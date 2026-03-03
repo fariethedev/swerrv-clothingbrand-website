@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # ── MySQL Database ──────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: swerrv-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-swerrv_secret}
+      MYSQL_DATABASE: ${DB_NAME:-swerrv}
+    ports:
+      - "3307:3306"
+    volumes:
+      - swerrv_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Spring Boot Backend ─────────────────────────────────────
+  backend:
+    build:
+      context: ./swerrv
+      dockerfile: Dockerfile
+    container_name: swerrv-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:-swerrv}
+      DB_USERNAME: ${DB_USERNAME:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-swerrv_secret}
+      JWT_SECRET: ${JWT_SECRET}
+      STRIPE_API_KEY: ${STRIPE_API_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-whsec_placeholder}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      APP_CORS_ORIGINS: ${APP_CORS_ORIGINS:-http://localhost}
+    ports:
+      - "8080:8080"
+
+  # ── React Frontend (Nginx) ─────────────────────────────────
+  frontend:
+    build:
+      context: ./swerrvfrontend
+      dockerfile: Dockerfile
+    container_name: swerrv-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  swerrv_mysql_data:

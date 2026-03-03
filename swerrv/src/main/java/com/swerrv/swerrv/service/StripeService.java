@@ -1,0 +1,79 @@
+package com.swerrv.swerrv.service;
+
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
+import com.swerrv.swerrv.exception.BadRequestException;
+import com.swerrv.swerrv.model.Cart;
+import com.swerrv.swerrv.model.CartItem;
+import com.swerrv.swerrv.model.Product;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+@Service
+public class StripeService {
+
+    @Value("${stripe.api.key}")
+    private String stripeApiKey;
+
+    @PostConstruct
+    public void init() {
+        Stripe.apiKey = stripeApiKey;
+    }
+
+    public String createPaymentIntent(Cart cart) {
+        if (cart == null || cart.getItems().isEmpty()) {
+            throw new BadRequestException("Cart is empty");
+        }
+
+        BigDecimal subtotal = cart.getItems().stream()
+                .map(ci -> {
+                    Product p = ci.getProduct();
+                    BigDecimal price = p.getSalePrice() != null ? p.getSalePrice() : p.getPrice();
+                    return price.multiply(BigDecimal.valueOf(ci.getQuantity()));
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal shippingCost = subtotal.compareTo(new BigDecimal("300")) >= 0
+                ? BigDecimal.ZERO
+                : new BigDecimal("15.00");
+
+        BigDecimal total = subtotal.add(shippingCost);
+
+        // Stripe expects amount in smallest currency unit (e.g., groszy for PLN)
+        long amountInSmallestUnit = total.multiply(new BigDecimal("100")).longValue();
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("amount", amountInSmallestUnit);
+        params.put("currency", "pln");
+        // We can add metadata here if needed
+        Map<String, Object> paymentMethodTypes = new HashMap<>();
+        paymentMethodTypes.put("enabled", true);
+        params.put("automatic_payment_methods", paymentMethodTypes);
+
+        try {
+            PaymentIntent paymentIntent = PaymentIntent.create(params);
+            return paymentIntent.getClientSecret();
+        } catch (StripeException e) {
+            throw new BadRequestException("Failed to initialize payment: " + e.getMessage());
+        }
+    }
+
+    public boolean verifyPayment(String paymentIntentId) {
+        if (paymentIntentId == null || paymentIntentId.trim().isEmpty()) {
+            return false;
+        }
+
+        try {
+            PaymentIntent intent = PaymentIntent.retrieve(paymentIntentId);
+            return "succeeded".equals(intent.getStatus());
+        } catch (StripeException e) {
+            return false;
+        }
+    }
+}

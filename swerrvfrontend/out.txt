@@ -1,0 +1,5 @@
+C:\Users\User\Desktop\swervbackend\swerrvfrontend\public\images\swerrv_graphic_tee_1772061065620.png
+C:\Users\User\Desktop\swervbackend\swerrvfrontend\public\images\swerrv_cargo_1772060995951.png
+C:\Users\User\Desktop\swervbackend\swerrvfrontend\public\images\swerrv_jacket_1772060954722.png
+C:\Users\User\Desktop\swervbackend\swerrvfrontend\public\images\swerrv_cap_1772060869187.png
+C:\Users\User\Desktop\swervbackend\swerrvfrontend\public\images\swerrv_bag_model_1772058939685.png

@@ -1,0 +1,144 @@
+﻿
+> swerrvfrontend@0.0.0 lint
+> eslint .
+
+
+C:\Users\User\Desktop\swervbackend\swerrvfrontend\src\components\CartDrawer.jsx
+  1:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\User\Desktop\swervbackend\swerrvfrontend\src\components\Footer.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\User\Desktop\swervbackend\swerrvfrontend\src\components\Navbar.jsx
+  3:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\User\Desktop\swervbackend\swerrvfrontend\src\components\ProductCard.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\User\Desktop\swervbackend\swerrvfrontend\src\context\AuthContext.jsx
+  30:9   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  28 |
+  29 |     useEffect(() => {
+> 30 |         checkAuthStatus();
+     |         ^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  31 |     }, [checkAuthStatus]);
+  32 |
+  33 |     const login = async (email, password) => {  react-hooks/set-state-in-effect
+  77:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             react-refresh/only-export-components
+
+C:\Users\User\Desktop\swervbackend\swerrvfrontend\src\context\CartContext.jsx
+   56:9   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  54 |
+  55 |     useEffect(() => {
+> 56 |         fetchCart();
+     |         ^^^^^^^^^ Avoid calling setState() directly within an effect
+  57 |     }, [user]);
+  58 |
+  59 |     const addToCart = async (product, size, quantity = 1) => {  react-hooks/set-state-in-effect
+   57:8   warning  React Hook useEffect has a missing dependency: 'fetchCart'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        react-hooks/exhaustive-deps
+  122:14  error    Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      react-refresh/only-export-components
+
+C:\Users\User\Desktop\swervbackend\swerrvfrontend\src\context\WishlistContext.jsx
+  18:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  16 |                 .catch(err => console.error("Failed to load wishlist:", err));
+  17 |         } else {
+> 18 |             setWishlist([]);
+     |             ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  19 |         }
+  20 |     }, [user]);
+  21 |  react-hooks/set-state-in-effect
+  47:18  error  'error' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  63:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         react-refresh/only-export-components
+
+C:\Users\User\Desktop\swervbackend\swerrvfrontend\src\pages\About.jsx
+  1:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\User\Desktop\swervbackend\swerrvfrontend\src\pages\Admin.jsx
+   2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u         no-unused-vars
+  22:13  error  'user' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  69:18  error  'error' is defined but never used                                                     no-unused-vars
+  82:18  error  'error' is defined but never used                                                     no-unused-vars
+
+C:\Users\User\Desktop\swervbackend\swerrvfrontend\src\pages\Checkout.jsx
+  3:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\User\Desktop\swervbackend\swerrvfrontend\src\pages\Contact.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\User\Desktop\swervbackend\swerrvfrontend\src\pages\Home.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\User\Desktop\swervbackend\swerrvfrontend\src\pages\Login.jsx
+  3:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\User\Desktop\swervbackend\swerrvfrontend\src\pages\OrderSuccess.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            no-unused-vars
+  8:61  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+   6 |     const location = useLocation();
+   7 |     const order = location.state?.order;
+>  8 |     const orderId = order?.id || 'SWV-' + String(Math.floor(Math.random() * 900 + 100));
+     |                                                             ^^^^^^^^^^^^^ Cannot call impure function
+   9 |
+  10 |     return (
+  11 |         <div className="min-h-screen bg-black flex items-center justify-center px-6 py-12">  react-hooks/purity
+
+C:\Users\User\Desktop\swervbackend\swerrvfrontend\src\pages\ProductDetail.jsx
+   3:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    no-unused-vars
+  39:9   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  37 |
+  38 |     useEffect(() => {
+> 39 |         setLoading(true);
+     |         ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  40 |         window.scrollTo(0, 0); // Scroll to top when id changes
+  41 |
+  42 |         Promise.all([  react-hooks/set-state-in-effect
+  88:19  error  'addedReview' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+
+C:\Users\User\Desktop\swervbackend\swerrvfrontend\src\pages\Shop.jsx
+    3:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                   no-unused-vars
+   13:25  error  'setSearchQuery' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+   18:9   error  'setLoading' is not defined                                                                     no-undef
+   37:13  error  'setFiltered' is not defined                                                                    no-undef
+   38:13  error  'setLoading' is not defined                                                                     no-undef
+   41:13  error  'setLoading' is not defined                                                                     no-undef
+   59:81  error  'filtered' is not defined                                                                       no-undef
+  113:22  error  'loading' is not defined                                                                        no-undef
+  119:25  error  'filtered' is not defined                                                                       no-undef
+  128:30  error  'filtered' is not defined                                                                       no-undef
+
+C:\Users\User\Desktop\swervbackend\swerrvfrontend\src\pages\Wishlist.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+Γ£û 37 problems (36 errors, 1 warning)
+

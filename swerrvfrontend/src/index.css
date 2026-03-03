@@ -1,0 +1,150 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Dancing+Script:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-black text-white font-poppins antialiased overflow-x-hidden;
+    line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  html.light-mode body {
+    @apply bg-white text-black;
+  }
+
+  html.light-mode .bg-black {
+    @apply !bg-white;
+  }
+
+  html.light-mode .text-white {
+    @apply !text-black;
+  }
+
+  html.light-mode .bg-grey-900 {
+    @apply !bg-grey-100;
+  }
+
+  html.light-mode .text-grey-300 {
+    @apply !text-grey-700;
+  }
+
+  html.light-mode .text-grey-500 {
+    @apply !text-grey-700;
+  }
+
+  html.light-mode .border-white\/10 {
+    @apply !border-black/10;
+  }
+
+  html.light-mode .btn-secondary {
+    @apply border-black text-black hover:bg-black/5;
+  }
+
+  a {
+    @apply text-inherit no-underline;
+  }
+
+  button {
+    @apply cursor-pointer font-poppins border-0 outline-none;
+  }
+
+  input,
+  textarea,
+  select {
+    @apply font-poppins outline-none;
+  }
+
+  img {
+    @apply max-w-full block;
+  }
+
+  ::selection {
+    @apply bg-accent text-black;
+  }
+
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-grey-900;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-grey-700 rounded-sm;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-accent text-black px-8 py-3.5 text-xs font-bold tracking-widest uppercase transition-all duration-200 cursor-pointer inline-block;
+  }
+
+  .btn-primary:hover {
+    @apply bg-accent-dark -translate-y-px;
+  }
+
+  .btn-secondary {
+    @apply bg-transparent text-white px-8 py-3.5 text-xs font-semibold tracking-widest uppercase border border-grey-700 cursor-pointer inline-block transition-all duration-200;
+  }
+
+  .btn-secondary:hover {
+    @apply border-white bg-white/5;
+  }
+
+  .section-label {
+    @apply text-xs font-semibold tracking-widest2 uppercase text-grey-300;
+  }
+
+  .nav-link {
+    @apply text-[11px] font-semibold tracking-widest uppercase text-grey-300 transition-colors duration-200 relative;
+  }
+
+  .nav-link:hover {
+    @apply text-white;
+  }
+
+  .tag-new {
+    @apply bg-accent text-black text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5;
+  }
+
+  .tag-sale {
+    @apply bg-brand-red text-white text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5;
+  }
+
+  .tag-best {
+    @apply bg-white text-black text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5;
+  }
+
+  .form-input {
+    @apply w-full bg-white/5 border border-grey-700 text-white px-4 py-3 text-sm font-poppins transition-colors duration-200;
+  }
+
+  .form-input:focus {
+    @apply border-accent outline-none;
+  }
+
+  .form-input::placeholder {
+    @apply text-grey-500;
+  }
+
+  .admin-card {
+    @apply bg-grey-900 border border-white/[0.06] p-6 mb-6;
+  }
+}

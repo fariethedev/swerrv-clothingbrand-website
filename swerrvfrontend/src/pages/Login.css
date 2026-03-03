@@ -1,0 +1,19 @@
+/* Keeping Login styles minimal as it reuses general App.css styles like .form-input, .btn-primary */
+.form-input {
+    width: 100%;
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 10px 14px;
+    color: white;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.form-input:focus {
+    border-color: var(--accent-color, #f0f0f0);
+}
+
+.form-input.pl-10 {
+    padding-left: 2.5rem;
+}
