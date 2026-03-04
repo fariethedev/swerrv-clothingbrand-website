@@ -20,10 +20,10 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     long countByStatus(OrderStatus status);
 
-    @Query("SELECT COALESCE(SUM(o.total), 0) FROM Order o WHERE o.status <> 'CANCELLED' AND o.status <> 'REFUNDED'")
+    @Query(value = "SELECT COALESCE(SUM(o.total), 0) FROM orders o WHERE o.status NOT IN ('CANCELLED', 'REFUNDED')", nativeQuery = true)
     BigDecimal getTotalRevenue();
 
-    @Query("SELECT COALESCE(SUM(o.total), 0) FROM Order o WHERE MONTH(o.createdAt) = MONTH(CURRENT_DATE) AND YEAR(o.createdAt) = YEAR(CURRENT_DATE) AND o.status <> 'CANCELLED' AND o.status <> 'REFUNDED'")
+    @Query(value = "SELECT COALESCE(SUM(o.total), 0) FROM orders o WHERE MONTH(o.created_at) = MONTH(CURDATE()) AND YEAR(o.created_at) = YEAR(CURDATE()) AND o.status NOT IN ('CANCELLED', 'REFUNDED')", nativeQuery = true)
     BigDecimal getMonthlyRevenue();
 
     List<Order> findTop5ByOrderByCreatedAtDesc();
