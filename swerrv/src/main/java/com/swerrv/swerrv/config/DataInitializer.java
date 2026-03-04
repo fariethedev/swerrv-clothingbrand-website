@@ -41,7 +41,8 @@ public class DataInitializer implements CommandLineRunner {
                 jdbcTemplate.execute("ALTER TABLE product_images MODIFY image_url LONGTEXT");
 
                 seedUsers();
-                log.info("✅ Wiped all existing products from the database.");
+                seedProducts();
+                log.info("✅ Wiped all existing products and re-seeded them.");
         }
 
         // ── Users ─────────────────────────────────────────────────────────────────
