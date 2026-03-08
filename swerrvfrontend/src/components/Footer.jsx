@@ -74,7 +74,7 @@ const Footer = () => {
                 {[
                     { title: 'Shop', links: [['T-Shirts', '/shop?category=T-Shirts'], ['Hoodies', '/shop?category=Hoodies'], ['Bottoms', '/shop?category=Bottoms'], ['Jackets', '/shop?category=Jackets'], ['Accessories', '/shop?category=Accessories'], ['New Arrivals', '/shop']] },
                     { title: 'Info', links: [['About Us', '/about'], ['Contact', '/contact'], ['Sizing Guide', '#'], ['Shipping & Returns', '#'], ['FAQ', '#']] },
-                    { title: 'Legal', links: [['Privacy Policy', '#'], ['Terms of Service', '#'], ['Cookie Policy', '#']] },
+                    { title: 'Legal', links: [['Privacy Policy', '/privacy'], ['Terms of Service', '/terms'], ['Cookie Policy', '/cookie-policy']] },
                 ].map(col => (
                     <div key={col.title}>
                         <h4 className="text-[11px] font-bold tracking-[0.2em] uppercase text-grey-300 mb-5">{col.title}</h4>

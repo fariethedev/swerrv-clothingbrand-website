@@ -20,6 +20,8 @@ import Login from './pages/Login';
 import Profile from './pages/Profile';
 import Orders from './pages/Orders';
 import ForgotPassword from './pages/ForgotPassword';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsConditions from './pages/TermsConditions';
 import { Navigate } from 'react-router-dom'; const Layout = ({ children }) => {
   const location = useLocation();
   const hideLayout = ['/checkout', '/admin', '/order-success', '/login', '/forgot-password'].includes(location.pathname);
@@ -61,6 +63,8 @@ const AppContent = () => {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/orders" element={<Orders />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsConditions />} />
           <Route path="/admin" element={
             <ProtectedAdminRoute>
               <Admin />
