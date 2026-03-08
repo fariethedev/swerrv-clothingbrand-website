@@ -98,8 +98,8 @@ const LookbookCarousel = () => {
                     <img
                         src={slide.img}
                         alt={slide.title}
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 20%' }}
+                        className="w-full h-full object-cover cursor-pointer object-[center_20%] md:object-[center_40%] lg:object-[center_50%]"
+                        onClick={() => document.dispatchEvent(new CustomEvent('open-zoom', { detail: slide.img }))}
                     />
                 </motion.div>
             ))}
@@ -210,10 +210,17 @@ const Home = () => {
 
     // Auto-advance hero slides every 5s
     useEffect(() => {
-        const timer = setInterval(() => {
-            setHeroSlide(prev => (prev + 1) % HERO_SLIDES.length);
+        const interval = setInterval(() => {
+            setHeroSlide((prev) => (prev + 1) % HERO_SLIDES.length);
         }, 5000);
-        return () => clearInterval(timer);
+
+        const handleZoom = (e) => setZoomedImg(e.detail);
+        document.addEventListener('open-zoom', handleZoom);
+
+        return () => {
+            clearInterval(interval);
+            document.removeEventListener('open-zoom', handleZoom);
+        };
     }, []);
 
     useEffect(() => {
