@@ -186,3 +186,46 @@
         font-size: 26px;
     }
 }
+
+/* Cookie table (used on Cookie Policy page) */
+.cookie-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    color: var(--grey-300);
+    margin-top: 14px;
+    overflow-x: auto;
+    display: block;
+}
+
+.cookie-table th {
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--grey-500);
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    white-space: nowrap;
+}
+
+.cookie-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    line-height: 1.5;
+}
+
+.cookie-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Inline code */
+.legal-section code {
+    font-family: monospace;
+    font-size: 12px;
+    background: rgba(255, 255, 255, 0.07);
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: var(--accent);
+}

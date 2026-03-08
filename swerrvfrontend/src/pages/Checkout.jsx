@@ -10,7 +10,9 @@ import toast from 'react-hot-toast';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || 'pk_test_51RvGIWK8ke7t62uB0k3SMqKjZaQZjzTgZiqF1Z2uUxXSPUu1WrLzORNrogpYAkhl3HAH4dauUI0ktMzLwEBTysi5008wDTmJuL');
+const stripeKey = (import.meta.env.VITE_STRIPE_PUBLIC_KEY || 'pk_test_51RvGIWK8ke7t62uB0k3SMqKjZaQZjzTgZiqF1Z2uUxXSPUu1WrLzORNrogpYAkhl3HAH4dauUI0ktMzLwEBTysi5008wDTmJuL').trim();
+const stripePromise = loadStripe(stripeKey);
+
 
 const StripePaymentForm = ({ onPaymentSuccess, onBack, amount }) => {
     const stripe = useStripe();

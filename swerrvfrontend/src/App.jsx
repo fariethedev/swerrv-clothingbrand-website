@@ -1,12 +1,14 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { Toaster } from 'react-hot-toast';
+import { HelmetProvider } from 'react-helmet-async';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import PageLoader from './components/PageLoader';
+import CookieBanner from './components/CookieBanner';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';
@@ -22,6 +24,7 @@ import Orders from './pages/Orders';
 import ForgotPassword from './pages/ForgotPassword';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsConditions from './pages/TermsConditions';
+import CookiePolicy from './pages/CookiePolicy';
 import { Navigate } from 'react-router-dom'; const Layout = ({ children }) => {
   const location = useLocation();
   const hideLayout = ['/checkout', '/admin', '/order-success', '/login', '/forgot-password'].includes(location.pathname);
@@ -30,6 +33,7 @@ import { Navigate } from 'react-router-dom'; const Layout = ({ children }) => {
       {!hideLayout && <Navbar />}
       <main>{children}</main>
       {!hideLayout && <Footer />}
+      <CookieBanner />
     </>
   );
 };
@@ -65,6 +69,7 @@ const AppContent = () => {
           <Route path="/orders" element={<Orders />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsConditions />} />
+          <Route path="/cookie-policy" element={<CookiePolicy />} />
           <Route path="/admin" element={
             <ProtectedAdminRoute>
               <Admin />
@@ -87,20 +92,22 @@ import { ThemeProvider } from './context/ThemeContext';
 import { CurrencyProvider } from './context/CurrencyContext';
 
 const App = () => (
-  <BrowserRouter>
-    <ThemeProvider>
-      <CurrencyProvider>
-        <AuthProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <AppContent />
-              <Toaster position="bottom-right" toastOptions={{ style: { background: '#111', color: '#fff', border: '1px solid #333', fontFamily: 'Poppins, sans-serif', fontSize: '14px' } }} />
-            </WishlistProvider>
-          </CartProvider>
-        </AuthProvider>
-      </CurrencyProvider>
-    </ThemeProvider>
-  </BrowserRouter>
+  <HelmetProvider>
+    <BrowserRouter>
+      <ThemeProvider>
+        <CurrencyProvider>
+          <AuthProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <AppContent />
+                <Toaster position="bottom-right" toastOptions={{ style: { background: '#111', color: '#fff', border: '1px solid #333', fontFamily: 'Poppins, sans-serif', fontSize: '14px' } }} />
+              </WishlistProvider>
+            </CartProvider>
+          </AuthProvider>
+        </CurrencyProvider>
+      </ThemeProvider>
+    </BrowserRouter>
+  </HelmetProvider>
 );
 
 export default App;
