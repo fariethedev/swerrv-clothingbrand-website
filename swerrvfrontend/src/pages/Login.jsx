@@ -1,21 +1,47 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { HiOutlineMail, HiOutlineLockClosed, HiOutlineUser } from 'react-icons/hi';
+import { motion, AnimatePresence } from 'framer-motion';
+import { HiEye, HiEyeOff } from 'react-icons/hi';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import './Login.css';
+
+const SLIDE_IMAGES = [
+    '/images/_DSC8289.jpg',
+    '/images/_DSC8164.jpg',
+    '/images/_DSC8141.jpg',
+    '/images/_DSC8438.jpg',
+    '/images/_DSC8415.jpg',
+];
+
+const SLIDE_CAPTIONS = [
+    'Wear the Movement.',
+    'Style Without Limits.',
+    'Crafted for the Streets.',
+    'Bold. Clean. Swerrv.',
+    'Dress Your Story.',
+];
 
 const Login = () => {
     const [isLogin, setIsLogin] = useState(true);
     const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', password: '' });
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [agreeTerms, setAgreeTerms] = useState(false);
+    const [currentSlide, setCurrentSlide] = useState(0);
 
     const { login, register, googleLogin } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-
     const from = location.state?.from?.pathname || '/';
+
+    // Auto-advance slides every 4 seconds
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentSlide(prev => (prev + 1) % SLIDE_IMAGES.length);
+        }, 4000);
+        return () => clearInterval(timer);
+    }, []);
 
     const handleChange = (e) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -23,6 +49,7 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!isLogin && !agreeTerms) return;
         setIsLoading(true);
 
         if (isLogin) {
@@ -39,7 +66,7 @@ const Login = () => {
                 firstName: formData.firstName,
                 lastName: formData.lastName,
                 email: formData.email,
-                password: formData.password
+                password: formData.password,
             });
             if (success) {
                 setIsLogin(true);
@@ -49,163 +76,232 @@ const Login = () => {
     };
 
     const handleGoogleSuccess = async (credentialResponse) => {
-        // credentialResponse.credential is the Google ID token
         const success = await googleLogin(credentialResponse.credential);
         if (success) {
             navigate(from, { replace: true });
         }
     };
 
+    const switchMode = (toLogin) => {
+        setIsLogin(toLogin);
+        setFormData({ firstName: '', lastName: '', email: '', password: '' });
+        setShowPassword(false);
+        setAgreeTerms(false);
+    };
+
     return (
-        <div className="min-h-screen relative flex items-center justify-center px-6 overflow-hidden">
-            {/* Background Video */}
-            <div className="absolute inset-0 z-0">
-                <video
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="w-full h-full object-cover opacity-60 mix-blend-screen"
-                >
-                    <source src="/images/logovideo.mov" type="video/mp4" />
-                </video>
-                {/* Overlay gradient to ensure form readability if needed */}
-                <div className="absolute inset-0 bg-black/40" />
+        <div className="auth-page">
+            {/* ===== LEFT PANEL — Image Carousel ===== */}
+            <div className="auth-left">
+                {/* Slides */}
+                {SLIDE_IMAGES.map((img, i) => (
+                    <div
+                        key={img}
+                        className={`auth-slide ${i === currentSlide ? 'auth-slide--active' : ''}`}
+                        style={{ backgroundImage: `url(${img})` }}
+                    />
+                ))}
+
+                {/* Dark gradient overlay for readability */}
+                <div className="auth-left-overlay" />
+
+                {/* Top bar: logo + back link */}
+                <div className="auth-left-topbar">
+                    <Link to="/" className="auth-logo">
+                        <img src="/images/swerrve_logo_white.png" alt="Swerrv" className="auth-logo-img" />
+                    </Link>
+                    <Link to="/" className="auth-back-btn">
+                        Back to website <span>&rarr;</span>
+                    </Link>
+                </div>
+
+                {/* Bottom: tagline + dots */}
+                <div className="auth-left-bottom">
+                    <AnimatePresence mode="wait">
+                        <motion.p
+                            key={currentSlide}
+                            className="auth-caption"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            {SLIDE_CAPTIONS[currentSlide]}
+                        </motion.p>
+                    </AnimatePresence>
+
+                    {/* Dot indicators */}
+                    <div className="auth-dots">
+                        {SLIDE_IMAGES.map((_, i) => (
+                            <button
+                                key={i}
+                                className={`auth-dot ${i === currentSlide ? 'auth-dot--active' : ''}`}
+                                onClick={() => setCurrentSlide(i)}
+                                aria-label={`Slide ${i + 1}`}
+                            />
+                        ))}
+                    </div>
+                </div>
             </div>
 
-            <motion.div
-                className="w-full max-w-[280px] sm:max-w-[320px] bg-grey-900/90 backdrop-blur-md border border-white/[0.08] p-5 sm:p-6 z-10"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-            >
-                <div className="text-center mb-5">
-                    <h1 className="text-2xl font-black tracking-tight mb-2">
-                        {isLogin ? 'Welcome Back' : 'Create Account'}
-                    </h1>
-                    <p className="text-grey-500 text-sm">
-                        {isLogin ? 'Enter your details to access your account.' : 'Join Swerrv to start shopping.'}
-                    </p>
-                </div>
+            {/* ===== RIGHT PANEL — Form ===== */}
+            <div className="auth-right">
+                <motion.div
+                    className="auth-form-container"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.45 }}
+                >
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={isLogin ? 'login' : 'register'}
+                            initial={{ opacity: 0, y: 16 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -16 }}
+                            transition={{ duration: 0.35 }}
+                        >
+                            {/* Heading */}
+                            <h1 className="auth-title">
+                                {isLogin ? 'Welcome back' : 'Create an account'}
+                            </h1>
+                            <p className="auth-subtitle">
+                                {isLogin ? (
+                                    <>
+                                        Don't have an account?{' '}
+                                        <button className="auth-switch-link" onClick={() => switchMode(false)}>Sign up</button>
+                                    </>
+                                ) : (
+                                    <>
+                                        Already have an account?{' '}
+                                        <button className="auth-switch-link" onClick={() => switchMode(true)}>Log in</button>
+                                    </>
+                                )}
+                            </p>
 
-                {/* Google Sign-In */}
-                <div className="flex justify-center mb-4">
-                    <GoogleLogin
-                        onSuccess={handleGoogleSuccess}
-                        onError={() => { }}
-                        theme="filled_black"
-                        shape="rectangular"
-                        size="large"
-                        width="270"
-                        text={isLogin ? 'signin_with' : 'signup_with'}
-                    />
-                </div>
+                            {/* Form */}
+                            <form onSubmit={handleSubmit} className="auth-form" noValidate>
+                                {/* Name row – register only */}
+                                {!isLogin && (
+                                    <div className="auth-row">
+                                        <input
+                                            type="text"
+                                            name="firstName"
+                                            value={formData.firstName}
+                                            onChange={handleChange}
+                                            placeholder="First name"
+                                            required
+                                            className="auth-input"
+                                        />
+                                        <input
+                                            type="text"
+                                            name="lastName"
+                                            value={formData.lastName}
+                                            onChange={handleChange}
+                                            placeholder="Last name"
+                                            className="auth-input"
+                                        />
+                                    </div>
+                                )}
 
-                <div className="flex items-center gap-4 mb-4">
-                    <div className="flex-1 h-px bg-white/10" />
-                    <span className="text-grey-500 text-xs font-semibold tracking-widest uppercase">or</span>
-                    <div className="flex-1 h-px bg-white/10" />
-                </div>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    placeholder="Email"
+                                    required
+                                    className="auth-input"
+                                />
 
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                    {!isLogin && (
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="flex flex-col gap-1.5">
-                                <label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">First Name</label>
-                                <div className="relative">
-                                    <HiOutlineUser className="absolute left-3 top-1/2 -translate-y-1/2 text-grey-500" />
+                                <div className="auth-input-wrap">
                                     <input
-                                        type="text"
-                                        name="firstName"
-                                        value={formData.firstName}
+                                        type={showPassword ? 'text' : 'password'}
+                                        name="password"
+                                        value={formData.password}
                                         onChange={handleChange}
+                                        placeholder="Enter your password"
                                         required
-                                        placeholder="John"
-                                        className="form-input pl-10"
+                                        className="auth-input"
+                                    />
+                                    <button
+                                        type="button"
+                                        className="auth-eye-btn"
+                                        onClick={() => setShowPassword(v => !v)}
+                                        tabIndex={-1}
+                                    >
+                                        {showPassword ? <HiEyeOff /> : <HiEye />}
+                                    </button>
+                                </div>
+
+                                {/* Forgot password – login only */}
+                                {isLogin && (
+                                    <div className="auth-forgot-wrap">
+                                        <Link to="/forgot-password" className="auth-forgot">Forgot password?</Link>
+                                    </div>
+                                )}
+
+                                {/* Terms – register only */}
+                                {!isLogin && (
+                                    <label className="auth-terms">
+                                        <input
+                                            type="checkbox"
+                                            checked={agreeTerms}
+                                            onChange={e => setAgreeTerms(e.target.checked)}
+                                            className="auth-checkbox"
+                                        />
+                                        <span>
+                                            I agree to the{' '}
+                                            <Link to="/terms" className="auth-terms-link">Terms &amp; Conditions</Link>
+                                        </span>
+                                    </label>
+                                )}
+
+                                <button
+                                    type="submit"
+                                    className="auth-submit-btn"
+                                    disabled={isLoading || (!isLogin && !agreeTerms)}
+                                >
+                                    {isLoading ? (
+                                        <span className="auth-spinner" />
+                                    ) : (
+                                        isLogin ? 'Sign in' : 'Create account'
+                                    )}
+                                </button>
+                            </form>
+
+                            {/* Divider */}
+                            <div className="auth-divider">
+                                <span className="auth-divider-line" />
+                                <span className="auth-divider-text">Or register with</span>
+                                <span className="auth-divider-line" />
+                            </div>
+
+                            {/* Social buttons */}
+                            <div className="auth-social-row">
+                                {/* Google – wrapped GoogleLogin in a styled container */}
+                                <div className="auth-social-btn-wrap">
+                                    <GoogleLogin
+                                        onSuccess={handleGoogleSuccess}
+                                        onError={() => { }}
+                                        theme="filled_black"
+                                        shape="rectangular"
+                                        size="large"
+                                        text={isLogin ? 'signin_with' : 'signup_with'}
                                     />
                                 </div>
+
+                                {/* Apple placeholder */}
+                                <button className="auth-social-btn" type="button">
+                                    <svg viewBox="0 0 24 24" className="auth-social-icon" fill="currentColor">
+                                        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+                                    </svg>
+                                    Apple
+                                </button>
                             </div>
-                            <div className="flex flex-col gap-1.5">
-                                <label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">Last Name</label>
-                                <input
-                                    type="text"
-                                    name="lastName"
-                                    value={formData.lastName}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="Doe"
-                                    className="form-input"
-                                />
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="flex flex-col gap-1.5">
-                        <label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">Email</label>
-                        <div className="relative">
-                            <HiOutlineMail className="absolute left-3 top-1/2 -translate-y-1/2 text-grey-500" />
-                            <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                required
-                                placeholder="you@email.com"
-                                className="form-input pl-10"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col gap-1.5">
-                        <label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">Password</label>
-                        <div className="relative">
-                            <HiOutlineLockClosed className="absolute left-3 top-1/2 -translate-y-1/2 text-grey-500" />
-                            <input
-                                type="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                required
-                                placeholder="••••••••"
-                                className="form-input pl-10"
-                            />
-                        </div>
-                    </div>
-
-                    {isLogin && (
-                        <div className="flex justify-end">
-                            <Link
-                                to="/forgot-password"
-                                className="text-xs text-grey-500 hover:text-white transition-colors uppercase tracking-wider font-bold"
-                            >
-                                Forgot Password?
-                            </Link>
-                        </div>
-                    )}
-
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="btn-primary w-full mt-2 disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center text-sm py-2"
-                    >
-                        {isLoading ? (
-                            <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                        ) : (
-                            isLogin ? 'Sign In' : 'Create Account'
-                        )}
-                    </button>
-                </form>
-
-                <div className="mt-4 text-center text-xs text-grey-500">
-                    {isLogin ? "Don't have an account? " : "Already have an account? "}
-                    <button
-                        onClick={() => setIsLogin(!isLogin)}
-                        className="text-white font-bold hover:text-accent transition-colors"
-                    >
-                        {isLogin ? 'Sign Up' : 'Sign In'}
-                    </button>
-                </div>
-            </motion.div>
+                        </motion.div>
+                    </AnimatePresence>
+                </motion.div>
+            </div>
         </div>
     );
 };

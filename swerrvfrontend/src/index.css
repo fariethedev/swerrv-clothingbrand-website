@@ -1,5 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Dancing+Script:wght@400;700&display=swap');
 
+/* ===== Global CSS custom properties ===== */
+:root {
+  --accent: #7c6fff;
+  --accent-dark: #6355e0;
+  --black: #000;
+  --white: #fff;
+  --grey-900: #111111;
+  --grey-700: #404040;
+  --grey-500: #808080;
+  --grey-300: #c0c0c0;
+  --green: #34c759;
+  --red: #ff3b30;
+}
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -75,7 +90,7 @@
   }
 
   ::selection {
-    @apply bg-accent text-black;
+    @apply bg-accent text-white;
   }
 
   ::-webkit-scrollbar {
@@ -93,11 +108,15 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-accent text-black px-8 py-3.5 text-xs font-bold tracking-widest uppercase transition-all duration-200 cursor-pointer inline-block;
+    @apply px-8 py-3.5 text-xs font-bold tracking-widest uppercase transition-all duration-200 cursor-pointer inline-block text-white;
+    background: linear-gradient(135deg, #7c6fff 0%, #a040e0 100%);
+    border-radius: 8px;
   }
 
   .btn-primary:hover {
-    @apply bg-accent-dark -translate-y-px;
+    @apply -translate-y-px;
+    background: linear-gradient(135deg, #6355e0 0%, #8b2fc9 100%);
+    box-shadow: 0 8px 24px rgba(124, 111, 255, 0.35);
   }
 
   .btn-secondary {

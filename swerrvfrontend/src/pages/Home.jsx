@@ -1,10 +1,17 @@
 import { useRef, useEffect, useState } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
+const HERO_SLIDES = [
+    { img: '/images/_DSC8289.jpg', caption: 'Wear the Movement.' },
+    { img: '/images/_DSC8164.jpg', caption: 'Style Without Limits.' },
+    { img: '/images/_DSC8141.jpg', caption: 'Crafted for the Streets.' },
+    { img: '/images/_DSC8438.jpg', caption: 'Bold. Clean. Swerrv.' },
+    { img: '/images/_DSC8415.jpg', caption: 'Dress Your Story.' },
+];
 
 
 const CountdownTimer = ({ targetDate }) => {
@@ -55,6 +62,137 @@ const CountdownTimer = ({ targetDate }) => {
     );
 };
 
+const LOOKBOOK_SLIDES = [
+    { img: '/images/_DSC8113.jpg', label: 'Campaign 01', title: 'Feelings Mutual' },
+    { img: '/images/_DSC8122.jpg', label: 'Campaign 02', title: "Streets Don't Lie" },
+    { img: '/images/_DSC8136.jpg', label: 'Campaign 03', title: 'The Uniform' },
+    { img: '/images/_DSC8144.jpg', label: 'Campaign 04', title: 'Culture First' },
+    { img: '/images/_DSC8157.jpg', label: 'Campaign 05', title: 'Made Different' },
+    { img: '/images/_DSC8164.jpg', label: 'Campaign 06', title: 'No Compromise' },
+    { img: '/images/_DSC8177.jpg', label: 'Campaign 07', title: 'Own Your Lane' },
+];
+
+const LookbookCarousel = () => {
+    const [current, setCurrent] = useState(0);
+    const total = LOOKBOOK_SLIDES.length;
+
+    const prev = () => setCurrent(c => (c - 1 + total) % total);
+    const next = () => setCurrent(c => (c + 1) % total);
+
+    // Auto-advance every 6s
+    useEffect(() => {
+        const t = setInterval(next, 6000);
+        return () => clearInterval(t);
+    }, []);
+
+    return (
+        <section className="relative w-full overflow-hidden" style={{ height: '100vh' }}>
+            {/* Slides */}
+            {LOOKBOOK_SLIDES.map((slide, i) => (
+                <motion.div
+                    key={slide.img}
+                    className="absolute inset-0"
+                    animate={{ opacity: i === current ? 1 : 0 }}
+                    transition={{ duration: 1.1, ease: 'easeInOut' }}
+                >
+                    <img
+                        src={slide.img}
+                        alt={slide.title}
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 20%' }}
+                    />
+                </motion.div>
+            ))}
+
+            {/* Dark gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80 pointer-events-none" />
+
+            {/* Section label top-left */}
+            <div className="absolute top-10 left-10 z-10">
+                <p className="text-xs font-semibold tracking-[0.35em] uppercase text-white/60">Lookbook</p>
+            </div>
+
+            {/* Shop link top-right */}
+            <div className="absolute top-10 right-10 z-10">
+                <Link to="/shop" className="text-xs font-bold tracking-widest uppercase text-white/60 hover:text-white border border-white/20 hover:border-white/60 px-4 py-2 transition-all duration-200">
+                    Shop Collection →
+                </Link>
+            </div>
+
+            {/* Slide caption — bottom left */}
+            <div className="absolute bottom-16 left-10 z-10 max-w-xl">
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={current}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        <p className="text-accent text-xs font-semibold tracking-[0.3em] uppercase mb-3">
+                            {LOOKBOOK_SLIDES[current].label}
+                        </p>
+                        <h2 className="text-white text-4xl md:text-6xl font-black tracking-tight leading-tight drop-shadow-xl">
+                            {LOOKBOOK_SLIDES[current].title}
+                        </h2>
+                    </motion.div>
+                </AnimatePresence>
+            </div>
+
+            {/* Controls — bottom right */}
+            <div className="absolute bottom-16 right-10 z-10 flex items-center gap-6">
+                {/* Photo counter */}
+                <span className="text-white/50 text-sm font-mono tabular-nums">
+                    {String(current + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
+                </span>
+
+                {/* Prev / Next arrows */}
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={prev}
+                        aria-label="Previous"
+                        className="w-11 h-11 rounded-full border border-white/30 hover:border-white/80 bg-black/30 hover:bg-black/60 flex items-center justify-center text-white transition-all duration-200 backdrop-blur-sm"
+                    >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
+                            <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </button>
+                    <button
+                        onClick={next}
+                        aria-label="Next"
+                        className="w-11 h-11 rounded-full border border-white/30 hover:border-white/80 bg-black/30 hover:bg-black/60 flex items-center justify-center text-white transition-all duration-200 backdrop-blur-sm"
+                    >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
+                            <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            {/* Dot indicators — bottom centre */}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
+                {LOOKBOOK_SLIDES.map((_, i) => (
+                    <button
+                        key={i}
+                        onClick={() => setCurrent(i)}
+                        aria-label={`Slide ${i + 1}`}
+                        style={{
+                            width: i === current ? '38px' : '22px',
+                            height: '3px',
+                            borderRadius: '2px',
+                            background: i === current ? '#fff' : 'rgba(255,255,255,0.3)',
+                            border: 'none',
+                            padding: 0,
+                            cursor: 'pointer',
+                            transition: 'all 0.35s',
+                        }}
+                    />
+                ))}
+            </div>
+        </section>
+    );
+};
+
 const Home = () => {
     const { user } = useAuth();
     const heroRef = useRef(null);
@@ -67,6 +205,15 @@ const Home = () => {
     const [activeVideo, setActiveVideo] = useState(null);
     const [activeEvent, setActiveEvent] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [heroSlide, setHeroSlide] = useState(0);
+
+    // Auto-advance hero slides every 5s
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setHeroSlide(prev => (prev + 1) % HERO_SLIDES.length);
+        }, 5000);
+        return () => clearInterval(timer);
+    }, []);
 
     useEffect(() => {
         const fetchHomeData = async () => {
@@ -101,13 +248,24 @@ const Home = () => {
         <div className="min-h-screen">
             {/* HERO */}
             <section ref={heroRef} className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
-                <motion.div className="absolute inset-[-20%] z-0" style={{ y: heroY }}>
-                    <img src="/images/_DSC8113.jpg" alt="Hero" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/80 to-black/95" />
-                </motion.div>
 
+                {/* Slide images — absolute stacked, fade in/out */}
+                {HERO_SLIDES.map((slide, i) => (
+                    <motion.div
+                        key={slide.img}
+                        className="absolute inset-[-10%] z-0"
+                        style={{ y: heroY }}
+                        animate={{ opacity: i === heroSlide ? 1 : 0 }}
+                        transition={{ duration: 1.2, ease: 'easeInOut' }}
+                    >
+                        <img src={slide.img} alt={slide.caption} className="w-full h-full object-cover" style={{ objectPosition: 'center 20%' }} />
+                    </motion.div>
+                ))}
 
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 z-[1] bg-gradient-to-b from-black/30 via-black/70 to-black/95 pointer-events-none" />
 
+                {/* Central text content */}
                 <motion.div className="relative z-10 text-center px-6" style={{ opacity: heroOpacity }}>
                     <motion.p className="text-accent text-xs font-semibold tracking-[0.4em] uppercase mb-5" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}>
                         New Collection — 2026
@@ -115,17 +273,55 @@ const Home = () => {
                     <motion.h1 className="font-poppins font-black text-[clamp(40px,9vw,120px)] tracking-tight leading-[1] text-white mb-5 uppercase" initial={{ opacity: 0, y: 60 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.4 }}>
                         FEELINGS MUTUAL
                     </motion.h1>
-                    <motion.p className="text-white/70 text-lg font-light tracking-[0.1em] mb-10" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.6 }}>
-                        Not for everyone. Made for the culture.
-                    </motion.p>
+
+                    {/* Animated slide caption */}
+                    <AnimatePresence mode="wait">
+                        <motion.p
+                            key={heroSlide}
+                            className="text-white/70 text-lg font-light tracking-[0.15em] mb-10"
+                            initial={{ opacity: 0, y: 12 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -12 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            {HERO_SLIDES[heroSlide].caption}
+                        </motion.p>
+                    </AnimatePresence>
+
                     <motion.div className="flex gap-4 justify-center flex-wrap" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.8 }}>
                         <Link to="/shop" className="btn-primary">Shop Now</Link>
                         <Link to="/about" className="btn-secondary">Our Story</Link>
                     </motion.div>
                 </motion.div>
 
-                <motion.div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10" animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 1.8 }}>
-                    <div className="w-px h-12 bg-gradient-to-b from-transparent to-accent mx-auto" />
+                {/* Dot indicators — bottom centre */}
+                <motion.div
+                    className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-5"
+                    style={{ opacity: heroOpacity }}
+                >
+                    <div className="flex items-center gap-2">
+                        {HERO_SLIDES.map((_, i) => (
+                            <button
+                                key={i}
+                                onClick={() => setHeroSlide(i)}
+                                aria-label={`Slide ${i + 1}`}
+                                style={{
+                                    width: i === heroSlide ? '38px' : '26px',
+                                    height: '3px',
+                                    borderRadius: '2px',
+                                    background: i === heroSlide ? '#fff' : 'rgba(255,255,255,0.35)',
+                                    border: 'none',
+                                    padding: 0,
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s',
+                                }}
+                            />
+                        ))}
+                    </div>
+                    {/* Scroll line */}
+                    <motion.div animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 1.8 }}>
+                        <div className="w-px h-10 bg-gradient-to-b from-transparent to-accent mx-auto" />
+                    </motion.div>
                 </motion.div>
             </section>
 
@@ -205,7 +401,10 @@ const Home = () => {
                 </motion.div>
             </section>
 
-            {/* THE ARCHIVE / SHOWCASE */}
+            {/* LOOKBOOK — Full-Page Carousel */}
+            <LookbookCarousel />
+
+            {/* VIDEO + EVENT STRIP */}
             <section className="py-20 bg-black">
                 <div className="max-w-[1400px] mx-auto px-6">
                     <motion.div className="flex items-center justify-between mb-10" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
@@ -227,44 +426,34 @@ const Home = () => {
                             )}
                             <div className="absolute inset-0 bg-black/20" />
                             <div className="absolute bottom-6 left-6 z-10">
-                                <p className="text-white text-sm font-bold tracking-[0.2em] uppercase mb-1 drop-shadow-md">{activeVideo ? 'Campaign' : 'Campaign'}</p>
+                                <p className="text-white text-sm font-bold tracking-[0.2em] uppercase mb-1 drop-shadow-md">Campaign</p>
                                 <h3 className="text-white text-2xl md:text-3xl font-black drop-shadow-md">{activeVideo ? activeVideo.title : 'FEELINGS MUTUAL VISUALS'}</h3>
                                 {activeVideo?.description && <p className="text-white/80 text-sm mt-2 max-w-lg drop-shadow">{activeVideo.description}</p>}
                                 {activeVideo?.actionUrl && <a href={activeVideo.actionUrl} target="_blank" rel="noreferrer" className="inline-block mt-3 text-xs font-bold bg-white text-black px-4 py-2 hover:bg-accent transition-colors">WATCH FULL</a>}
                             </div>
                         </motion.div>
 
-                        {/* Right Column (Images/Flyer) */}
-                        <div className="lg:col-span-4 flex flex-col gap-5 lg:gap-6">
-                            <motion.div className="relative flex-1 min-h-[250px] lg:min-h-0 rounded-sm overflow-hidden" initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2 }}>
-                                <img src={activeEvent?.mediaUrl || "/images/_DSC8144.jpg"} alt="Lookbook" className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
-                                <div className="absolute inset-0 bg-black/10 transition-opacity duration-300 hover:opacity-0" />
-                                <div className="absolute top-4 left-4 tag-new">{activeEvent ? 'Event Flyer' : 'Lookbook'}</div>
-                            </motion.div>
-
-                            <motion.div className="bg-grey-900 flex-1 min-h-[250px] lg:min-h-0 p-6 sm:p-8 flex flex-col justify-center border border-white/[0.06] relative overflow-hidden rounded-sm group hover:bg-grey-800 transition-colors duration-300" initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.4 }}>
-                                <div className="absolute right-[-10%] top-[-10%] text-white/[0.02] group-hover:text-white/[0.04] transition-colors duration-300 text-8xl font-black uppercase pointer-events-none select-none">
-                                    {activeEvent ? 'EVENT' : 'POP UP'}
+                        {/* Event Card */}
+                        <motion.div className="lg:col-span-4 bg-grey-900 p-6 sm:p-8 flex flex-col justify-center border border-white/[0.06] relative overflow-hidden rounded-sm group hover:bg-grey-800 transition-colors duration-300" initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2 }}>
+                            <div className="absolute right-[-10%] top-[-10%] text-white/[0.02] text-8xl font-black uppercase pointer-events-none select-none">
+                                {activeEvent ? 'EVENT' : 'POP UP'}
+                            </div>
+                            <p className="text-accent text-xs font-semibold tracking-[0.2em] uppercase mb-3 relative z-10">Event</p>
+                            <h3 className="text-2xl font-black tracking-tight leading-tight mb-4 relative z-10 text-white">{activeEvent ? activeEvent.title : <><span>LONDON</span><br /><span>POP-UP STORE</span></>}</h3>
+                            <p className="text-grey-400 group-hover:text-grey-300 transition-colors duration-300 text-sm mb-6 relative z-10 line-clamp-3">{activeEvent ? activeEvent.description : 'Join us for the exclusive pre-release of the Feelings Mutual collection. Music, drinks, and early access.'}</p>
+                            <div className="mt-auto relative z-10 flex items-center gap-4">
+                                <div className="text-xs font-bold tracking-[0.1em] text-white">
+                                    <span className="block text-grey-500 mb-1">DATE</span>
+                                    {activeEvent?.eventDate ? new Date(activeEvent.eventDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).toUpperCase() : "26 AUG '26"}
                                 </div>
-                                <p className="text-accent text-xs font-semibold tracking-[0.2em] uppercase mb-3 relative z-10">Event</p>
-                                <h3 className="text-2xl font-black tracking-tight leading-tight mb-4 relative z-10 text-white">{activeEvent ? activeEvent.title : <>LONDON<br />POP-UP STORE</>}</h3>
-                                <p className="text-grey-400 group-hover:text-grey-300 transition-colors duration-300 text-sm mb-6 relative z-10 line-clamp-3">{activeEvent ? activeEvent.description : "Join us for the exclusive pre-release of the Feelings Mutual collection. Music, drinks, and early access."}</p>
-                                <div className="mt-auto relative z-10 flex items-center gap-4">
-                                    <div className="text-xs font-bold tracking-[0.1em] text-white">
-                                        <span className="block text-grey-500 group-hover:text-grey-400 transition-colors duration-300 mb-1">DATE</span>
-                                        {activeEvent?.eventDate ? new Date(activeEvent.eventDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).toUpperCase() : "26 AUG '26"}
-                                    </div>
-                                    <div className="w-px h-8 bg-white/10" />
-                                    <div className="text-xs font-bold tracking-[0.1em] text-white">
-                                        <span className="block text-grey-500 group-hover:text-grey-400 transition-colors duration-300 mb-1">LOC</span>
-                                        {activeEvent?.location ? activeEvent.location : "SOHO, LDN"}
-                                    </div>
+                                <div className="w-px h-8 bg-white/10" />
+                                <div className="text-xs font-bold tracking-[0.1em] text-white">
+                                    <span className="block text-grey-500 mb-1">LOC</span>
+                                    {activeEvent?.location || 'SOHO, LDN'}
                                 </div>
-                                {activeEvent?.actionUrl && (
-                                    <a href={activeEvent.actionUrl} target="_blank" rel="noreferrer" className="absolute top-6 right-6 text-xs text-accent hover:underline font-bold z-20">RSVP →</a>
-                                )}
-                            </motion.div>
-                        </div>
+                            </div>
+                            {activeEvent?.actionUrl && <a href={activeEvent.actionUrl} target="_blank" rel="noreferrer" className="absolute top-6 right-6 text-xs text-accent hover:underline font-bold z-20">RSVP →</a>}
+                        </motion.div>
                     </div>
                 </div>
             </section>

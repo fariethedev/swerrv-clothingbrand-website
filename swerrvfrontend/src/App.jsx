@@ -22,7 +22,7 @@ import Orders from './pages/Orders';
 import ForgotPassword from './pages/ForgotPassword';
 import { Navigate } from 'react-router-dom'; const Layout = ({ children }) => {
   const location = useLocation();
-  const hideLayout = ['/checkout', '/admin', '/order-success'].includes(location.pathname);
+  const hideLayout = ['/checkout', '/admin', '/order-success', '/login', '/forgot-password'].includes(location.pathname);
   return (
     <>
       {!hideLayout && <Navbar />}
