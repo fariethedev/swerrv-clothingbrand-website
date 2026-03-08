@@ -101,7 +101,7 @@ public class DataInitializer implements CommandLineRunner {
                                                 .sizes(List.of("XS", "S", "M", "L", "XL", "XXL"))
                                                 .colors(List.of("Black", "White", "Charcoal", "Olive"))
                                                 .stock(150)
-                                                .featured(true)
+                                                .featured(false)
                                                 .build(),
 
                                 Product.builder()
@@ -118,7 +118,7 @@ public class DataInitializer implements CommandLineRunner {
                                                 .sizes(List.of("S", "M", "L", "XL", "XXL"))
                                                 .colors(List.of("Cream", "Stone", "Forest Green"))
                                                 .stock(80)
-                                                .featured(true)
+                                                .featured(false)
                                                 .build(),
 
                                 // ─── T-Shirts ──────────────────────────────────────────────────────
@@ -172,7 +172,7 @@ public class DataInitializer implements CommandLineRunner {
                                                 .sizes(List.of("S", "M", "L", "XL", "XXL"))
                                                 .colors(List.of("Black", "Charcoal", "Navy"))
                                                 .stock(100)
-                                                .featured(true)
+                                                .featured(false)
                                                 .build(),
 
                                 Product.builder()
@@ -207,7 +207,7 @@ public class DataInitializer implements CommandLineRunner {
                                                 .sizes(List.of("S", "M", "L", "XL", "XXL"))
                                                 .colors(List.of("Black", "Navy", "Olive", "Burgundy"))
                                                 .stock(60)
-                                                .featured(true)
+                                                .featured(false)
                                                 .build(),
 
                                 Product.builder()
@@ -281,7 +281,7 @@ public class DataInitializer implements CommandLineRunner {
                                                 .sizes(List.of("XS", "S", "M", "L", "XL", "XXL"))
                                                 .colors(List.of("Black", "Oat", "Washed Grey", "Dusty Pink"))
                                                 .stock(110)
-                                                .featured(true)
+                                                .featured(false)
                                                 .build(),
 
                                 Product.builder()
@@ -316,7 +316,7 @@ public class DataInitializer implements CommandLineRunner {
                                                 .sizes(List.of("One Size"))
                                                 .colors(List.of("Black", "Forest Green"))
                                                 .stock(400)
-                                                .featured(true)
+                                                .featured(false)
                                                 .build(),
 
                                 Product.builder()
@@ -331,7 +331,7 @@ public class DataInitializer implements CommandLineRunner {
                                                 .sizes(List.of("S", "M", "L", "XL", "XXL"))
                                                 .colors(List.of("Black"))
                                                 .stock(100)
-                                                .featured(true)
+                                                .featured(false)
                                                 .build(),
 
                                 Product.builder()

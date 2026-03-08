@@ -39,7 +39,7 @@ const CookieBanner = () => {
                 >
                     <div className="cookie-banner__inner">
                         <div className="cookie-banner__text">
-                            <p className="cookie-banner__title">🍪 We use cookies</p>
+                            <p className="cookie-banner__title"> We use cookies</p>
                             <p className="cookie-banner__desc">
                                 We use strictly necessary cookies to operate this site. With your consent, we also use analytics cookies to improve your experience.
                                 No data is sold to third parties.{' '}
