@@ -292,11 +292,6 @@ const Home = () => {
                         <Link to="/shop" className="btn-primary">Shop Now</Link>
                         <Link to="/about" className="btn-secondary">Our Story</Link>
                     </motion.div>
-
-                    <motion.div className="flex gap-6 justify-center" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 1.0 }}>
-                        <Link to="/contact" className="text-white/70 hover:text-white text-xs font-bold tracking-[0.15em] uppercase transition-colors">Contact</Link>
-                        <Link to="/about" className="text-white/70 hover:text-white text-xs font-bold tracking-[0.15em] uppercase transition-colors">About Us</Link>
-                    </motion.div>
                 </motion.div>
 
                 {/* Dot indicators — bottom centre */}

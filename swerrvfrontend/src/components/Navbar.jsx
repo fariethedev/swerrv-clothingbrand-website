@@ -7,6 +7,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
 import { useCurrency } from '../context/CurrencyContext';
 import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 import CartDrawer from './CartDrawer';
 
 const Navbar = () => {
@@ -19,6 +20,7 @@ const Navbar = () => {
     const { user, logout, isAdmin } = useAuth();
     const { currency, setCurrency } = useCurrency();
     const { theme, toggleTheme } = useTheme();
+    const { t, language, setLanguage } = useLanguage();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -37,10 +39,12 @@ const Navbar = () => {
     };
 
     const navLinks = [
-        { to: '/shop?category=T-Shirts', label: 'T-Shirts' },
-        { to: '/shop?category=Hoodies', label: 'Hoodies' },
-        { to: '/shop?category=Tracksuits', label: 'Tracksuits' },
-        { to: '/shop', label: 'All' },
+        { to: '/shop?category=T-Shirts', label: t('nav.tshirts') },
+        { to: '/shop?category=Hoodies', label: t('nav.hoodies') },
+        { to: '/shop?category=Tracksuits', label: t('nav.tracksuits') },
+        { to: '/shop', label: t('nav.all') },
+        { to: '/about', label: t('nav.about') },
+        { to: '/contact', label: t('nav.contact') },
     ];
 
     return (
@@ -110,6 +114,13 @@ const Navbar = () => {
                                                     <option className="bg-grey-900" value="GBP">GBP (£)</option>
                                                     <option className="bg-grey-900" value="CAD">CAD ($)</option>
                                                     <option className="bg-grey-900" value="USD">USD ($)</option>
+                                                </select>
+                                            </div>
+                                            <div className="px-4 py-2 flex items-center justify-between hover:bg-white/5 transition-colors">
+                                                <span className="text-xs font-semibold text-grey-300">Language</span>
+                                                <select value={language} onChange={(e) => setLanguage(e.target.value)} className="bg-transparent text-xs text-white font-bold outline-none cursor-pointer border-none uppercase">
+                                                    <option className="bg-grey-900" value="en">English</option>
+                                                    <option className="bg-grey-900" value="pl">Polski</option>
                                                 </select>
                                             </div>
                                             <div className="px-4 py-2 flex items-center justify-between hover:bg-white/5 transition-colors">
@@ -211,9 +222,15 @@ const Navbar = () => {
                                         </Link>
                                     </motion.div>
                                 ))}
-                                <div className="mt-4" />
-                                <Link to="/about" className="block text-sm text-grey-300 py-3" onClick={() => setMobileOpen(false)}>About</Link>
-                                <Link to="/contact" className="block text-sm text-grey-300 py-3" onClick={() => setMobileOpen(false)}>Contact</Link>
+                                <div className="mt-4 border-t border-white/5 pt-4">
+                                    <div className="flex items-center justify-between py-2 text-white">
+                                        <span className="text-sm font-semibold text-grey-300">Language</span>
+                                        <div className="flex gap-4">
+                                            <button onClick={() => setLanguage('en')} className={`text-sm font-bold ${language === 'en' ? 'text-accent' : 'text-grey-500'}`}>EN</button>
+                                            <button onClick={() => setLanguage('pl')} className={`text-sm font-bold ${language === 'pl' ? 'text-accent' : 'text-grey-500'}`}>PL</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </nav>
                         </motion.div>
                     </>
