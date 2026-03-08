@@ -42,7 +42,6 @@ const Navbar = () => {
         { to: '/shop?category=T-Shirts', label: t('nav.tshirts') },
         { to: '/shop?category=Hoodies', label: t('nav.hoodies') },
         { to: '/shop?category=Tracksuits', label: t('nav.tracksuits') },
-        { to: '/shop', label: t('nav.all') },
         { to: '/about', label: t('nav.about') },
         { to: '/contact', label: t('nav.contact') },
     ];
