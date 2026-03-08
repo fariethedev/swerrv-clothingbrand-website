@@ -249,6 +249,20 @@
     border-color: var(--grey-500);
 }
 
+/* ── Coming Soon Disabled States ── */
+.pd-disabled-section {
+    opacity: 0.5;
+    pointer-events: none;
+    user-select: none;
+}
+
+.pd-pill--disabled {
+    cursor: not-allowed;
+    background: transparent !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--grey-500) !important;
+}
+
 .pd-swatch--active {
     border-color: var(--white);
 }

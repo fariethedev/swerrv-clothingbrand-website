@@ -23,7 +23,7 @@ public class StripeService {
 
     @PostConstruct
     public void init() {
-        Stripe.apiKey = stripeApiKey;
+        Stripe.apiKey = stripeApiKey.trim();
     }
 
     public String createPaymentIntent(Cart cart) {
@@ -39,9 +39,8 @@ public class StripeService {
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal shippingCost = subtotal.compareTo(new BigDecimal("300")) >= 0
-                ? BigDecimal.ZERO
-                : new BigDecimal("15.00");
+        // Flat 8.99 PLN shipping (free for Lublin - handled on order confirmation)
+        BigDecimal shippingCost = new BigDecimal("8.99");
 
         BigDecimal total = subtotal.add(shippingCost);
 

@@ -41,30 +41,40 @@ const ProductCard = ({ product, index = 0 }) => {
                     <img
                         src={product.image}
                         alt={product.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${product.comingSoon ? 'blur-[3px] scale-105' : ''}`}
                         loading="lazy"
                     />
 
-                    {/* Badge */}
-                    {product.comingSoon ? (
-                        <span className="absolute top-3 left-3 bg-white text-black px-2.5 py-1 text-[9px] font-black tracking-[0.2em] uppercase rounded-sm">Coming Soon</span>
-                    ) : product.originalPrice ? (
+                    {/* Coming soon overlay */}
+                    {product.comingSoon && (
+                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center pointer-events-none">
+                            <span className="text-white text-[11px] font-black tracking-[0.25em] uppercase border border-white/40 px-4 py-2 backdrop-blur-sm">
+                                Coming Soon
+                            </span>
+                        </div>
+                    )}
+
+                    {/* Badges (non-coming-soon) */}
+                    {!product.comingSoon && product.originalPrice && (
                         <span className="absolute top-3 left-3 tag-sale">Sale</span>
-                    ) : product.isNew ? (
+                    )}
+                    {!product.comingSoon && !product.originalPrice && product.isNew && (
                         <span className="absolute top-3 left-3 tag-new">New</span>
-                    ) : null}
+                    )}
 
-                    {/* Wishlist */}
-                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-300">
-                        <button
-                            onClick={handleWishlist}
-                            className="bg-black/80 backdrop-blur-sm text-white w-9 h-9 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-200"
-                        >
-                            {wishlisted ? <HiHeart size={16} className="text-accent" /> : <HiOutlineHeart size={16} />}
-                        </button>
-                    </div>
+                    {/* Wishlist — disabled for coming soon */}
+                    {!product.comingSoon && (
+                        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-300">
+                            <button
+                                onClick={handleWishlist}
+                                className="bg-black/80 backdrop-blur-sm text-white w-9 h-9 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-200"
+                            >
+                                {wishlisted ? <HiHeart size={16} className="text-accent" /> : <HiOutlineHeart size={16} />}
+                            </button>
+                        </div>
+                    )}
 
-                    {/* Quick Add */}
+                    {/* Quick Add — hidden entirely for coming soon */}
                     {!product.comingSoon && (
                         <button
                             onClick={handleQuickAdd}
@@ -74,6 +84,7 @@ const ProductCard = ({ product, index = 0 }) => {
                         </button>
                     )}
                 </div>
+
 
                 {/* Info */}
                 <div className="pt-3.5 pb-1 flex flex-col gap-1">

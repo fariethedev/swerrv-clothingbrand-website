@@ -144,10 +144,15 @@ const ProductDetail = () => {
                                 <img
                                     src={images[selectedImg]}
                                     alt={product.name}
-                                    className="pd-main-img"
+                                    className={`pd-main-img${product.comingSoon ? ' blur-[4px] scale-105' : ''}`}
+                                    style={product.comingSoon ? { filter: 'blur(4px)', transform: 'scale(1.06)' } : {}}
                                 />
                                 {product.comingSoon && (
-                                    <span className="pd-badge pd-badge--soon">Coming Soon</span>
+                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center pointer-events-none">
+                                        <span className="text-white text-[13px] font-black tracking-[0.25em] uppercase border border-white/40 px-6 py-3">
+                                            Coming Soon
+                                        </span>
+                                    </div>
                                 )}
                                 {isOnSale && (
                                     <span className="pd-badge pd-badge--sale">Sale</span>
@@ -198,9 +203,9 @@ const ProductDetail = () => {
                             )}
                         </div>
 
-                        {/* Color selector */}
+                        {/* Color selector — disabled for coming soon */}
                         {productColors.length > 0 && (
-                            <div className="pd-color-section">
+                            <div className={`pd-color-section${product.comingSoon ? ' pd-disabled-section' : ''}`}>
                                 <div className="pd-color-label">
                                     <span>colour</span>
                                     {selectedColor && <span className="pd-color-chosen">{selectedColor}</span>}
@@ -209,14 +214,12 @@ const ProductDetail = () => {
                                     {productColors.map(color => (
                                         <button
                                             key={color}
-                                            className={`pd-color-pill ${selectedColor === color ? 'pd-color-pill--active' : ''}`}
-                                            onClick={() => setSelectedColor(color)}
+                                            disabled={product.comingSoon}
+                                            className={`pd-color-pill ${selectedColor === color ? 'pd-color-pill--active' : ''} ${product.comingSoon ? 'pd-pill--disabled' : ''}`}
+                                            onClick={() => !product.comingSoon && setSelectedColor(color)}
                                             title={color}
                                         >
-                                            <span
-                                                className="pd-color-dot"
-                                                style={{ background: getColorSwatch(color) }}
-                                            />
+                                            <span className="pd-color-dot" style={{ background: getColorSwatch(color) }} />
                                             {color}
                                         </button>
                                     ))}
@@ -224,28 +227,30 @@ const ProductDetail = () => {
                             </div>
                         )}
 
-                        {/* Size pills */}
-                        <div className="pd-sizes-section">
+                        {/* Size pills — disabled for coming soon */}
+                        <div className={`pd-sizes-section${product.comingSoon ? ' pd-disabled-section' : ''}`}>
                             <div className="pd-sizes-grid">
                                 {productSizes.map(size => (
                                     <button
                                         key={size}
-                                        className={`pd-size-pill ${selectedSize === size ? 'pd-size-pill--active' : ''}`}
-                                        onClick={() => setSelectedSize(size)}
+                                        disabled={product.comingSoon}
+                                        className={`pd-size-pill ${selectedSize === size ? 'pd-size-pill--active' : ''} ${product.comingSoon ? 'pd-pill--disabled' : ''}`}
+                                        onClick={() => !product.comingSoon && setSelectedSize(size)}
                                     >
                                         {size}
                                     </button>
                                 ))}
                             </div>
 
-                            {/* Dropdown (mirrors pill selection) */}
+                            {/* Dropdown */}
                             <div className="pd-size-select-wrap">
                                 <select
                                     className="pd-size-select"
                                     value={selectedSize}
                                     onChange={handleSizeDropdown}
+                                    disabled={product.comingSoon}
                                 >
-                                    <option value="">select your size</option>
+                                    <option value="">{product.comingSoon ? 'Not available yet' : 'select your size'}</option>
                                     {productSizes.map(s => (
                                         <option key={s} value={s}>{s}</option>
                                     ))}
