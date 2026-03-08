@@ -40,15 +40,17 @@
   }
 
   html.light-mode body {
-    @apply bg-white text-black;
+    @apply bg-white;
+    color: var(--white);
   }
 
   html.light-mode .bg-black {
     @apply !bg-white;
   }
 
-  html.light-mode .text-white {
-    @apply !text-black;
+  /* Keep text white in light mode instead of inverting to black */
+  html.light-mode .text-black {
+    @apply !text-white;
   }
 
   html.light-mode .bg-grey-900 {
