@@ -17,11 +17,15 @@ const Contact = () => {
     return (
         <div className="min-h-screen pt-[70px]">
             {/* Hero */}
-            <div className="bg-grey-900 border-b border-white/[0.06] py-16 px-6">
-                <div className="max-w-[1400px] mx-auto">
+            <div className="relative bg-grey-900 border-b border-white/[0.06] py-24 px-6 overflow-hidden">
+                <div className="absolute inset-0 z-0">
+                    <img src="/images/_DSC8415.jpg" alt="Contact Us" className="w-full h-full object-cover opacity-40" style={{ objectPosition: 'center 30%' }} />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/95"></div>
+                </div>
+                <div className="relative z-10 max-w-[1400px] mx-auto text-center">
                     <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-                        <p className="section-label mb-3">Get in Touch</p>
-                        <h1 className="text-5xl lg:text-7xl font-black tracking-tight">We'd Love to<br />Hear From You</h1>
+                        <p className="section-label mb-3 justify-center">Get in Touch</p>
+                        <h1 className="text-5xl lg:text-7xl font-black tracking-tight drop-shadow-lg">We'd Love to<br />Hear From You</h1>
                     </motion.div>
                 </div>
             </div>

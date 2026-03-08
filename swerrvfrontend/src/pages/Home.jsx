@@ -120,7 +120,7 @@ const LookbookCarousel = () => {
             </div>
 
             {/* Slide caption — bottom left */}
-            <div className="absolute bottom-16 left-10 z-10 max-w-xl">
+            <div className="absolute bottom-24 md:bottom-16 left-6 md:left-10 z-10 max-w-[85vw] md:max-w-xl">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={current}
@@ -129,10 +129,10 @@ const LookbookCarousel = () => {
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.5 }}
                     >
-                        <p className="text-accent text-xs font-semibold tracking-[0.3em] uppercase mb-3">
+                        <p className="text-accent text-[10px] md:text-xs font-semibold tracking-[0.3em] uppercase mb-2 md:mb-3">
                             {LOOKBOOK_SLIDES[current].label}
                         </p>
-                        <h2 className="text-white text-4xl md:text-6xl font-black tracking-tight leading-tight drop-shadow-xl">
+                        <h2 className="text-white text-3xl sm:text-4xl md:text-6xl font-black tracking-tight leading-tight drop-shadow-xl">
                             {LOOKBOOK_SLIDES[current].title}
                         </h2>
                     </motion.div>
@@ -140,29 +140,29 @@ const LookbookCarousel = () => {
             </div>
 
             {/* Controls — bottom right */}
-            <div className="absolute bottom-16 right-10 z-10 flex items-center gap-6">
+            <div className="absolute bottom-24 md:bottom-16 right-6 md:right-10 z-10 flex items-center gap-4 md:gap-6">
                 {/* Photo counter */}
-                <span className="text-white/50 text-sm font-mono tabular-nums">
+                <span className="text-white/50 text-xs md:text-sm font-mono tabular-nums hidden sm:inline">
                     {String(current + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
                 </span>
 
                 {/* Prev / Next arrows */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 md:gap-3">
                     <button
                         onClick={prev}
                         aria-label="Previous"
-                        className="w-11 h-11 rounded-full border border-white/30 hover:border-white/80 bg-black/30 hover:bg-black/60 flex items-center justify-center text-white transition-all duration-200 backdrop-blur-sm"
+                        className="w-9 h-9 md:w-11 md:h-11 rounded-full border border-white/30 hover:border-white/80 bg-black/30 hover:bg-black/60 flex items-center justify-center text-white transition-all duration-200 backdrop-blur-sm"
                     >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4 md:w-5 md:h-5">
                             <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                     </button>
                     <button
                         onClick={next}
                         aria-label="Next"
-                        className="w-11 h-11 rounded-full border border-white/30 hover:border-white/80 bg-black/30 hover:bg-black/60 flex items-center justify-center text-white transition-all duration-200 backdrop-blur-sm"
+                        className="w-9 h-9 md:w-11 md:h-11 rounded-full border border-white/30 hover:border-white/80 bg-black/30 hover:bg-black/60 flex items-center justify-center text-white transition-all duration-200 backdrop-blur-sm"
                     >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4 md:w-5 md:h-5">
                             <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                     </button>
@@ -288,9 +288,14 @@ const Home = () => {
                         </motion.p>
                     </AnimatePresence>
 
-                    <motion.div className="flex gap-4 justify-center flex-wrap" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.8 }}>
+                    <motion.div className="flex gap-4 justify-center flex-wrap mb-4" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.8 }}>
                         <Link to="/shop" className="btn-primary">Shop Now</Link>
                         <Link to="/about" className="btn-secondary">Our Story</Link>
+                    </motion.div>
+
+                    <motion.div className="flex gap-6 justify-center" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 1.0 }}>
+                        <Link to="/contact" className="text-white/70 hover:text-white text-xs font-bold tracking-[0.15em] uppercase transition-colors">Contact</Link>
+                        <Link to="/about" className="text-white/70 hover:text-white text-xs font-bold tracking-[0.15em] uppercase transition-colors">About Us</Link>
                     </motion.div>
                 </motion.div>
 
@@ -349,10 +354,21 @@ const Home = () => {
                         <motion.p className="section-label mb-10" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
                             Featured Drop
                         </motion.p>
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-                            <motion.div className="relative aspect-[3/4] overflow-hidden" initial={{ opacity: 0, x: -60 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
-                                <img src={featured[0].image} alt={featured[0].name} className="w-full h-full object-cover" />
-                                <span className="absolute top-5 left-5 tag-new">Featured</span>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center">
+                            <motion.div className="grid grid-cols-2 gap-2" initial={{ opacity: 0, x: -60 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
+                                {featured[0].images && featured[0].images.length >= 4 ? (
+                                    featured[0].images.slice(0, 4).map((img, i) => (
+                                        <div key={i} className={`relative aspect-square overflow-hidden ${i === 0 ? 'col-span-2 aspect-[3/2]' : ''}`}>
+                                            <img src={img} alt={`${featured[0].name} view ${i + 1}`} className="w-full h-full object-cover" />
+                                            {i === 0 && <span className="absolute top-4 left-4 tag-new">Featured</span>}
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="col-span-2 relative aspect-[4/5] overflow-hidden">
+                                        <img src={featured[0].image} alt={featured[0].name} className="w-full h-full object-cover" />
+                                        <span className="absolute top-5 left-5 tag-new">Featured</span>
+                                    </div>
+                                )}
                             </motion.div>
                             <motion.div initial={{ opacity: 0, x: 60 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.15 }}>
                                 <p className="text-accent text-xs font-semibold tracking-[0.2em] uppercase mb-3">{featured[0].category}</p>
@@ -436,23 +452,25 @@ const Home = () => {
                         {/* Event Card */}
                         <motion.div className="lg:col-span-4 bg-grey-900 p-6 sm:p-8 flex flex-col justify-center border border-white/[0.06] relative overflow-hidden rounded-sm group hover:bg-grey-800 transition-colors duration-300" initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2 }}>
                             <div className="absolute right-[-10%] top-[-10%] text-white/[0.02] text-8xl font-black uppercase pointer-events-none select-none">
-                                {activeEvent ? 'EVENT' : 'POP UP'}
+                                EVENT
                             </div>
                             <p className="text-accent text-xs font-semibold tracking-[0.2em] uppercase mb-3 relative z-10">Event</p>
-                            <h3 className="text-2xl font-black tracking-tight leading-tight mb-4 relative z-10 text-white">{activeEvent ? activeEvent.title : <><span>LONDON</span><br /><span>POP-UP STORE</span></>}</h3>
-                            <p className="text-grey-400 group-hover:text-grey-300 transition-colors duration-300 text-sm mb-6 relative z-10 line-clamp-3">{activeEvent ? activeEvent.description : 'Join us for the exclusive pre-release of the Feelings Mutual collection. Music, drinks, and early access.'}</p>
+                            <h3 className="text-2xl font-black tracking-tight leading-tight mb-4 relative z-10 text-white">SWERRV PICNIC<br />& BRAAI</h3>
+                            <p className="text-grey-400 group-hover:text-grey-300 transition-colors duration-300 text-sm mb-6 relative z-10 line-clamp-4">
+                                Join us for an outdoor picnic and braai hosted by SWERRV to showcase the new collection. Good food, music, and exclusive first looks.
+                            </p>
                             <div className="mt-auto relative z-10 flex items-center gap-4">
                                 <div className="text-xs font-bold tracking-[0.1em] text-white">
                                     <span className="block text-grey-500 mb-1">DATE</span>
-                                    {activeEvent?.eventDate ? new Date(activeEvent.eventDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).toUpperCase() : "26 AUG '26"}
+                                    31 JUL '26
                                 </div>
                                 <div className="w-px h-8 bg-white/10" />
                                 <div className="text-xs font-bold tracking-[0.1em] text-white">
                                     <span className="block text-grey-500 mb-1">LOC</span>
-                                    {activeEvent?.location || 'SOHO, LDN'}
+                                    Zalew Zemborzycki, Lublin
                                 </div>
                             </div>
-                            {activeEvent?.actionUrl && <a href={activeEvent.actionUrl} target="_blank" rel="noreferrer" className="absolute top-6 right-6 text-xs text-accent hover:underline font-bold z-20">RSVP →</a>}
+                            <a href="#" className="absolute top-6 right-6 text-xs text-accent hover:underline font-bold z-20">RSVP →</a>
                         </motion.div>
                     </div>
                 </div>
