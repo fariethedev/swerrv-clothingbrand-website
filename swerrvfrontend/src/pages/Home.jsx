@@ -206,6 +206,7 @@ const Home = () => {
     const [activeEvent, setActiveEvent] = useState(null);
     const [loading, setLoading] = useState(true);
     const [heroSlide, setHeroSlide] = useState(0);
+    const [zoomedImg, setZoomedImg] = useState(null); // Added for image click-to-enlarge
 
     // Auto-advance hero slides every 5s
     useEffect(() => {
@@ -258,7 +259,13 @@ const Home = () => {
                         animate={{ opacity: i === heroSlide ? 1 : 0 }}
                         transition={{ duration: 1.2, ease: 'easeInOut' }}
                     >
-                        <img src={slide.img} alt={slide.caption} className="w-full h-full object-cover" style={{ objectPosition: 'center 20%' }} />
+                        <img
+                            src={slide.img}
+                            alt={slide.caption}
+                            className="w-full h-full object-cover cursor-pointer"
+                            style={{ objectPosition: 'center 20%' }}
+                            onClick={() => setZoomedImg(slide.img)}
+                        />
                     </motion.div>
                 ))}
 
@@ -353,15 +360,15 @@ const Home = () => {
                             <motion.div className="grid grid-cols-2 gap-2" initial={{ opacity: 0, x: -60 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
                                 {featured[0].images && featured[0].images.length >= 4 ? (
                                     featured[0].images.slice(0, 4).map((img, i) => (
-                                        <div key={i} className={`relative aspect-square overflow-hidden ${i === 0 ? 'col-span-2 aspect-[3/2]' : ''}`}>
-                                            <img src={img} alt={`${featured[0].name} view ${i + 1}`} className="w-full h-full object-cover" />
-                                            {i === 0 && <span className="absolute top-4 left-4 tag-new">Featured</span>}
+                                        <div key={i} className={`relative aspect-square overflow-hidden cursor-pointer ${i === 0 ? 'col-span-2 aspect-[3/2]' : ''}`} onClick={() => setZoomedImg(img)}>
+                                            <img src={img} alt={`${featured[0].name} view ${i + 1}`} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" />
+                                            {i === 0 && <span className="absolute top-4 left-4 tag-new pointer-events-none">Featured</span>}
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="col-span-2 relative aspect-[4/5] overflow-hidden">
-                                        <img src={featured[0].image} alt={featured[0].name} className="w-full h-full object-cover" />
-                                        <span className="absolute top-5 left-5 tag-new">Featured</span>
+                                    <div className="col-span-2 relative aspect-[4/5] overflow-hidden cursor-pointer" onClick={() => setZoomedImg(featured[0].image)}>
+                                        <img src={featured[0].image} alt={featured[0].name} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" />
+                                        <span className="absolute top-5 left-5 tag-new pointer-events-none">Featured</span>
                                     </div>
                                 )}
                             </motion.div>
@@ -479,7 +486,7 @@ const Home = () => {
                     <motion.p className="section-label mb-10" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>Shop by Category</motion.p>
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                         {[
-                            { label: 'T-Shirts', img: '/images/swerrv_tshirt_model_1772058780873.png' },
+                            { label: 'T-Shirts', img: '/images/_DSC8141.jpg' },
                             { label: 'Hoodies', img: '/images/swerrv_hoodie_model_1772058693065.png' },
                             { label: 'Tracksuits', img: '/images/swerrv_cargo_1772060995951.png' },
                             { label: 'Accessories', img: '/images/swerrv_bag_model_1772058939685.png' },
@@ -497,6 +504,41 @@ const Home = () => {
                     </div>
                 </div>
             </section>
+
+            {/* FULLSCREEN IMAGE MODAL */}
+            <AnimatePresence>
+                {zoomedImg && (
+                    <motion.div
+                        className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-4 sm:p-10 cursor-zoom-out"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setZoomedImg(null)}
+                    >
+                        {/* Close button top right */}
+                        <button
+                            onClick={(e) => { e.stopPropagation(); setZoomedImg(null); }}
+                            className="absolute top-6 right-6 text-white/50 hover:text-white bg-black/50 hover:bg-black/80 w-12 h-12 rounded-full flex items-center justify-center transition-all z-10"
+                        >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-6 h-6">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+
+                        <motion.img
+                            src={zoomedImg}
+                            alt="Enlarged view"
+                            className="max-w-full max-h-full object-contain shadow-2xl"
+                            initial={{ scale: 0.95, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.95, y: 20 }}
+                            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking the image itself
+                        />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
         </div>
     );
 };
