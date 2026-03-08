@@ -52,10 +52,11 @@ public class StripeService {
         Map<String, Object> params = new HashMap<>();
         params.put("amount", amountInSmallestUnit);
         params.put("currency", currency != null ? currency.toLowerCase() : "pln");
-        // We can add metadata here if needed
-        Map<String, Object> paymentMethodTypes = new HashMap<>();
-        paymentMethodTypes.put("enabled", true);
-        params.put("automatic_payment_methods", paymentMethodTypes);
+        // Reverting to explicitly allowing only 'card' to prevent processing errors
+        // with automatic methods on some test accounts
+        java.util.List<String> paymentMethodTypes = new java.util.ArrayList<>();
+        paymentMethodTypes.add("card");
+        params.put("payment_method_types", paymentMethodTypes);
 
         try {
             PaymentIntent paymentIntent = PaymentIntent.create(params);

@@ -26,6 +26,9 @@ const StripePaymentForm = ({ onPaymentSuccess, onBack, amount }) => {
         setIsProcessing(true);
         const { error, paymentIntent } = await stripe.confirmPayment({
             elements,
+            confirmParams: {
+                return_url: window.location.origin + '/order-success',
+            },
             redirect: 'if_required',
         });
 
