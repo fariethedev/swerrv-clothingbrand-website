@@ -263,7 +263,7 @@ const Home = () => {
                             src={slide.img}
                             alt={slide.caption}
                             className="w-full h-full object-cover cursor-pointer"
-                            style={{ objectPosition: 'center 20%' }}
+                            style={{ objectPosition: 'center 40%' }}
                             onClick={() => setZoomedImg(slide.img)}
                         />
                     </motion.div>
