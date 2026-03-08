@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -26,7 +27,10 @@ public class PaymentController {
 
     @PostMapping("/create-intent")
     @Operation(summary = "Create a Stripe PaymentIntent for the current user's cart")
-    public ResponseEntity<PaymentIntentResponse> createPaymentIntent(@AuthenticationPrincipal User user) {
+    public ResponseEntity<PaymentIntentResponse> createPaymentIntent(
+            @AuthenticationPrincipal User user,
+            @RequestParam(defaultValue = "PLN") String currency) {
+
         Cart cart = cartRepository.findByUser(user)
                 .orElseThrow(() -> new BadRequestException("Cart not found"));
 
@@ -34,7 +38,7 @@ public class PaymentController {
             throw new BadRequestException("Cannot create payment intent with an empty cart");
         }
 
-        String clientSecret = stripeService.createPaymentIntent(cart);
+        String clientSecret = stripeService.createPaymentIntent(cart, currency);
         return ResponseEntity.ok(new PaymentIntentResponse(clientSecret));
     }
 }

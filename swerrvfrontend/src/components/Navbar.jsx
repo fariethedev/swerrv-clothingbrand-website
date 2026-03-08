@@ -113,6 +113,7 @@ const Navbar = () => {
                                                     <option className="bg-grey-900" value="GBP">GBP (£)</option>
                                                     <option className="bg-grey-900" value="CAD">CAD ($)</option>
                                                     <option className="bg-grey-900" value="USD">USD ($)</option>
+                                                    <option className="bg-grey-900" value="ZAR">ZAR (R)</option>
                                                 </select>
                                             </div>
                                             <div className="px-4 py-2 flex items-center justify-between hover:bg-white/5 transition-colors">

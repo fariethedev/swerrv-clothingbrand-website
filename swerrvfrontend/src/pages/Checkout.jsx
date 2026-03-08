@@ -68,7 +68,7 @@ const StripePaymentForm = ({ onPaymentSuccess, onBack, amount }) => {
 
 const Checkout = () => {
     const { cartItems, cartTotal, clearCart } = useCart();
-    const { formatPrice } = useCurrency();
+    const { formatPrice, currency } = useCurrency();
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [clientSecret, setClientSecret] = useState('');
@@ -97,7 +97,7 @@ const Checkout = () => {
         setIsLoading(true);
         try {
             // 1. Init Payment Intent (Cart is automatically synced via CartContext)
-            const intentResponse = await api.createPaymentIntent();
+            const intentResponse = await api.createPaymentIntent(currency);
             if (intentResponse && intentResponse.clientSecret) {
                 setClientSecret(intentResponse.clientSecret);
                 setStep(2);

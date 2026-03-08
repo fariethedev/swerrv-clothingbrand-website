@@ -303,12 +303,12 @@ public class DataInitializer implements CommandLineRunner {
                                                 .featured(false)
                                                 .build(),
 
-                                // ─── Nano Banana Collection ──────────────────────────────────────────
+                                // ─── Classic Collection ──────────────────────────────────────────
                                 Product.builder()
-                                                .name("Swerrv Nano Banana Cap")
-                                                .slug("swerrv-nano-banana-cap")
+                                                .name("Swerrv Classic Cap")
+                                                .slug("swerrv-classic-cap")
                                                 .description(
-                                                                "Premium black dad hat featuring the signature minimalist 'nano banana' embroidery. A subtle homage to streetwear culture.")
+                                                                "Premium black dad hat featuring signature minimalist embroidery. A subtle homage to streetwear culture.")
                                                 .price(new BigDecimal("39.99"))
                                                 .category("Accessories")
                                                 .images(List.of(
@@ -320,10 +320,10 @@ public class DataInitializer implements CommandLineRunner {
                                                 .build(),
 
                                 Product.builder()
-                                                .name("Swerrv Nano Banana Bomber")
-                                                .slug("swerrv-nano-banana-bomber")
+                                                .name("Swerrv Classic Bomber")
+                                                .slug("swerrv-classic-bomber")
                                                 .description(
-                                                                "Oversized black bomber jacket with an extremely understated 'nano banana' embroidery on the chest. Perfect silhouette and luxury feel.")
+                                                                "Oversized black bomber jacket with extremely understated embroidery on the chest. Perfect silhouette and luxury feel.")
                                                 .price(new BigDecimal("149.99"))
                                                 .category("Jackets")
                                                 .images(List.of(
@@ -335,10 +335,10 @@ public class DataInitializer implements CommandLineRunner {
                                                 .build(),
 
                                 Product.builder()
-                                                .name("Swerrv Nano Banana Cargos")
-                                                .slug("swerrv-nano-banana-cargos")
+                                                .name("Swerrv Classic Cargos")
+                                                .slug("swerrv-classic-cargos")
                                                 .description(
-                                                                "Heavyweight olive cargos featuring a tiny yellow 'nano banana' tag near the left knee pocket. Loose fit, adjustable waist and hem.")
+                                                                "Heavyweight olive cargos featuring a minimalist tag near the left knee pocket. Loose fit, adjustable waist and hem.")
                                                 .price(new BigDecimal("89.99"))
                                                 .category("Joggers")
                                                 .images(List.of(
@@ -350,10 +350,10 @@ public class DataInitializer implements CommandLineRunner {
                                                 .build(),
 
                                 Product.builder()
-                                                .name("Swerrv Nano Banana Graphic Tee")
-                                                .slug("swerrv-nano-banana-graphic-tee")
+                                                .name("Swerrv Classic Graphic Tee")
+                                                .slug("swerrv-classic-graphic-tee")
                                                 .description(
-                                                                "Vintage washed grey tee with a large artistic representation of the 'nano banana' peeling on the back. A loud piece with a quiet inspiration.")
+                                                                "Vintage washed grey tee with a large artistic representation peeling on the back. A loud piece with a quiet inspiration.")
                                                 .price(new BigDecimal("49.99"))
                                                 .category("T-Shirts")
                                                 .images(List.of(

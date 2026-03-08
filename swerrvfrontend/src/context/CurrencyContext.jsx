@@ -12,7 +12,8 @@ export const CurrencyProvider = ({ children }) => {
         EUR: 0.23,
         GBP: 0.20,
         CAD: 0.35,
-        USD: 0.25
+        USD: 0.25,
+        ZAR: 4.50
     };
 
     const currencySymbols = {
@@ -20,7 +21,8 @@ export const CurrencyProvider = ({ children }) => {
         EUR: '€',
         GBP: '£',
         CAD: '$',
-        USD: '$'
+        USD: '$',
+        ZAR: 'R'
     };
 
     useEffect(() => {

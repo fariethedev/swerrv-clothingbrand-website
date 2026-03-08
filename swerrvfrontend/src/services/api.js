@@ -215,8 +215,8 @@ export const api = {
     },
 
     // Orders & Payments
-    createPaymentIntent: async () => {
-        const response = await fetch(`${API_URL}/payments/create-intent`, {
+    createPaymentIntent: async (currency = 'PLN') => {
+        const response = await fetch(`${API_URL}/payments/create-intent?currency=${currency}`, {
             method: 'POST',
             headers: getHeaders(),
         });

@@ -26,7 +26,7 @@ public class StripeService {
         Stripe.apiKey = stripeApiKey.trim();
     }
 
-    public String createPaymentIntent(Cart cart) {
+    public String createPaymentIntent(Cart cart, String currency) {
         if (cart == null || cart.getItems().isEmpty()) {
             throw new BadRequestException("Cart is empty");
         }
@@ -42,14 +42,16 @@ public class StripeService {
         // Flat 8.99 PLN shipping (free for Lublin - handled on order confirmation)
         BigDecimal shippingCost = new BigDecimal("8.99");
 
-        BigDecimal total = subtotal.add(shippingCost);
+        BigDecimal totalPln = subtotal.add(shippingCost);
+        BigDecimal exchangeRate = getExchangeRate(currency);
+        BigDecimal totalConverted = totalPln.multiply(exchangeRate);
 
-        // Stripe expects amount in smallest currency unit (e.g., groszy for PLN)
-        long amountInSmallestUnit = total.multiply(new BigDecimal("100")).longValue();
+        // Stripe expects amount in smallest currency unit (e.g., cents)
+        long amountInSmallestUnit = totalConverted.multiply(new BigDecimal("100")).longValue();
 
         Map<String, Object> params = new HashMap<>();
         params.put("amount", amountInSmallestUnit);
-        params.put("currency", "pln");
+        params.put("currency", currency != null ? currency.toLowerCase() : "pln");
         // We can add metadata here if needed
         Map<String, Object> paymentMethodTypes = new HashMap<>();
         paymentMethodTypes.put("enabled", true);
@@ -59,7 +61,27 @@ public class StripeService {
             PaymentIntent paymentIntent = PaymentIntent.create(params);
             return paymentIntent.getClientSecret();
         } catch (StripeException e) {
-            throw new BadRequestException("Failed to initialize payment: " + e.getMessage());
+            throw new BadRequestException("Failed to create payment intent: " + e.getMessage());
+        }
+    }
+
+    private BigDecimal getExchangeRate(String currency) {
+        if (currency == null)
+            return BigDecimal.ONE;
+        switch (currency.toUpperCase()) {
+            case "EUR":
+                return new BigDecimal("0.23");
+            case "GBP":
+                return new BigDecimal("0.20");
+            case "CAD":
+                return new BigDecimal("0.35");
+            case "USD":
+                return new BigDecimal("0.25");
+            case "ZAR":
+                return new BigDecimal("4.50");
+            case "PLN":
+            default:
+                return BigDecimal.ONE;
         }
     }
 
