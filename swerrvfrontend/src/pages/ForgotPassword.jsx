@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
 import { useNavigate, Link } from 'react-router-dom';
+import { HiEye, HiEyeOff } from 'react-icons/hi';
 import { api } from '../services/api';
 
 const ForgotPassword = () => {
@@ -14,6 +15,10 @@ const ForgotPassword = () => {
     const [token, setToken] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+
+    // UI State
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const handleRequestCode = async (e) => {
         e.preventDefault();
@@ -107,23 +112,43 @@ const ForgotPassword = () => {
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-grey-300 mb-2 uppercase tracking-wider">New Password</label>
-                            <input
-                                type="password"
-                                value={newPassword}
-                                onChange={(e) => setNewPassword(e.target.value)}
-                                className="w-full bg-[#1A1A1A] border border-white/[0.08] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors"
-                                required
-                            />
+                            <div className="relative">
+                                <input
+                                    type={showNewPassword ? "text" : "password"}
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    className="w-full bg-[#1A1A1A] border border-white/[0.08] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors pr-12"
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowNewPassword(!showNewPassword)}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-grey-300 hover:text-white transition-colors z-10"
+                                    tabIndex={-1}
+                                >
+                                    {showNewPassword ? <HiEyeOff size={20} /> : <HiEye size={20} />}
+                                </button>
+                            </div>
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-grey-300 mb-2 uppercase tracking-wider">Confirm New Password</label>
-                            <input
-                                type="password"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="w-full bg-[#1A1A1A] border border-white/[0.08] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors"
-                                required
-                            />
+                            <div className="relative">
+                                <input
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    className="w-full bg-[#1A1A1A] border border-white/[0.08] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors pr-12"
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-grey-300 hover:text-white transition-colors z-10"
+                                    tabIndex={-1}
+                                >
+                                    {showConfirmPassword ? <HiEyeOff size={20} /> : <HiEye size={20} />}
+                                </button>
+                            </div>
                         </div>
                         <button
                             type="submit"

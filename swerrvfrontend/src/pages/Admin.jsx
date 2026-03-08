@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiOutlineShoppingBag, HiOutlineCurrencyDollar, HiOutlineClipboardList, HiOutlineCheck, HiOutlineLogout, HiOutlineMenu, HiOutlineCog, HiChartBar, HiOutlineVideoCamera, HiOutlineUsers } from 'react-icons/hi';
+import { HiOutlineShoppingBag, HiOutlineCurrencyDollar, HiOutlineClipboardList, HiOutlineCheck, HiOutlineLogout, HiOutlineMenu, HiOutlineCog, HiChartBar, HiOutlineVideoCamera, HiOutlineUsers, HiEye, HiEyeOff } from 'react-icons/hi';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import toast from 'react-hot-toast';
@@ -43,6 +43,7 @@ const Admin = () => {
         deliveredOrders: 0
     });
     const [loading, setLoading] = useState(true);
+    const [showNewPassword, setShowNewPassword] = useState(false);
 
     const loadAdminData = async () => {
         try {
@@ -612,7 +613,24 @@ const Admin = () => {
                                     <div className="admin-card">
                                         <h3 className="text-sm font-bold tracking-[0.08em] mb-5">Admin Account</h3>
                                         <div className="flex flex-col gap-4 max-w-md">
-                                            <div className="flex flex-col gap-1.5"><label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">New Password</label><input type="password" placeholder="Enter new password" className="form-input" /></div>
+                                            <div className="flex flex-col gap-1.5">
+                                                <label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">New Password</label>
+                                                <div className="relative">
+                                                    <input
+                                                        type={showNewPassword ? "text" : "password"}
+                                                        placeholder="Enter new password"
+                                                        className="form-input w-full pr-10"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setShowNewPassword(!showNewPassword)}
+                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-grey-500 hover:text-white transition-colors z-10 flex items-center justify-center p-1"
+                                                        tabIndex={-1}
+                                                    >
+                                                        {showNewPassword ? <HiEyeOff size={18} /> : <HiEye size={18} />}
+                                                    </button>
+                                                </div>
+                                            </div>
                                             <button className="btn-secondary self-start mt-1">Update Password</button>
                                         </div>
                                     </div>
