@@ -51,6 +51,7 @@ const ProductDetail = () => {
 
     const [selectedImg, setSelectedImg] = useState(0);
     const [selectedSize, setSelectedSize] = useState('');
+    const [selectedColor, setSelectedColor] = useState('');
     const [quantity, setQuantity] = useState(1);
 
     const styledRef = useRef(null);
@@ -59,6 +60,7 @@ const ProductDetail = () => {
         setLoading(true);
         setSelectedImg(0);
         setSelectedSize('');
+        setSelectedColor('');
         window.scrollTo(0, 0);
 
         api.getProductById(id).then(productData => {
@@ -89,7 +91,8 @@ const ProductDetail = () => {
 
     const handleAddToCart = () => {
         if (!selectedSize) { toast.error('Please select a size'); return; }
-        addToCart(product, selectedSize, quantity);
+        if (productColors.length > 0 && !selectedColor) { toast.error('Please select a colour'); return; }
+        addToCart({ ...product, selectedColor }, selectedSize, quantity);
         toast.success('Added to bag!', { style: { background: '#111', color: '#fff', border: '1px solid #333' } });
     };
 
@@ -98,6 +101,20 @@ const ProductDetail = () => {
     /* ── Sizes catalogue ── */
     const allSizes = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'];
     const productSizes = product.sizes?.length ? product.sizes : allSizes;
+
+    /* ── Colours ── */
+    const productColors = product.colors?.length ? product.colors : [];
+    const colorMap = {
+        'black': '#111111', 'white': '#f5f5f5', 'charcoal': '#36454f',
+        'olive': '#6b7645', 'cream': '#f5f0e8', 'stone': '#928978',
+        'forest green': '#2d5a27', 'washed blue': '#6b8cae', 'rust': '#8b3a2a',
+        'sand': '#c2a87d', 'navy': '#1a2744', 'khaki': '#c3b091',
+        'burgundy': '#6d1a2f', 'slate blue': '#6a7fa0', 'tan': '#d2b48c',
+        'forest': '#2d5a27', 'multi': 'linear-gradient(135deg,#f00,#0f0,#00f)',
+        'oat': '#e8dcc8', 'washed grey': '#a0a0a0', 'dusty pink': '#d4a0a0',
+        'vintage black': '#2a2a2a', 'washed brown': '#8b6f5e', 'olive green': '#6b7645',
+    };
+    const getColorSwatch = (name) => colorMap[name.toLowerCase()] || '#888';
 
     return (
         <div className="pd-root">
@@ -181,18 +198,26 @@ const ProductDetail = () => {
                             )}
                         </div>
 
-                        {/* Color / image swatches */}
-                        {images.length > 1 && (
-                            <div className="pd-swatches-section">
-                                <div className="pd-swatches">
-                                    {images.map((img, i) => (
+                        {/* Color selector */}
+                        {productColors.length > 0 && (
+                            <div className="pd-color-section">
+                                <div className="pd-color-label">
+                                    <span>colour</span>
+                                    {selectedColor && <span className="pd-color-chosen">{selectedColor}</span>}
+                                </div>
+                                <div className="pd-color-pills">
+                                    {productColors.map(color => (
                                         <button
-                                            key={i}
-                                            className={`pd-swatch ${i === selectedImg ? 'pd-swatch--active' : ''}`}
-                                            onClick={() => setSelectedImg(i)}
-                                            title={`Variant ${i + 1}`}
+                                            key={color}
+                                            className={`pd-color-pill ${selectedColor === color ? 'pd-color-pill--active' : ''}`}
+                                            onClick={() => setSelectedColor(color)}
+                                            title={color}
                                         >
-                                            <img src={img} alt={`Colour ${i + 1}`} />
+                                            <span
+                                                className="pd-color-dot"
+                                                style={{ background: getColorSwatch(color) }}
+                                            />
+                                            {color}
                                         </button>
                                     ))}
                                 </div>
