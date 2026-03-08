@@ -86,7 +86,7 @@ const LookbookCarousel = () => {
     }, []);
 
     return (
-        <section className="relative w-full overflow-hidden" style={{ height: '100vh' }}>
+        <section className="always-dark relative w-full overflow-hidden" style={{ height: '100vh' }}>
             {/* Slides */}
             {LOOKBOOK_SLIDES.map((slide, i) => (
                 <motion.div
@@ -255,7 +255,7 @@ const Home = () => {
     return (
         <div className="min-h-screen">
             {/* HERO */}
-            <section ref={heroRef} className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
+            <section ref={heroRef} className="always-dark relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
 
                 {/* Slide images — absolute stacked, fade in/out */}
                 {HERO_SLIDES.map((slide, i) => (
@@ -439,7 +439,7 @@ const Home = () => {
 
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6">
                         {/* Video Column */}
-                        <motion.div className="lg:col-span-8 relative aspect-video rounded-sm overflow-hidden" initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+                        <motion.div className="always-dark lg:col-span-8 relative aspect-video rounded-sm overflow-hidden" initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
                             {activeVideo ? (
                                 <video autoPlay loop muted playsInline className="w-full h-full object-cover" key={activeVideo.mediaUrl}>
                                     <source src={activeVideo.mediaUrl} type={activeVideo.mediaUrl.endsWith('.mp4') ? 'video/mp4' : 'video/quicktime'} />
@@ -500,7 +500,7 @@ const Home = () => {
                         ].map((cat, i) => (
                             <motion.div key={cat.label} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: '-40px' }} transition={{ duration: 0.5, delay: i * 0.1 }}>
                                 {cat.comingSoon ? (
-                                    <div className="group block relative aspect-[2/3] overflow-hidden bg-grey-900 cursor-not-allowed">
+                                    <div className="always-dark group block relative aspect-[2/3] overflow-hidden bg-grey-900 cursor-not-allowed">
                                         <img src={cat.img} alt={cat.label} className="w-full h-full object-cover blur-[4px] scale-105 opacity-50 transition-transform duration-700" />
                                         <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center p-6 text-center z-10">
                                             <h3 className="text-lg font-black tracking-[0.08em] uppercase text-white mb-2">{cat.label}</h3>
@@ -510,7 +510,7 @@ const Home = () => {
                                         </div>
                                     </div>
                                 ) : (
-                                    <Link to={`/shop?category=${cat.label}`} className="group block relative aspect-[2/3] overflow-hidden">
+                                    <Link to={`/shop?category=${cat.label}`} className="always-dark group block relative aspect-[2/3] overflow-hidden">
                                         <img src={cat.img} alt={cat.label} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/85 to-transparent flex flex-col justify-end p-6">
                                             <h3 className="text-lg font-black tracking-[0.08em] uppercase text-white">{cat.label}</h3>

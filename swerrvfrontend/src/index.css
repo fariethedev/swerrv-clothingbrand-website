@@ -40,17 +40,16 @@
   }
 
   html.light-mode body {
-    @apply bg-white;
-    color: var(--white);
+    @apply bg-white text-black;
   }
 
+  /* Base inversions for light mode backgrounds and text */
   html.light-mode .bg-black {
     @apply !bg-white;
   }
 
-  /* Keep text white in light mode instead of inverting to black */
-  html.light-mode .text-black {
-    @apply !text-white;
+  html.light-mode .text-white {
+    @apply !text-black;
   }
 
   html.light-mode .bg-grey-900 {
@@ -63,6 +62,36 @@
 
   html.light-mode .text-grey-500 {
     @apply !text-grey-700;
+  }
+
+  html.light-mode .border-white\/10 {
+    @apply !border-black/10;
+  }
+
+  /* Exception for elements that must stay dark/white because they overlay images */
+  html.light-mode .always-dark.text-white,
+  html.light-mode .always-dark .text-white {
+    @apply !text-white;
+  }
+
+  html.light-mode .always-dark.text-grey-300,
+  html.light-mode .always-dark .text-grey-300 {
+    @apply !text-grey-300;
+  }
+
+  html.light-mode .always-dark.text-grey-500,
+  html.light-mode .always-dark .text-grey-500 {
+    @apply !text-grey-500;
+  }
+
+  html.light-mode .always-dark.bg-grey-900,
+  html.light-mode .always-dark .bg-grey-900 {
+    @apply !bg-grey-900;
+  }
+
+  html.light-mode .always-dark.border-white\/10,
+  html.light-mode .always-dark .border-white\/10 {
+    @apply !border-white/10;
   }
 
   html.light-mode .border-white\/10 {
