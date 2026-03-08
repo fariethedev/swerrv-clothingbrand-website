@@ -486,19 +486,31 @@ const Home = () => {
                     <motion.p className="section-label mb-10" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>Shop by Category</motion.p>
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                         {[
-                            { label: 'T-Shirts', img: '/images/_DSC8141.jpg' },
-                            { label: 'Hoodies', img: '/images/swerrv_hoodie_model_1772058693065.png' },
-                            { label: 'Tracksuits', img: '/images/swerrv_cargo_1772060995951.png' },
-                            { label: 'Accessories', img: '/images/swerrv_bag_model_1772058939685.png' },
+                            { label: 'T-Shirts', img: '/images/_DSC8141.jpg', comingSoon: false },
+                            { label: 'Hoodies', img: '/images/swerrv_hoodie_model_1772058693065.png', comingSoon: true },
+                            { label: 'Tracksuits', img: '/images/swerrv_cargo_1772060995951.png', comingSoon: true },
+                            { label: 'Accessories', img: '/images/swerrv_bag_model_1772058939685.png', comingSoon: true },
                         ].map((cat, i) => (
                             <motion.div key={cat.label} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: '-40px' }} transition={{ duration: 0.5, delay: i * 0.1 }}>
-                                <Link to={`/shop?category=${cat.label}`} className="group block relative aspect-[2/3] overflow-hidden">
-                                    <img src={cat.img} alt={cat.label} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 to-transparent flex flex-col justify-end p-6">
-                                        <h3 className="text-lg font-black tracking-[0.08em] uppercase">{cat.label}</h3>
-                                        <span className="text-xs text-accent font-semibold mt-1 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">Shop →</span>
+                                {cat.comingSoon ? (
+                                    <div className="group block relative aspect-[2/3] overflow-hidden bg-grey-900 cursor-not-allowed">
+                                        <img src={cat.img} alt={cat.label} className="w-full h-full object-cover blur-[4px] scale-105 opacity-50 transition-transform duration-700" />
+                                        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center p-6 text-center z-10">
+                                            <h3 className="text-lg font-black tracking-[0.08em] uppercase text-white mb-2">{cat.label}</h3>
+                                            <span className="text-[10px] font-black tracking-[0.25em] uppercase text-white border border-white/40 px-3 py-1.5 backdrop-blur-sm">
+                                                Coming Soon
+                                            </span>
+                                        </div>
                                     </div>
-                                </Link>
+                                ) : (
+                                    <Link to={`/shop?category=${cat.label}`} className="group block relative aspect-[2/3] overflow-hidden">
+                                        <img src={cat.img} alt={cat.label} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 to-transparent flex flex-col justify-end p-6">
+                                            <h3 className="text-lg font-black tracking-[0.08em] uppercase text-white">{cat.label}</h3>
+                                            <span className="text-xs text-accent font-semibold mt-1 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">Shop →</span>
+                                        </div>
+                                    </Link>
+                                )}
                             </motion.div>
                         ))}
                     </div>
