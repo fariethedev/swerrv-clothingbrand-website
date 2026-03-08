@@ -84,9 +84,9 @@ const Checkout = () => {
         </div>
     );
 
-    const shipping = cartTotal >= 300 ? 0 : 15.00;
-    const tax = cartTotal * 0.08;
-    const total = cartTotal + shipping + tax;
+    const isLublin = form.city.trim().toLowerCase() === 'lublin';
+    const shipping = isLublin ? 0 : 8.99;
+    const total = cartTotal + shipping;
 
     const handleChange = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
 
@@ -238,8 +238,7 @@ const Checkout = () => {
                     </div>
                     <div className="flex flex-col gap-3 text-sm text-grey-300">
                         <div className="flex justify-between"><span>Subtotal</span><span>{formatPrice(cartTotal)}</span></div>
-                        <div className="flex justify-between"><span>Shipping</span><span>{shipping === 0 ? 'Free' : formatPrice(shipping)}</span></div>
-                        <div className="flex justify-between"><span>Tax (8%)</span><span>{formatPrice(tax)}</span></div>
+                        <div className="flex justify-between"><span>Shipping</span><span>{shipping === 0 ? 'Free (Lublin)' : formatPrice(shipping)}</span></div>
                         <div className="flex justify-between text-base font-black text-white pt-3 border-t border-white/[0.08] mt-1">
                             <span>Total</span><span>{formatPrice(total)}</span>
                         </div>

@@ -323,11 +323,9 @@ const ProductDetail = () => {
 
                             <Accordion title="shipping &amp; returns">
                                 <div className="pd-accordion-text">
-                                    <p>Free standard shipping on orders over 400 PLN.</p>
-                                    <p>• Standard: 5–7 business days — free (400 PLN+) / 40 PLN</p>
-                                    <p>• Express: 2–3 business days — 80 PLN</p>
-                                    <p>• Overnight: 1 business day — 160 PLN</p>
-                                    <p style={{ marginTop: 8 }}>Easy returns within 30 days of delivery.</p>
+                                    <p><strong>Lublin (local):</strong> Free — pick up or local delivery within Lublin.</p>
+                                    <p><strong>Outside Lublin:</strong> 8.99 zł flat-rate postal shipping via Polish Post.</p>
+                                    <p style={{ marginTop: 8 }}>No hidden fees or taxes. Easy returns within 30 days of delivery.</p>
                                 </div>
                             </Accordion>
                         </div>
