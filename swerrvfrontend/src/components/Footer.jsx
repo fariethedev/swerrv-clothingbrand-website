@@ -8,9 +8,34 @@ const Footer = () => {
     const [email, setEmail] = useState('');
     const [subscribed, setSubscribed] = useState(false);
 
-    const handleSubscribe = (e) => {
+    const handleSubscribe = async (e) => {
         e.preventDefault();
-        if (email) { setSubscribed(true); setEmail(''); }
+        if (!email) return;
+
+        const payload = {
+            access_key: "62af5c85-8d88-439d-921e-e50bd3c8ac1c",
+            email: email,
+            subject: "New Newsletter Subscriber",
+            from_name: "Swerrv Newsletter"
+        };
+
+        try {
+            const response = await fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            if (result.success) {
+                setSubscribed(true);
+                setEmail('');
+            }
+        } catch (error) {
+            console.error("Subscription error:", error);
+        }
     };
 
     const socials = [
@@ -35,7 +60,7 @@ const Footer = () => {
                     {subscribed ? (
                         <p className="text-accent text-lg font-semibold">✓ You're in. Stay locked in.</p>
                     ) : (
-                        <form onSubmit={handleSubscribe} className="inline-flex max-w-md w-full border border-grey-700">
+                        <form onSubmit={handleSubscribe} className="inline-flex max-w-md w-full border border-grey-700 rounded-[4px] overflow-hidden">
                             <input
                                 type="email"
                                 placeholder="your@email.com"

@@ -7,11 +7,37 @@ const Contact = () => {
     const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
     const [sent, setSent] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setSent(true);
-        setForm({ name: '', email: '', subject: '', message: '' });
-        setTimeout(() => setSent(false), 5000);
+
+        const payload = {
+            access_key: "62af5c85-8d88-439d-921e-e50bd3c8ac1c",
+            name: form.name,
+            email: form.email,
+            subject: form.subject || "No Subject",
+            message: form.message,
+            from_name: "Swerrv Contact Form"
+        };
+
+        try {
+            const response = await fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                setSent(true);
+                setForm({ name: '', email: '', subject: '', message: '' });
+                setTimeout(() => setSent(false), 5000);
+            }
+        } catch (error) {
+            console.error("Form submission error:", error);
+        }
     };
 
     return (
