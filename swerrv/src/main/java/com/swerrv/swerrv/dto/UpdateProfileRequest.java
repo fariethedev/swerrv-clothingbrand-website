@@ -17,4 +17,12 @@ public class UpdateProfileRequest {
     @Email(message = "Email should be valid")
     private String email;
 
+    private String profilePictureUrl;
+
+    private String dateOfBirth;
+
+    private String address;
+
+    private String secondAddress;
+
 }

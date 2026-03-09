@@ -63,6 +63,9 @@ public class AuthService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
+                .profilePictureUrl(request.getProfilePictureUrl())
+                .dateOfBirth(request.getDateOfBirth())
+                .address(request.getAddress())
                 .build();
 
         user = userRepository.save(user);
@@ -102,6 +105,10 @@ public class AuthService {
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
+        user.setProfilePictureUrl(request.getProfilePictureUrl());
+        user.setDateOfBirth(request.getDateOfBirth());
+        user.setAddress(request.getAddress());
+        user.setSecondAddress(request.getSecondAddress());
 
         user = userRepository.save(user);
 
@@ -170,6 +177,7 @@ public class AuthService {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .role(user.getRole())
+                .profilePictureUrl(user.getProfilePictureUrl())
                 .build();
     }
 

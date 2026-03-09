@@ -39,6 +39,18 @@ public class User implements UserDetails {
     @Builder.Default
     private Role role = Role.USER;
 
+    @Column(columnDefinition = "LONGTEXT")
+    private String profilePictureUrl;
+
+    @Column
+    private String dateOfBirth;
+
+    @Column
+    private String address;
+
+    @Column
+    private String secondAddress;
+
     @Column(nullable = false, updatable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
