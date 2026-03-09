@@ -45,57 +45,53 @@
 
   /* Base inversions for light mode backgrounds and text */
   html.light-mode .bg-black {
-    @apply !bg-white;
+    background-color: #fff !important;
   }
 
   html.light-mode .text-white {
-    @apply !text-black;
+    color: #000 !important;
   }
 
   html.light-mode .bg-grey-900 {
-    @apply !bg-grey-100;
+    background-color: #f3f4f6 !important;
   }
 
   html.light-mode .text-grey-300 {
-    @apply !text-grey-700;
+    color: #374151 !important;
   }
 
   html.light-mode .text-grey-500 {
-    @apply !text-grey-700;
+    color: #374151 !important;
   }
 
   html.light-mode .border-white\/10 {
-    @apply !border-black/10;
+    border-color: rgba(0, 0, 0, 0.1) !important;
   }
 
   /* Exception for elements that must stay dark/white because they overlay images */
   html.light-mode .always-dark.text-white,
   html.light-mode .always-dark .text-white {
-    @apply !text-white;
+    color: #fff !important;
   }
 
   html.light-mode .always-dark.text-grey-300,
   html.light-mode .always-dark .text-grey-300 {
-    @apply !text-grey-300;
+    color: #c0c0c0 !important;
   }
 
   html.light-mode .always-dark.text-grey-500,
   html.light-mode .always-dark .text-grey-500 {
-    @apply !text-grey-500;
+    color: #808080 !important;
   }
 
   html.light-mode .always-dark.bg-grey-900,
   html.light-mode .always-dark .bg-grey-900 {
-    @apply !bg-grey-900;
+    background-color: #111111 !important;
   }
 
   html.light-mode .always-dark.border-white\/10,
   html.light-mode .always-dark .border-white\/10 {
-    @apply !border-white/10;
-  }
-
-  html.light-mode .border-white\/10 {
-    @apply !border-black/10;
+    border-color: rgba(255, 255, 255, 0.1) !important;
   }
 
   html.light-mode .btn-secondary {
@@ -141,7 +137,7 @@
   .btn-primary {
     @apply px-8 py-3.5 text-xs font-bold tracking-widest uppercase transition-all duration-200 cursor-pointer inline-block text-white;
     background: linear-gradient(135deg, #7c6fff 0%, #a040e0 100%);
-    border-radius: 8px;
+    border-radius: 4px;
   }
 
   .btn-primary:hover {
@@ -152,6 +148,7 @@
 
   .btn-secondary {
     @apply bg-transparent text-white px-8 py-3.5 text-xs font-semibold tracking-widest uppercase border border-grey-700 cursor-pointer inline-block transition-all duration-200;
+    border-radius: 4px;
   }
 
   .btn-secondary:hover {
@@ -184,6 +181,7 @@
 
   .form-input {
     @apply w-full bg-white/5 border border-grey-700 text-white px-4 py-3 text-sm font-poppins transition-colors duration-200;
+    border-radius: 4px;
   }
 
   .form-input:focus {

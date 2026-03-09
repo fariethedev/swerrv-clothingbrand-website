@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HiCheck, HiLockClosed, HiArrowLeft } from 'react-icons/hi';
+import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useCurrency } from '../context/CurrencyContext';
 import { api } from '../services/api';
@@ -71,15 +72,18 @@ const StripePaymentForm = ({ onPaymentSuccess, onBack, amount }) => {
 
 const Checkout = () => {
     const { cartItems, cartTotal, clearCart } = useCart();
-    const { formatPrice, currency } = useCurrency();
+    const { user } = useAuth();
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [clientSecret, setClientSecret] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
+    // Address Selection State
+    const [selectedAddressType, setSelectedAddressType] = useState('primary');
+
     const [form, setForm] = useState({
-        firstName: '', lastName: '', email: '', phone: '',
-        address: '', city: '', state: '', zip: '', country: 'Poland',
+        firstName: user?.firstName || '', lastName: user?.lastName || '', email: user?.email || '', phone: '',
+        address: user?.address || '', city: '', state: '', zip: '', country: 'Poland',
     });
 
     if (cartItems.length === 0 && step < 3) return (
@@ -141,6 +145,15 @@ const Checkout = () => {
         }
     };
 
+    const handleAddressSelection = (type) => {
+        setSelectedAddressType(type);
+        if (type === 'primary' && user?.address) {
+            setForm(prev => ({ ...prev, address: user.address }));
+        } else if (type === 'secondary' && user?.secondAddress) {
+            setForm(prev => ({ ...prev, address: user.secondAddress }));
+        }
+    };
+
     const steps = ['Shipping', 'Payment & Review'];
 
     return (
@@ -174,6 +187,31 @@ const Checkout = () => {
                         <div className={step === 1 ? 'block' : 'hidden'}>
                             <form onSubmit={handleProceedToPayment} className="flex flex-col gap-5">
                                 <h2 className="text-2xl font-black tracking-tight">Shipping Information</h2>
+
+                                {/* Saved Address Selection */}
+                                {user && (user.address || user.secondAddress) && (
+                                    <div className="flex gap-4 mb-4">
+                                        {user.address && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleAddressSelection('primary')}
+                                                className={`flex-1 p-3 border text-left text-xs uppercase tracking-widest font-bold transition-colors ${selectedAddressType === 'primary' ? 'border-accent bg-accent/10 text-accent' : 'border-white/10 text-grey-500 hover:border-white/30'}`}
+                                            >
+                                                Primary Address
+                                            </button>
+                                        )}
+                                        {user.secondAddress && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleAddressSelection('secondary')}
+                                                className={`flex-1 p-3 border text-left text-xs uppercase tracking-widest font-bold transition-colors ${selectedAddressType === 'secondary' ? 'border-accent bg-accent/10 text-accent' : 'border-white/10 text-grey-500 hover:border-white/30'}`}
+                                            >
+                                                Secondary Address
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
+
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="flex flex-col gap-1.5"><label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">First Name</label><input name="firstName" value={form.firstName} onChange={handleChange} required placeholder="John" className="form-input" /></div>
                                     <div className="flex flex-col gap-1.5"><label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">Last Name</label><input name="lastName" value={form.lastName} onChange={handleChange} required placeholder="Doe" className="form-input" /></div>

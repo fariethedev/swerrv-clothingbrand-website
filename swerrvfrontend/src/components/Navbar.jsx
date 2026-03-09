@@ -91,8 +91,14 @@ const Navbar = () => {
                         </button>
                         {user ? (
                             <div className="group relative">
-                                <button className="text-white p-1.5 hover:text-accent transition-colors duration-200">
-                                    <HiOutlineUser size={20} />
+                                <button className="text-white p-1 hover:text-accent transition-colors duration-200">
+                                    {user.profilePictureUrl ? (
+                                        <div className="w-7 h-7 rounded-full overflow-hidden border border-white/20">
+                                            <img src={user.profilePictureUrl} alt="Profile" className="w-full h-full object-cover" />
+                                        </div>
+                                    ) : (
+                                        <HiOutlineUser size={20} className="m-0.5" />
+                                    )}
                                 </button>
                                 <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                                     <div className="bg-grey-900 border border-white/10 flex flex-col min-w-[200px] shadow-2xl">

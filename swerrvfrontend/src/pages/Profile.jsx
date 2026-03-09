@@ -11,27 +11,23 @@ const Profile = () => {
 
     const [activeTab, setActiveTab] = useState('details'); // 'details' or 'address'
 
-    // User Details State
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
-        email: ''
+        email: '',
+        dateOfBirth: '',
+        address: '',
+        secondAddress: '',
+        profilePictureUrl: ''
     });
     const [submittingUser, setSubmittingUser] = useState(false);
 
-    // MOCK Address State (since backend doesn't have an address endpoint right now)
-    // We will simulate the Shein functionality by storing it in local storage temporarily
-    const [addresses, setAddresses] = useState([]);
-    const [isAddingAddress, setIsAddingAddress] = useState(false);
+    // MOCK Address State will be repurposed here to just handle editing 
+    // the user's two addresses (Primary Address and Second Address)
+    const [isEditingAddress, setIsEditingAddress] = useState(false);
     const [addressForm, setAddressForm] = useState({
-        fullName: '',
-        phone: '',
-        country: '',
-        state: '',
-        city: '',
-        zipCode: '',
-        addressLine1: '',
-        isDefault: false
+        type: 'primary',
+        addressString: ''
     });
 
     useEffect(() => {
@@ -41,24 +37,25 @@ const Profile = () => {
             setFormData({
                 firstName: user.firstName || '',
                 lastName: user.lastName || '',
-                email: user.email || ''
+                email: user.email || '',
+                dateOfBirth: user.dateOfBirth || '',
+                address: user.address || '',
+                secondAddress: user.secondAddress || '',
+                profilePictureUrl: user.profilePictureUrl || ''
             });
-            // Try load mocked addresses
-            const savedAddresses = localStorage.getItem('swerrv_addresses_' + user?.id);
-            if (savedAddresses) {
-                setAddresses(JSON.parse(savedAddresses));
-            } else {
-                setAddresses([]);
-            }
         }
     }, [user, loading, navigate]);
 
-    // Save mocked addresses
-    useEffect(() => {
-        if (user && user.id) {
-            localStorage.setItem('swerrv_addresses_' + user.id, JSON.stringify(addresses));
+    const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFormData(prev => ({ ...prev, profilePictureUrl: reader.result }));
+            };
+            reader.readAsDataURL(file);
         }
-    }, [addresses, user]);
+    };
 
     // Handle normal user details update
     const handleUserChange = (e) => {
@@ -75,47 +72,45 @@ const Profile = () => {
 
     // Address Box Handlers
     const handleAddressChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setAddressForm(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value
-        }));
+        setAddressForm(prev => ({ ...prev, addressString: e.target.value }));
     };
 
-    const selectCountry = (val) => setAddressForm(prev => ({ ...prev, country: val }));
-    const selectRegion = (val) => setAddressForm(prev => ({ ...prev, state: val }));
-
-    const saveAddress = (e) => {
-        e.preventDefault();
-        let newAddresses = [...addresses];
-
-        if (addressForm.isDefault) {
-            // Unset other defaults
-            newAddresses = newAddresses.map(a => ({ ...a, isDefault: false }));
-        }
-
-        const newAddr = { ...addressForm, id: Date.now().toString() };
-        // If first address, make it default automatically
-        if (newAddresses.length === 0) {
-            newAddr.isDefault = true;
-        }
-
-        setAddresses([newAddr, ...newAddresses]);
-        setIsAddingAddress(false);
+    const startEditAddress = (type) => {
         setAddressForm({
-            fullName: '', phone: '', country: '', state: '', city: '', zipCode: '', addressLine1: '', isDefault: false
+            type: type,
+            addressString: type === 'primary' ? formData.address : formData.secondAddress
         });
+        setIsEditingAddress(true);
     };
 
-    const deleteAddress = (id) => {
-        setAddresses(addresses.filter(a => a.id !== id));
+    const saveAddress = async (e) => {
+        e.preventDefault();
+        setSubmittingUser(true);
+        const newProfile = { ...formData };
+        if (addressForm.type === 'primary') {
+            newProfile.address = addressForm.addressString;
+        } else {
+            newProfile.secondAddress = addressForm.addressString;
+        }
+
+        await updateUserProfile(newProfile);
+        setFormData(newProfile);
+        setIsEditingAddress(false);
+        setSubmittingUser(false);
     };
 
-    const setAsDefault = (id) => {
-        setAddresses(addresses.map(a => ({
-            ...a,
-            isDefault: a.id === id
-        })));
+    const deleteAddress = async (type) => {
+        setSubmittingUser(true);
+        const newProfile = { ...formData };
+        if (type === 'primary') {
+            // Shouldn't really delete primary, but if they want to...
+            newProfile.address = '';
+        } else {
+            newProfile.secondAddress = '';
+        }
+        await updateUserProfile(newProfile);
+        setFormData(newProfile);
+        setSubmittingUser(false);
     };
 
     if (loading) {
@@ -179,12 +174,29 @@ const Profile = () => {
                                                 <label className="text-[11px] font-bold tracking-[0.2em] uppercase text-grey-400">Last Name</label>
                                                 <input type="text" name="lastName" value={formData.lastName} onChange={handleUserChange} required className="form-input" />
                                             </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[11px] font-bold tracking-[0.2em] uppercase text-grey-400">Date of Birth</label>
+                                                <input type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleUserChange} className="form-input" style={{ color: formData.dateOfBirth ? 'inherit' : 'gray' }} />
+                                            </div>
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-[11px] font-bold tracking-[0.2em] uppercase text-grey-400">Email Address <span className="text-grey-600 lowercase tracking-normal">(Read Only if Google Auth)</span></label>
                                             <input type="email" name="email" value={formData.email} onChange={handleUserChange} required className="form-input opacity-80" readOnly />
                                         </div>
-                                        <button type="submit" disabled={submittingUser} className="btn-primary w-full sm:w-auto">
+
+                                        <div className="space-y-2">
+                                            <label className="text-[11px] font-bold tracking-[0.2em] uppercase text-grey-400">Profile Picture</label>
+                                            <div className="flex items-center gap-4">
+                                                {formData.profilePictureUrl && (
+                                                    <div className="w-16 h-16 rounded-full overflow-hidden border border-white/20 shrink-0">
+                                                        <img src={formData.profilePictureUrl} alt="Profile" className="w-full h-full object-cover" />
+                                                    </div>
+                                                )}
+                                                <input type="file" accept="image/*" onChange={handleImageUpload} className="text-sm text-grey-300" />
+                                            </div>
+                                        </div>
+
+                                        <button type="submit" disabled={submittingUser} className="btn-primary w-full sm:w-auto mt-4">
                                             {submittingUser ? 'Saving...' : 'Save Changes'}
                                         </button>
                                     </form>
@@ -194,110 +206,75 @@ const Profile = () => {
                             {/* Address Book Tab */}
                             {activeTab === 'address' && (
                                 <motion.div key="address" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                                    {!isAddingAddress ? (
+                                    {!isEditingAddress ? (
                                         <>
                                             <div className="flex items-center justify-between mb-6">
                                                 <h2 className="text-lg font-bold tracking-widest uppercase text-white">Saved Addresses</h2>
-                                                <button onClick={() => setIsAddingAddress(true)} className="btn-secondary flex items-center gap-2 text-xs py-2 px-4">
-                                                    <HiOutlinePlus size={16} /> Add New
-                                                </button>
+                                                {(!formData.address || !formData.secondAddress) && (
+                                                    <button onClick={() => startEditAddress(formData.address ? 'secondary' : 'primary')} className="btn-secondary flex items-center gap-2 text-xs py-2 px-4">
+                                                        <HiOutlinePlus size={16} /> Add Address
+                                                    </button>
+                                                )}
                                             </div>
 
-                                            {addresses.length === 0 ? (
+                                            {(!formData.address && !formData.secondAddress) ? (
                                                 <div className="bg-grey-900 border border-white/5 border-dashed p-10 text-center flex flex-col items-center">
                                                     <HiOutlineLocationMarker size={40} className="text-grey-600 mb-4" />
                                                     <p className="text-grey-400 mb-4">No shipping addresses saved yet.</p>
-                                                    <button onClick={() => setIsAddingAddress(true)} className="text-accent underline text-sm font-bold uppercase tracking-widest">Add your first address</button>
+                                                    <button onClick={() => startEditAddress('primary')} className="text-accent underline text-sm font-bold uppercase tracking-widest">Add your first address</button>
                                                 </div>
                                             ) : (
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                                    {addresses.map(addr => (
-                                                        <div key={addr.id} className={`bg-grey-900 border p-5 relative transition-all ${addr.isDefault ? 'border-accent' : 'border-white/10'}`}>
-                                                            {addr.isDefault && (
-                                                                <span className="absolute -top-3 left-4 bg-accent text-black text-[10px] font-black uppercase tracking-widest px-2 py-0.5">Default</span>
-                                                            )}
+                                                <div className="grid grid-cols-1 gap-5">
+                                                    {formData.address && (
+                                                        <div className={`bg-grey-900 border p-5 relative transition-all border-accent`}>
+                                                            <span className="absolute -top-3 left-4 bg-accent text-black text-[10px] font-black uppercase tracking-widest px-2 py-0.5">Primary</span>
                                                             <div className="absolute top-4 right-4 flex gap-3 text-grey-500">
-                                                                <button onClick={() => deleteAddress(addr.id)} className="hover:text-brand-red transition-colors" title="Delete"><HiOutlineTrash size={18} /></button>
+                                                                <button onClick={() => startEditAddress('primary')} className="hover:text-white transition-colors" title="Edit"><HiOutlinePencilAlt size={18} /></button>
                                                             </div>
-
-                                                            <p className="font-bold text-white mb-2 tracking-wide truncate pr-16">{addr.fullName}</p>
-                                                            <p className="text-sm text-grey-400 mb-1">{addr.phone}</p>
-                                                            <p className="text-sm text-grey-400 leading-relaxed max-w-[90%]">
-                                                                {addr.addressLine1} <br />
-                                                                {addr.city}, {addr.state} {addr.zipCode} <br />
-                                                                {addr.country}
+                                                            <p className="font-bold text-white mb-2 tracking-wide truncate pr-16">{formData.firstName} {formData.lastName}</p>
+                                                            <p className="text-sm text-grey-400 leading-relaxed max-w-[90%] whitespace-pre-line">
+                                                                {formData.address}
                                                             </p>
-
-                                                            {!addr.isDefault && (
-                                                                <button onClick={() => setAsDefault(addr.id)} className="mt-4 text-[11px] font-bold tracking-widest uppercase text-grey-500 hover:text-white underline">
-                                                                    Set as Default
-                                                                </button>
-                                                            )}
                                                         </div>
-                                                    ))}
+                                                    )}
+
+                                                    {formData.secondAddress && (
+                                                        <div className={`bg-grey-900 border p-5 relative transition-all border-white/10`}>
+                                                            <span className="absolute -top-3 left-4 bg-grey-700 text-white text-[10px] font-black uppercase tracking-widest px-2 py-0.5">Secondary</span>
+                                                            <div className="absolute top-4 right-4 flex gap-3 text-grey-500">
+                                                                <button onClick={() => startEditAddress('secondary')} className="hover:text-white transition-colors" title="Edit"><HiOutlinePencilAlt size={18} /></button>
+                                                                <button onClick={() => deleteAddress('secondary')} className="hover:text-brand-red transition-colors" title="Delete"><HiOutlineTrash size={18} /></button>
+                                                            </div>
+                                                            <p className="font-bold text-white mb-2 tracking-wide truncate pr-16">{formData.firstName} {formData.lastName}</p>
+                                                            <p className="text-sm text-grey-400 leading-relaxed max-w-[90%] whitespace-pre-line">
+                                                                {formData.secondAddress}
+                                                            </p>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
                                         </>
                                     ) : (
                                         <div className="bg-grey-900 border border-white/10 p-6 md:p-8">
-                                            <h2 className="text-lg font-bold tracking-widest uppercase text-white mb-6">Add New Address</h2>
+                                            <h2 className="text-lg font-bold tracking-widest uppercase text-white mb-6">
+                                                {addressForm.type === 'primary' ? 'Edit Primary Address' : 'Edit Secondary Address'}
+                                            </h2>
                                             <form onSubmit={saveAddress} className="space-y-5">
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                                    <div className="space-y-1.5">
-                                                        <label className="text-[11px] font-bold tracking-[0.2em] uppercase text-grey-400">Full Name</label>
-                                                        <input type="text" name="fullName" value={addressForm.fullName} onChange={handleAddressChange} required className="form-input py-2.5" />
-                                                    </div>
-                                                    <div className="space-y-1.5">
-                                                        <label className="text-[11px] font-bold tracking-[0.2em] uppercase text-grey-400">Phone Number</label>
-                                                        <input type="tel" name="phone" value={addressForm.phone} onChange={handleAddressChange} required className="form-input py-2.5" />
-                                                    </div>
-                                                </div>
-
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                                    <div className="space-y-1.5 flex flex-col">
-                                                        <label className="text-[11px] font-bold tracking-[0.2em] uppercase text-grey-400">Country/Region</label>
-                                                        <CountryDropdown
-                                                            value={addressForm.country}
-                                                            onChange={(val) => selectCountry(val)}
-                                                            classes="form-input py-2.5 bg-black"
-                                                        />
-                                                    </div>
-                                                    <div className="space-y-1.5 flex flex-col">
-                                                        <label className="text-[11px] font-bold tracking-[0.2em] uppercase text-grey-400">State/Province</label>
-                                                        <RegionDropdown
-                                                            country={addressForm.country}
-                                                            value={addressForm.state}
-                                                            onChange={(val) => selectRegion(val)}
-                                                            classes="form-input py-2.5 bg-black"
-                                                            disableWhenEmpty={true}
-                                                        />
-                                                    </div>
-                                                </div>
-
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                                    <div className="space-y-1.5">
-                                                        <label className="text-[11px] font-bold tracking-[0.2em] uppercase text-grey-400">City</label>
-                                                        <input type="text" name="city" value={addressForm.city} onChange={handleAddressChange} required className="form-input py-2.5" />
-                                                    </div>
-                                                    <div className="space-y-1.5">
-                                                        <label className="text-[11px] font-bold tracking-[0.2em] uppercase text-grey-400">Zip/Postal Code</label>
-                                                        <input type="text" name="zipCode" value={addressForm.zipCode} onChange={handleAddressChange} required className="form-input py-2.5" />
-                                                    </div>
-                                                </div>
-
                                                 <div className="space-y-1.5">
-                                                    <label className="text-[11px] font-bold tracking-[0.2em] uppercase text-grey-400">Address Line 1</label>
-                                                    <input type="text" name="addressLine1" value={addressForm.addressLine1} onChange={handleAddressChange} required placeholder="Street address, P.O. box, company name, c/o" className="form-input py-2.5" />
-                                                </div>
-
-                                                <div className="flex items-center gap-3 pt-2">
-                                                    <input type="checkbox" id="isDefault" name="isDefault" checked={addressForm.isDefault} onChange={handleAddressChange} className="w-4 h-4 accent-accent" />
-                                                    <label htmlFor="isDefault" className="text-sm font-semibold text-white">Make this my default shipping address</label>
+                                                    <label className="text-[11px] font-bold tracking-[0.2em] uppercase text-grey-400">Full Address</label>
+                                                    <textarea
+                                                        rows="4"
+                                                        value={addressForm.addressString}
+                                                        onChange={handleAddressChange}
+                                                        required
+                                                        placeholder="123 Main Street, City, State, ZIP, Country"
+                                                        className="form-input py-2.5 resize-none"
+                                                    />
                                                 </div>
 
                                                 <div className="flex items-center gap-4 pt-4 border-t border-white/10">
-                                                    <button type="submit" className="btn-primary py-3 px-8 text-xs">Save Address</button>
-                                                    <button type="button" onClick={() => setIsAddingAddress(false)} className="text-white hover:text-brand-red font-bold text-xs uppercase tracking-widest transition-colors py-3 px-4">Cancel</button>
+                                                    <button type="submit" disabled={submittingUser} className="btn-primary py-3 px-8 text-xs">{submittingUser ? 'Saving...' : 'Save Address'}</button>
+                                                    <button type="button" onClick={() => setIsEditingAddress(false)} className="text-white hover:text-brand-red font-bold text-xs uppercase tracking-widest transition-colors py-3 px-4">Cancel</button>
                                                 </div>
                                             </form>
                                         </div>
