@@ -73,6 +73,7 @@ const StripePaymentForm = ({ onPaymentSuccess, onBack, amount }) => {
 const Checkout = () => {
     const { cartItems, cartTotal, clearCart } = useCart();
     const { user } = useAuth();
+    const { currency, formatPrice } = useCurrency();
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [clientSecret, setClientSecret] = useState('');
