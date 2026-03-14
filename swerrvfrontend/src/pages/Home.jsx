@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
-
+import { useAuth } from '../context/AuthContext';
 
 const CountdownTimer = ({ targetDate }) => {
     const calculateTimeLeft = () => {
