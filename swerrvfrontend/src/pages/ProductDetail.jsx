@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { HiHeart, HiOutlineHeart, HiArrowLeft, HiChevronDown, HiChevronUp } from 'react-icons/hi';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -22,16 +22,12 @@ const Accordion = ({ title, children }) => {
             </button>
             <AnimatePresence initial={false}>
                 {open && (
-                    <motion.div
+                    <div
                         key="content"
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25, ease: 'easeInOut' }}
                         className="pd-accordion-body"
                     >
                         {children}
-                    </motion.div>
+                    </div>
                 )}
             </AnimatePresence>
         </div>
@@ -52,7 +48,7 @@ const ProductDetail = () => {
     const [selectedImg, setSelectedImg] = useState(0);
     const [selectedSize, setSelectedSize] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
-    const [quantity, setQuantity] = useState(1);
+    const [quantity] = useState(1);
 
     const styledRef = useRef(null);
 
@@ -96,8 +92,6 @@ const ProductDetail = () => {
         toast.success('Added to bag!', { style: { background: '#111', color: '#fff', border: '1px solid #333' } });
     };
 
-    const handleSizeDropdown = e => setSelectedSize(e.target.value);
-
     /* ── Sizes catalogue ── */
     const allSizes = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'];
     const productSizes = product.sizes?.length ? product.sizes : allSizes;
@@ -120,11 +114,15 @@ const ProductDetail = () => {
         <div className="pd-root">
             <div className="pd-container">
 
-                {/* Back link */}
-                <Link to="/shop" className="pd-back">
-                    <HiArrowLeft size={14} />
-                    <span>collection</span>
-                </Link>
+                {/* ── Top Bar: breadcrumbs etc ── */}
+                <div className="pd-top-bar">
+                    <Link to="/shop" className="pd-back">
+                        <HiArrowLeft size={16} />
+                        <span>Home</span>
+                        <span className="pd-back-sep">/</span>
+                        <span className="pd-back-current">Product details</span>
+                    </Link>
+                </div>
 
                 {/* ══ Main grid ══ */}
                 <div className="pd-grid">
@@ -133,23 +131,18 @@ const ProductDetail = () => {
                     <div className="pd-gallery">
                         {/* Main image */}
                         <AnimatePresence mode="wait">
-                            <motion.div
+                            <div
                                 key={selectedImg}
                                 className="pd-main-img-wrap"
-                                initial={{ opacity: 0, scale: 0.98 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.3 }}
                             >
                                 <img
                                     src={images[selectedImg]}
                                     alt={product.name}
                                     className={`pd-main-img${product.comingSoon ? ' blur-[4px] scale-105' : ''}`}
-                                    style={product.comingSoon ? { filter: 'blur(4px)', transform: 'scale(1.06)' } : {}}
                                 />
                                 {product.comingSoon && (
-                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center pointer-events-none">
-                                        <span className="text-white text-[13px] font-black tracking-[0.25em] uppercase border border-white/40 px-6 py-3">
+                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center pointer-events-none rounded-2xl">
+                                        <span className="text-white text-sm font-bold tracking-[0.2em] uppercase border border-white/40 px-6 py-3 rounded-full backdrop-blur-sm">
                                             Coming Soon
                                         </span>
                                     </div>
@@ -157,7 +150,7 @@ const ProductDetail = () => {
                                 {isOnSale && (
                                     <span className="pd-badge pd-badge--sale">Sale</span>
                                 )}
-                            </motion.div>
+                            </div>
                         </AnimatePresence>
 
                         {/* Thumbnail strip */}
@@ -177,39 +170,37 @@ const ProductDetail = () => {
                     </div>
 
                     {/* ── Right: Info panel ── */}
-                    <motion.div
+                    <div
                         className="pd-info"
-                        initial={{ opacity: 0, x: 30 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.45 }}
                     >
-                        {/* Name */}
-                        <div className="pd-header">
-                            <p className="pd-category">{product.category}</p>
-                            <h1 className="pd-name">{product.name}</h1>
-                        </div>
+                        {/* Category Tag */}
+                        <span className="pd-category-tag">{product.category || 'Fashion'}</span>
 
-                        {/* Price */}
+                        {/* Name & Price */}
+                        <h1 className="pd-name">{product.name}</h1>
                         <div className="pd-price-row">
                             {product.comingSoon ? (
                                 <span className="pd-price--soon">Coming Soon</span>
                             ) : (
                                 <>
+                                    <span className="pd-price--current">{formatPrice(product.price)}</span>
                                     {isOnSale && (
                                         <span className="pd-price--original">{formatPrice(product.originalPrice)}</span>
                                     )}
-                                    <span className="pd-price--current">{formatPrice(product.price)}</span>
                                 </>
                             )}
                         </div>
 
-                        {/* Color selector — disabled for coming soon */}
+                        {/* Delivery Estimate Box */}
+                        <div className="pd-delivery-estimate">
+                            <span className="pd-icon-clock">🕒</span>
+                            <span>Order in <b>02:30:25</b> to get next day delivery</span>
+                        </div>
+
+                        {/* Color selector */}
                         {productColors.length > 0 && (
                             <div className={`pd-color-section${product.comingSoon ? ' pd-disabled-section' : ''}`}>
-                                <div className="pd-color-label">
-                                    <span>colour</span>
-                                    {selectedColor && <span className="pd-color-chosen">{selectedColor}</span>}
-                                </div>
+                                <div className="pd-color-label">Select Color {selectedColor && `- ${selectedColor}`}</div>
                                 <div className="pd-color-pills">
                                     {productColors.map(color => (
                                         <button
@@ -227,8 +218,9 @@ const ProductDetail = () => {
                             </div>
                         )}
 
-                        {/* Size pills — disabled for coming soon */}
+                        {/* Size pills */}
                         <div className={`pd-sizes-section${product.comingSoon ? ' pd-disabled-section' : ''}`}>
+                            <div className="pd-size-label">Select Size</div>
                             <div className="pd-sizes-grid">
                                 {productSizes.map(size => (
                                     <button
@@ -241,34 +233,17 @@ const ProductDetail = () => {
                                     </button>
                                 ))}
                             </div>
-
-                            {/* Dropdown */}
-                            <div className="pd-size-select-wrap">
-                                <select
-                                    className="pd-size-select"
-                                    value={selectedSize}
-                                    onChange={handleSizeDropdown}
-                                    disabled={product.comingSoon}
-                                >
-                                    <option value="">{product.comingSoon ? 'Not available yet' : 'select your size'}</option>
-                                    {productSizes.map(s => (
-                                        <option key={s} value={s}>{s}</option>
-                                    ))}
-                                </select>
-                                <HiChevronDown className="pd-size-select-icon" size={14} />
-                            </div>
                         </div>
 
                         {/* CTAs */}
                         <div className="pd-ctas">
-                            <motion.button
+                            <button
                                 onClick={handleAddToCart}
                                 disabled={product.comingSoon}
-                                whileTap={!product.comingSoon ? { scale: 0.97 } : {}}
                                 className={`pd-add-btn ${product.comingSoon ? 'pd-add-btn--disabled' : ''}`}
                             >
-                                {product.comingSoon ? 'Coming Soon' : 'add to bag'}
-                            </motion.button>
+                                {product.comingSoon ? 'Coming Soon' : 'Add to Cart'}
+                            </button>
                             <button
                                 onClick={() => toggleWishlist(product)}
                                 className={`pd-wishlist-btn ${wishlisted ? 'pd-wishlist-btn--active' : ''}`}
@@ -278,15 +253,15 @@ const ProductDetail = () => {
                         </div>
 
                         {/* Stock badge */}
-                        <div className="pd-stock-row">
+                        <div className="pd-stock-row mt-2">
                             <span className={`pd-stock ${product.stock < 10 ? 'pd-stock--low' : ''}`}>
-                                {product.stock < 10 ? `Only ${product.stock} left` : 'In Stock'}
+                                {product.stock < 10 ? `Only ${product.stock} left in stock` : 'In Stock'}
                             </span>
                         </div>
 
                         {/* Accordions */}
                         <div className="pd-accordions">
-                            <Accordion title="product details">
+                            <Accordion title="Description & Fit">
                                 <p className="pd-accordion-text">{product.description}</p>
                                 {product.material && (
                                     <p className="pd-accordion-text" style={{ marginTop: 8 }}>
@@ -295,52 +270,82 @@ const ProductDetail = () => {
                                 )}
                             </Accordion>
 
-                            <Accordion title="sizing chart">
-                                <div className="pd-sizing-table">
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>Size</th>
-                                                <th>Chest (cm)</th>
-                                                <th>Waist (cm)</th>
-                                                <th>Hip (cm)</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {[
-                                                ['XXS', '76–81', '60–65', '84–89'],
-                                                ['XS', '81–86', '65–70', '89–94'],
-                                                ['S', '86–91', '70–75', '94–99'],
-                                                ['M', '91–96', '75–80', '99–104'],
-                                                ['L', '99–104', '83–88', '107–112'],
-                                                ['XL', '107–112', '91–96', '115–120'],
-                                                ['XXL', '117–122', '101–106', '125–130'],
-                                            ].map(([s, ...vals]) => (
-                                                <tr key={s} className={selectedSize === s ? 'pd-sizing-table__row--active' : ''}>
-                                                    <td>{s}</td>
-                                                    {vals.map((v, i) => <td key={i}>{v}</td>)}
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </Accordion>
-
-                            <Accordion title="shipping &amp; returns">
-                                <div className="pd-accordion-text">
-                                    <p><strong>Lublin (local):</strong> Free — pick up or local delivery within Lublin.</p>
-                                    <p><strong>Outside Lublin:</strong> 8.99 zł flat-rate postal shipping via Polish Post.</p>
-                                    <p style={{ marginTop: 8 }}>No hidden fees or taxes. Easy returns within 30 days of delivery.</p>
+                            <Accordion title="Shipping">
+                                <div className="pd-shipping-grid">
+                                    <div className="pd-shipping-item">
+                                        <div className="pd-ship-icon">%</div>
+                                        <div>
+                                            <p className="pd-ship-title">Discount</p>
+                                            <p className="pd-ship-desc">Dec 50%</p>
+                                        </div>
+                                    </div>
+                                    <div className="pd-shipping-item">
+                                        <div className="pd-ship-icon">📦</div>
+                                        <div>
+                                            <p className="pd-ship-title">Package</p>
+                                            <p className="pd-ship-desc">Regular Package</p>
+                                        </div>
+                                    </div>
+                                    <div className="pd-shipping-item">
+                                        <div className="pd-ship-icon">📅</div>
+                                        <div>
+                                            <p className="pd-ship-title">Delivery Time</p>
+                                            <p className="pd-ship-desc">3-4 Working Days</p>
+                                        </div>
+                                    </div>
+                                    <div className="pd-shipping-item">
+                                        <div className="pd-ship-icon">🚚</div>
+                                        <div>
+                                            <p className="pd-ship-title">Estimated Arrival</p>
+                                            <p className="pd-ship-desc">10 - 12 October 2026</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </Accordion>
                         </div>
-                    </motion.div>
+                    </div>
                 </div>
 
-                {/* ══ Styled With ══ */}
+                {/* ══ Ratings & Reviews ══ */}
+                <section className="pd-reviews-section">
+                    <h2 className="pd-section-title">Rating & Reviews</h2>
+                    <div className="pd-reviews-container">
+                        <div className="pd-reviews-summary">
+                            <div className="pd-score-big">
+                                4.5 <span className="pd-score-slash">/ 5</span>
+                            </div>
+                            <p className="pd-reviews-count">(50 New Reviews)</p>
+                        </div>
+
+                        <div className="pd-reviews-bars">
+                            {[5, 4, 3, 2, 1].map(star => (
+                                <div key={star} className="pd-review-bar-row">
+                                    <span className="pd-star">★ {star}</span>
+                                    <div className="pd-bar-bg">
+                                        <div className="pd-bar-fill" style={{ width: star === 5 ? '80%' : star === 4 ? '15%' : '5%' }}></div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="pd-review-cards">
+                            <div className="pd-review-card">
+                                <div className="pd-rc-header">
+                                    <h4>Alex Mathio</h4>
+                                    <span className="pd-rc-date">13 Oct 2026</span>
+                                </div>
+                                <div className="pd-rc-stars">★★★★★</div>
+                                <p className="pd-rc-text">"NextGen's dedication to sustainability and ethical practices resonates strongly with today's consumers, positioning the brand as a responsible choice in the fashion world."</p>
+                                <img src={`https://i.pravatar.cc/150?u=${product.id}`} alt="User" className="pd-rc-avatar" />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* ══ Styled With / You might also like ══ */}
                 {related.length > 0 && (
                     <section className="pd-styled-with">
-                        <p className="pd-styled-with__label">styled with</p>
+                        <h2 className="pd-section-title text-center text-4xl mb-12">You might also like</h2>
                         <div className="pd-styled-with__scroll" ref={styledRef}>
                             {related.map((p, i) => (
                                 <div key={p.id} className="pd-styled-with__item">
