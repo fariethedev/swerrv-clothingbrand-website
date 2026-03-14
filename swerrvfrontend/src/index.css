@@ -2,22 +2,16 @@
 
 /* ===== Global CSS custom properties ===== */
 :root {
-  --accent: #fff;
-  --accent-dark: #eee;
+  --accent: #7c6fff;
+  --accent-dark: #6355e0;
   --black: #000;
   --white: #fff;
-  --grey-900: #000;
-  /* Replaced with black */
-  --grey-700: #333;
-  /* Dark stark grey for borders if absolute needed, else black */
-  --grey-500: #888;
-  /* Minimal mid-grey for technical text */
-  --grey-300: #fff;
-  /* Replaced with white */
-  --green: #fff;
-  /* Replaced with white */
-  --red: #fff;
-  /* Replaced with white */
+  --grey-900: #111111;
+  --grey-700: #404040;
+  --grey-500: #808080;
+  --grey-300: #c0c0c0;
+  --green: #34c759;
+  --red: #ff3b30;
 }
 
 
@@ -172,15 +166,15 @@
   }
 
   .tag-new {
-    @apply bg-white text-black text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5 border border-white;
-  }
-
-  .tag-sale {
     @apply bg-black text-white text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5 border border-white;
   }
 
+  .tag-sale {
+    @apply bg-brand-red text-white text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5;
+  }
+
   .tag-best {
-    @apply bg-white text-black text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5 border border-white;
+    @apply bg-accent text-white text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5;
   }
 
   .form-input {
