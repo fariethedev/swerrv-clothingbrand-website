@@ -153,11 +153,26 @@ const LookbookCarousel = () => {
     );
 };
 
+const SectionHeader = ({ label, title }) => (
+    <div className="flex flex-col items-center mb-12 px-6">
+        <div className="flex items-center gap-4 mb-4">
+            <div className="h-px w-8 bg-white/20" />
+            <img src="/images/swerrve_logo_white.png" alt="Swerrv" className="h-12 w-auto object-contain" />
+            <div className="h-px w-8 bg-white/20" />
+        </div>
+        <p className="text-[10px] font-mono tracking-[0.4em] text-grey-500 uppercase mb-4">{label}</p>
+        <h2 className="text-4xl md:text-6xl font-black tracking-tighter uppercase text-center">{title}</h2>
+    </div>
+);
+
 const BrandStatement = () => (
     <section className="py-24 px-6 border-b border-white/10 bg-black">
         <div className="max-w-[1200px] mx-auto text-center">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-                <p className="text-[10px] font-mono tracking-[0.5em] text-grey-500 uppercase mb-8">Swerrv Studios / Philosophy</p>
+                <div className="flex justify-center mb-8">
+                    <img src="/images/swerrve_logo_white.png" alt="Swerrv" className="h-10 w-auto opacity-50" />
+                </div>
+                <p className="text-[10px] font-mono tracking-[0.5em] text-grey-500 uppercase mb-8">Studios / Philosophy</p>
                 <h2 className="text-3xl md:text-5xl font-black tracking-tighter leading-[1.1] text-white">
                     BRUTALIST SIMPLICITY<br />
                     MEETS PREMIUM CRAFTSMANSHIP.
@@ -179,26 +194,26 @@ const EditorialFeatures = () => {
         {
             type: 'image',
             img: '/images/_DSC8113.jpg',
-            title: 'CORE PIECES',
+            title: 'FEELINGS\nMUTUAL',
             subtitle: 'NEW DROP',
             label: 'SWERRV ARCHIVE',
-            color: 'text-[#d1b2ff]'
+            color: 'text-white'
         },
         {
             type: 'solid',
-            title: 'VELOUR\nTRACKSUIT',
+            title: 'FEELINGS\nMUTUAL',
             subtitle: 'LIMITED RELEASE',
             label: 'COTI X COTI',
-            bgColor: 'bg-[#d1b2ff]',
-            textColor: 'text-black'
+            bgColor: 'bg-grey-900',
+            textColor: 'text-white'
         },
         {
             type: 'image',
             img: '/images/_DSC8141.jpg',
-            title: 'STUDIO WEAR',
+            title: 'FEELINGS\nMUTUAL',
             subtitle: 'NEW DROP',
             label: 'SWERRV ARCHIVE',
-            color: 'text-[#d1b2ff]'
+            color: 'text-white'
         }
     ];
 
@@ -224,7 +239,11 @@ const EditorialFeatures = () => {
                         <div className={`relative z-10 flex flex-col h-full p-8 md:p-10 ${card.textColor || 'text-white'}`}>
                             {/* Top Logo Accents */}
                             <div className="flex justify-between items-start mb-auto">
-                                <div className={`font-dancing text-2xl md:text-3xl ${card.color || ''}`}>Swerrv</div>
+                                <img
+                                    src={card.textColor === 'text-black' ? '/images/swerrve_logo_black.png' : '/images/swerrve_logo_white.png'}
+                                    alt="Swerrv"
+                                    className="h-10 w-auto object-contain"
+                                />
                                 <div className="text-[9px] font-mono uppercase tracking-widest opacity-60">Vol. 26</div>
                             </div>
 
@@ -409,7 +428,7 @@ const Home = () => {
             <section className="py-24 bg-black">
                 <div className="max-w-[1400px] mx-auto px-6">
                     <div className="flex items-center justify-between mb-12">
-                        <p className="section-label">New Arrivals</p>
+                        <SectionHeader label="Campaign" title="Feelings Mutual" />
                         <Link to="/shop" className="text-xs font-bold tracking-widest text-grey-300 hover:text-white transition-colors uppercase">View All →</Link>
                     </div>
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">

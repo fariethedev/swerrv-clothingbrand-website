@@ -121,7 +121,22 @@ public class DataInitializer implements CommandLineRunner {
                                                 .featured(false)
                                                 .build(),
 
-                                // ─── T-Shirts ──────────────────────────────────────────────────────
+                                Product.builder()
+                                                .name("Feelings Mutual Essential Tee")
+                                                .slug("feelings-mutual-essential-tee")
+                                                .description(
+                                                                "Limited edition T-shirt from the 'Feelings Mutual' campaign. 100% heavy cotton, oversized fit, featuring the iconic script branding on the front.")
+                                                .price(new BigDecimal("185.00"))
+                                                .category("T-Shirts")
+                                                .images(List.of(
+                                                                "/images/_DSC8141.jpg",
+                                                                "/images/_DSC8144.jpg"))
+                                                .sizes(List.of("S", "M", "L", "XL"))
+                                                .colors(List.of("Black", "White"))
+                                                .stock(100)
+                                                .featured(true)
+                                                .build(),
+
                                 Product.builder()
                                                 .name("Swerrv Essential Tee")
                                                 .slug("swerrv-essential-tee")
