@@ -2,16 +2,22 @@
 
 /* ===== Global CSS custom properties ===== */
 :root {
-  --accent: #7c6fff;
-  --accent-dark: #6355e0;
+  --accent: #fff;
+  --accent-dark: #eee;
   --black: #000;
   --white: #fff;
-  --grey-900: #111111;
-  --grey-700: #404040;
-  --grey-500: #808080;
-  --grey-300: #c0c0c0;
-  --green: #34c759;
-  --red: #ff3b30;
+  --grey-900: #000;
+  /* Replaced with black */
+  --grey-700: #333;
+  /* Dark stark grey for borders if absolute needed, else black */
+  --grey-500: #888;
+  /* Minimal mid-grey for technical text */
+  --grey-300: #fff;
+  /* Replaced with white */
+  --green: #fff;
+  /* Replaced with white */
+  --red: #fff;
+  /* Replaced with white */
 }
 
 
@@ -135,24 +141,22 @@
 
 @layer components {
   .btn-primary {
-    @apply px-8 py-3.5 text-xs font-bold tracking-widest uppercase transition-all duration-200 cursor-pointer inline-block text-white;
-    background: linear-gradient(135deg, #7c6fff 0%, #a040e0 100%);
-    border-radius: 4px;
+    @apply px-8 py-3.5 text-xs font-bold tracking-widest uppercase transition-all duration-200 cursor-pointer inline-block text-black bg-white border border-white;
+    border-radius: 0;
+    /* Brutalist sharp corners */
   }
 
   .btn-primary:hover {
-    @apply -translate-y-px;
-    background: linear-gradient(135deg, #6355e0 0%, #8b2fc9 100%);
-    box-shadow: 0 8px 24px rgba(124, 111, 255, 0.35);
+    @apply bg-black text-white;
   }
 
   .btn-secondary {
-    @apply bg-transparent text-white px-8 py-3.5 text-xs font-semibold tracking-widest uppercase border border-grey-700 cursor-pointer inline-block transition-all duration-200;
-    border-radius: 4px;
+    @apply bg-black text-white px-8 py-3.5 text-xs font-semibold tracking-widest uppercase border border-white cursor-pointer inline-block transition-all duration-200;
+    border-radius: 0;
   }
 
   .btn-secondary:hover {
-    @apply border-white bg-white/5;
+    @apply bg-white text-black;
   }
 
   .section-label {
@@ -168,15 +172,15 @@
   }
 
   .tag-new {
-    @apply bg-accent text-black text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5;
+    @apply bg-white text-black text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5 border border-white;
   }
 
   .tag-sale {
-    @apply bg-brand-red text-white text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5;
+    @apply bg-black text-white text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5 border border-white;
   }
 
   .tag-best {
-    @apply bg-white text-black text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5;
+    @apply bg-white text-black text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5 border border-white;
   }
 
   .form-input {

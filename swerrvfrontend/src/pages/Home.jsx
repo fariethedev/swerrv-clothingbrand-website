@@ -1,17 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import ProductCard from '../components/ProductCard';
 import { api } from '../services/api';
-import { useAuth } from '../context/AuthContext';
-
-const HERO_SLIDES = [
-    { img: '/images/_DSC8289.jpg', caption: 'Wear the Movement.' },
-    { img: '/images/_DSC8164.jpg', caption: 'Style Without Limits.' },
-    { img: '/images/_DSC8141.jpg', caption: 'Crafted for the Streets.' },
-    { img: '/images/_DSC8438.jpg', caption: 'Bold. Clean. Swerrv.' },
-    { img: '/images/_DSC8415.jpg', caption: 'Dress Your Story.' },
-];
 
 
 const CountdownTimer = ({ targetDate }) => {

@@ -43,7 +43,7 @@
 }
 
 .footer-newsletter-btn {
-    background: var(--accent);
+    background: var(--white);
     color: var(--black);
     border: none;
     padding: 14px 20px;
@@ -51,14 +51,15 @@
     display: flex;
     align-items: center;
     transition: background 0.2s;
+    font-weight: bold;
 }
 
 .footer-newsletter-btn:hover {
-    background: var(--accent-dark);
+    background: var(--grey-500);
 }
 
 .footer-newsletter-success {
-    color: var(--accent);
+    color: var(--white);
     font-size: 16px;
     font-weight: 600;
 }
@@ -99,7 +100,8 @@
     width: 38px;
     height: 38px;
     border: 1px solid var(--grey-700);
-    border-radius: 50%;
+    border-radius: 0;
+    /* Brutalist sharp */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -108,9 +110,10 @@
 }
 
 .footer-social-link:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    transform: translateY(-2px);
+    border-color: var(--white);
+    color: var(--black);
+    background: var(--white);
+    transform: none;
 }
 
 .footer-links-title {
