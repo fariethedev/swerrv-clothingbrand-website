@@ -12,6 +12,7 @@
   --grey-300: #c0c0c0;
   --green: #34c759;
   --red: #ff3b30;
+  --brand-lilac: #d1b2ff;
 }
 
 
@@ -130,6 +131,10 @@
 
   ::-webkit-scrollbar-thumb {
     @apply bg-grey-700 rounded-sm;
+  }
+
+  .font-dancing {
+    font-family: 'Dancing Script', cursive;
   }
 }
 

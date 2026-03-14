@@ -158,6 +158,107 @@ const LookbookCarousel = () => {
     );
 };
 
+const BrandStatement = () => (
+    <section className="py-24 px-6 border-b border-white/10 bg-black">
+        <div className="max-w-[1200px] mx-auto text-center">
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+                <p className="text-[10px] font-mono tracking-[0.5em] text-grey-500 uppercase mb-8">Swerrv Studios / Philosophy</p>
+                <h2 className="text-3xl md:text-5xl font-black tracking-tighter leading-[1.1] text-white">
+                    BRUTALIST SIMPLICITY<br />
+                    MEETS PREMIUM CRAFTSMANSHIP.
+                </h2>
+                <div className="mt-12 flex justify-center gap-12 text-[9px] font-mono tracking-widest text-grey-400 uppercase">
+                    <span>Authentic</span>
+                    <span>/</span>
+                    <span>Raw</span>
+                    <span>/</span>
+                    <span>Visionary</span>
+                </div>
+            </motion.div>
+        </div>
+    </section>
+);
+
+const EditorialFeatures = () => {
+    const cards = [
+        {
+            type: 'image',
+            img: '/images/_DSC8113.jpg',
+            title: 'CORE PIECES',
+            subtitle: 'NEW DROP',
+            label: 'SWERRV ARCHIVE',
+            color: 'text-[#d1b2ff]'
+        },
+        {
+            type: 'solid',
+            title: 'VELOUR\nTRACKSUIT',
+            subtitle: 'LIMITED RELEASE',
+            label: 'COTI X COTI',
+            bgColor: 'bg-[#d1b2ff]',
+            textColor: 'text-black'
+        },
+        {
+            type: 'image',
+            img: '/images/_DSC8141.jpg',
+            title: 'STUDIO WEAR',
+            subtitle: 'NEW DROP',
+            label: 'SWERRV ARCHIVE',
+            color: 'text-[#d1b2ff]'
+        }
+    ];
+
+    return (
+        <section className="py-20 px-4 md:px-10 bg-black overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-[1400px] mx-auto">
+                {cards.map((card, i) => (
+                    <motion.div
+                        key={i}
+                        className={`relative aspect-[3/4] rounded-[2.5rem] overflow-hidden flex flex-col ${card.bgColor || 'bg-grey-900 shadow-2xl shadow-black/50'}`}
+                        initial={{ opacity: 0, y: 50 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.2, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                        {card.type === 'image' && (
+                            <div className="absolute inset-0">
+                                <img src={card.img} alt={card.title} className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                            </div>
+                        )}
+
+                        <div className={`relative z-10 flex flex-col h-full p-8 md:p-10 ${card.textColor || 'text-white'}`}>
+                            {/* Top Logo Accents */}
+                            <div className="flex justify-between items-start mb-auto">
+                                <div className={`font-dancing text-2xl md:text-3xl ${card.color || ''}`}>Swerrv</div>
+                                <div className="text-[9px] font-mono uppercase tracking-widest opacity-60">Vol. 26</div>
+                            </div>
+
+                            {/* Center/Bottom Content */}
+                            <div className="mt-auto">
+                                <div className={`text-[9px] font-mono uppercase tracking-[0.3em] mb-4 opacity-80`}>
+                                    {card.subtitle}
+                                </div>
+                                <h3 className={`text-4xl md:text-5xl font-black leading-none tracking-tighter uppercase whitespace-pre-line mb-4 ${card.color || ''}`}>
+                                    {card.title}
+                                </h3>
+                                <div className="text-[8px] font-mono uppercase tracking-[0.4em] opacity-40">
+                                    BRING YOUR SHIT TO THE WORLD
+                                </div>
+                            </div>
+
+                            {/* Corner Accents */}
+                            <div className="absolute top-8 left-8 w-4 h-4 border-t border-l border-white/20" />
+                            <div className="absolute top-8 right-8 w-4 h-4 border-t border-r border-white/20" />
+                            <div className="absolute bottom-8 left-8 w-4 h-4 border-b border-l border-white/20" />
+                            <div className="absolute bottom-8 right-8 w-4 h-4 border-b border-r border-white/20" />
+                        </div>
+                    </motion.div>
+                ))}
+            </div>
+        </section>
+    );
+};
+
 const Home = () => {
     const heroRef = useRef(null);
     const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
@@ -296,21 +397,10 @@ const Home = () => {
             </section>
 
             {/* ══ BRAND STATEMENT ══ */}
-            <section className="py-32 bg-black text-center border-b border-white/10">
-                <motion.div className="max-w-[1400px] mx-auto px-6" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
-                    <p className="text-[clamp(11px,1.2vw,14px)] tracking-[0.4em] uppercase text-grey-300 leading-loose mb-6">
-                        A CELEBRATION OF INDIVIDUALISM. SWERRV IS<br />
-                        NOT FOR EVERYONE. SWERRV IS FOR EVERY ONE.
-                    </p>
-                    <div className="flex gap-4 justify-center items-center text-[10px] font-bold tracking-[0.3em] uppercase text-grey-500">
-                        <span>PAST</span>
-                        <span className="text-grey-700">·</span>
-                        <span>PRESENT</span>
-                        <span className="text-grey-700">·</span>
-                        <span className="text-white">FUTURE</span>
-                    </div>
-                </motion.div>
-            </section>
+            <BrandStatement />
+
+            {/* ══ EDITORIAL FEATURES ══ */}
+            <EditorialFeatures />
 
             {/* ══ FEATURED DROP ══ */}
             {featured[0] && (
