@@ -5,13 +5,8 @@ import { Link } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { api } from '../services/api';
 
-const HERO_SLIDES = [
-    { img: '/images/_DSC8289.jpg', caption: 'Wear the Movement.' },
-    { img: '/images/_DSC8164.jpg', caption: 'Style Without Limits.' },
-    { img: '/images/_DSC8141.jpg', caption: 'Crafted for the Streets.' },
-    { img: '/images/_DSC8438.jpg', caption: 'Bold. Clean. Swerrv.' },
-    { img: '/images/_DSC8415.jpg', caption: 'Dress Your Story.' },
-];
+const HERO_IMAGE = '/images/_DSC8289.jpg';
+const HERO_CAPTION = 'Wear the Movement.';
 
 const LOOKBOOK_SLIDES = [
     { img: '/images/_DSC8113.jpg', label: 'Campaign 01', title: 'Feelings Mutual' },
@@ -262,21 +257,13 @@ const EditorialFeatures = () => {
 const Home = () => {
     const heroRef = useRef(null);
     const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
-    const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '40%']);
-    const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+    const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
+    const heroOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
 
     const [newArrivals, setNewArrivals] = useState([]);
     const [featured, setFeatured] = useState([]);
     const [activeVideo, setActiveVideo] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [heroSlide, setHeroSlide] = useState(0);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setHeroSlide((prev) => (prev + 1) % HERO_SLIDES.length);
-        }, 5000);
-        return () => clearInterval(interval);
-    }, []);
 
     useEffect(() => {
         const fetchHomeData = async () => {
@@ -331,23 +318,18 @@ const Home = () => {
             {/* ══ HERO SECTION (Refined Minimalist Imagery) ══ */}
             <section ref={heroRef} className="always-dark relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden border-b border-white/10">
 
-                {/* Background Slider - Full Screen */}
-                {HERO_SLIDES.map((slide, i) => (
-                    <motion.div
-                        key={slide.img}
-                        className="absolute inset-0 z-0"
-                        style={{ y: heroY }}
-                        animate={{ opacity: i === heroSlide ? 1 : 0 }}
-                        transition={{ duration: 1.2, ease: 'easeInOut' }}
-                    >
-                        <img
-                            src={slide.img}
-                            alt={slide.caption}
-                            className="w-full h-full object-cover object-[center_20%]"
-                        />
-                        <div className="absolute inset-0 bg-black/30 z-10" />
-                    </motion.div>
-                ))}
+                {/* Background Image - Static */}
+                <motion.div
+                    className="absolute inset-0 z-0"
+                    style={{ y: heroY }}
+                >
+                    <img
+                        src={HERO_IMAGE}
+                        alt={HERO_CAPTION}
+                        className="w-full h-full object-cover object-[center_20%]"
+                    />
+                    <div className="absolute inset-0 bg-black/30 z-10" />
+                </motion.div>
 
                 {/* Crosshairs & Grid Lines */}
                 <div className="absolute inset-0 z-10 pointer-events-none opacity-40">
@@ -377,18 +359,9 @@ const Home = () => {
 
                 {/* Hero Caption & Buttons - Centered and Small */}
                 <motion.div className="relative z-40 text-center px-6 mt-auto mb-24" style={{ opacity: heroOpacity }}>
-                    <AnimatePresence mode="wait">
-                        <motion.p
-                            key={heroSlide}
-                            className="text-white/90 text-[10px] md:text-xs font-medium tracking-[0.3em] mb-6 uppercase"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.5 }}
-                        >
-                            {HERO_SLIDES[heroSlide].caption}
-                        </motion.p>
-                    </AnimatePresence>
+                    <p className="text-white/90 text-[10px] md:text-xs font-medium tracking-[0.3em] mb-6 uppercase">
+                        {HERO_CAPTION}
+                    </p>
                     <div className="flex gap-3 justify-center">
                         <Link to="/shop" className="px-5 py-2 text-[9px] font-bold tracking-[0.2em] uppercase border border-white bg-white text-black hover:bg-black hover:text-white transition-all duration-300">Shop Now</Link>
                         <Link to="/about" className="px-5 py-2 text-[9px] font-bold tracking-[0.2em] uppercase border border-white bg-transparent text-white hover:bg-white hover:text-black transition-all duration-300">Our Story</Link>
