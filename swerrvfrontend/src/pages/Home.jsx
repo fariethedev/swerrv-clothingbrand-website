@@ -182,11 +182,35 @@ const Home = () => {
             try {
                 const [feats, arrivals, promos] = await Promise.all([
                     api.getFeaturedProducts(),
-                    api.searchProducts({ size: 4 }),
+                    api.searchProducts({ size: 8 }),
                     api.getActivePromoContent()
                 ]);
-                setFeatured(feats || []);
-                setNewArrivals(arrivals || []);
+
+                // Robust Fallbacks
+                if (!feats || feats.length === 0) {
+                    setFeatured([{
+                        id: 'f1',
+                        name: 'CORE LOGO HOODIE',
+                        description: 'Premium heavyweight cotton hoodie with signature Swerrv embroidery. Designed for a boxy, oversized fit.',
+                        price: '350',
+                        image: '/images/swerrv_hoodie_model_1772058693065.png',
+                        images: ['/images/swerrv_hoodie_model_1772058693065.png', '/images/_DSC8113.jpg']
+                    }]);
+                } else {
+                    setFeatured(feats);
+                }
+
+                if (!arrivals || arrivals.length === 0) {
+                    setNewArrivals([
+                        { id: '1', name: 'CORE LOGO T-SHIRT', price: '150', category: 'T-Shirts', image: '/images/_DSC8141.jpg' },
+                        { id: '2', name: 'VELOUR TRACKSUIT', price: '550', category: 'Tracksuits', image: '/images/swerrv_cargo_1772060995951.png' },
+                        { id: '3', name: 'HEAVYWEIGHT HOODIE', price: '320', category: 'Hoodies', image: '/images/swerrv_hoodie_model_1772058693065.png' },
+                        { id: '4', name: 'UTILITY CARGO', price: '450', category: 'Trousers', image: '/images/_DSC8164.jpg' }
+                    ]);
+                } else {
+                    setNewArrivals(arrivals);
+                }
+
                 if (promos) {
                     const video = promos.find(p => p.type === 'VIDEO');
                     if (video) setActiveVideo(video);
@@ -218,8 +242,9 @@ const Home = () => {
                         <img
                             src={slide.img}
                             alt={slide.caption}
-                            className="w-full h-full object-cover object-top"
+                            className="w-full h-full object-cover object-[center_20%]"
                         />
+                        <div className="absolute inset-0 bg-black/30 z-10" />
                     </motion.div>
                 ))}
 

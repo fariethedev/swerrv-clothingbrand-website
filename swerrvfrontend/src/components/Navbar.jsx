@@ -66,10 +66,10 @@ const Navbar = () => {
                             <Link
                                 key={link.label}
                                 to={link.to}
-                                className="text-[11px] font-semibold tracking-[0.15em] uppercase text-grey-300 hover:text-white transition-colors duration-200 relative group"
+                                className="text-[10px] font-bold tracking-[0.2em] uppercase text-grey-300 hover:text-white transition-colors duration-200 relative group"
                             >
                                 {link.label}
-                                <span className="absolute -bottom-1 left-0 w-0 h-px bg-accent transition-all duration-200 group-hover:w-full" />
+                                <span className="absolute -bottom-1 left-0 w-0 h-px bg-white transition-all duration-200 group-hover:w-full" />
                             </Link>
                         ))}
                     </div>
@@ -101,7 +101,7 @@ const Navbar = () => {
                                     )}
                                 </button>
                                 <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                                    <div className="bg-grey-900 border border-white/10 flex flex-col min-w-[200px] shadow-2xl">
+                                    <div className="bg-grey-900 border border-white/10 flex flex-col min-w-[200px] shadow-2xl rounded-none">
                                         <div className="px-4 py-3 border-b border-white/10 text-xs text-grey-500">
                                             Signed in as <br /><strong className="text-white truncate block capitalize">{user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.name || user.email}</strong>
                                         </div>
@@ -152,13 +152,13 @@ const Navbar = () => {
                         <Link to="/wishlist" className="hidden md:block relative text-white p-1.5 hover:text-accent transition-colors duration-200">
                             <HiOutlineHeart size={20} />
                             {wishlist.length > 0 && (
-                                <span className="absolute -top-0.5 -right-1 bg-accent text-black text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">{wishlist.length}</span>
+                                <span className="absolute -top-0.5 -right-1 bg-white text-black text-[8px] font-black w-3.5 h-3.5 flex items-center justify-center rounded-none">{wishlist.length}</span>
                             )}
                         </Link>
                         <button onClick={() => setIsCartOpen(true)} className="relative text-white p-1.5 hover:text-accent transition-colors duration-200">
                             <HiOutlineShoppingBag size={20} />
                             {cartCount > 0 && (
-                                <span className="absolute -top-0.5 -right-1 bg-accent text-black text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">{cartCount}</span>
+                                <span className="absolute -top-0.5 -right-1 bg-white text-black text-[8px] font-black w-3.5 h-3.5 flex items-center justify-center rounded-none">{cartCount}</span>
                             )}
                         </button>
                     </div>
@@ -173,7 +173,7 @@ const Navbar = () => {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0 }}
                         >
-                            <form onSubmit={handleSearch} className="flex-1 flex items-center bg-white/5 border border-grey-700 px-4 py-2.5 gap-3 rounded-sm">
+                            <form onSubmit={handleSearch} className="flex-1 flex items-center bg-white/5 border border-grey-700 px-4 py-2.5 gap-3 rounded-none">
                                 <HiOutlineSearch size={18} className="text-grey-500 shrink-0" />
                                 <input
                                     autoFocus
@@ -183,7 +183,7 @@ const Navbar = () => {
                                     onChange={e => setSearchQuery(e.target.value)}
                                     className="flex-1 bg-transparent border-none text-white text-sm placeholder:text-grey-500 outline-none"
                                 />
-                                <button type="submit" className="bg-accent text-black px-4 py-1.5 text-xs font-bold tracking-wider uppercase rounded-sm">Search</button>
+                                <button type="submit" className="bg-white text-black px-4 py-1.5 text-xs font-bold tracking-wider uppercase rounded-none">Search</button>
                             </form>
                             <button onClick={() => setSearchOpen(false)} className="text-grey-300 hover:text-white p-2">
                                 <HiX size={20} />
@@ -218,7 +218,7 @@ const Navbar = () => {
                                 <motion.div initial={{ x: -30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.1 }}>
                                     <Link to="/wishlist" className="w-full text-left text-lg font-semibold py-4 border-b border-white/5 text-white flex items-center justify-between" onClick={() => setMobileOpen(false)}>
                                         <div className="flex items-center gap-3"><HiOutlineHeart size={20} className="text-grey-400" /> Saved Items</div>
-                                        {wishlist.length > 0 && <span className="bg-accent text-black text-[10px] font-black px-2 py-0.5 rounded-full">{wishlist.length}</span>}
+                                        {wishlist.length > 0 && <span className="bg-white text-black text-[9px] font-black px-2 py-0.5 rounded-none">{wishlist.length}</span>}
                                     </Link>
                                 </motion.div>
                                 {navLinks.map((link, i) => (

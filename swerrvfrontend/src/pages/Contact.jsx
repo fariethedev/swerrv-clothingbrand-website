@@ -43,10 +43,10 @@ const Contact = () => {
     return (
         <div className="min-h-screen pt-[70px]">
             {/* Hero */}
-            <div className="relative bg-grey-900 border-b border-white/[0.06] py-24 px-6 overflow-hidden">
+            <div className="relative bg-black border-b border-white/[0.06] py-24 px-6 overflow-hidden">
                 <div className="absolute inset-0 z-0">
-                    <img src="/images/_DSC8415.jpg" alt="Contact Us" className="w-full h-full object-cover opacity-40" style={{ objectPosition: 'center 30%' }} />
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/95"></div>
+                    <img src="/images/_DSC8415.jpg" alt="Contact Us" className="w-full h-full object-cover opacity-50" style={{ objectPosition: 'center 20%' }} />
+                    <div className="absolute inset-0 bg-black/40"></div>
                 </div>
                 <div className="relative z-10 max-w-[1400px] mx-auto text-center">
                     <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
@@ -111,7 +111,7 @@ const Contact = () => {
                             <p className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-500 mb-3">Follow Us</p>
                             <div className="flex gap-3">
                                 {[FaInstagram, FaTwitter, FaTiktok].map((Icon, i) => (
-                                    <a key={i} href="#" className="w-9 h-9 border border-grey-700 rounded-full flex items-center justify-center text-base hover:border-accent hover:text-accent transition-all duration-200">
+                                    <a key={i} href="#" className="w-9 h-9 border border-grey-700 flex items-center justify-center text-base hover:border-white hover:text-white transition-all duration-200">
                                         <Icon />
                                     </a>
                                 ))}
@@ -119,7 +119,7 @@ const Contact = () => {
                         </div>
                     </div>
 
-                    <div className="bg-grey-900 border border-white/[0.06] p-7 flex flex-col gap-0">
+                    <div className="bg-black border border-white/[0.06] p-7 flex flex-col gap-0 rounded-none">
                         <h3 className="text-base font-black tracking-[0.06em] mb-5">Quick FAQs</h3>
                         {[
                             { q: 'How long does shipping take?', a: 'Standard shipping takes 5–7 business days. Express 2–3 days.' },
