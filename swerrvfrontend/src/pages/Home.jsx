@@ -203,14 +203,14 @@ const Home = () => {
     return (
         <div className="min-h-screen bg-black text-white">
 
-            {/* ══ HERO SECTION (Refined Brutalist Overlay) ══ */}
+            {/* ══ HERO SECTION (Refined Minimalist Imagery) ══ */}
             <section ref={heroRef} className="always-dark relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden border-b border-white/10">
 
-                {/* Background Slider */}
+                {/* Background Slider - Full Screen */}
                 {HERO_SLIDES.map((slide, i) => (
                     <motion.div
                         key={slide.img}
-                        className="absolute inset-0 z-0 flex justify-center"
+                        className="absolute inset-0 z-0"
                         style={{ y: heroY }}
                         animate={{ opacity: i === heroSlide ? 1 : 0 }}
                         transition={{ duration: 1.2, ease: 'easeInOut' }}
@@ -218,64 +218,54 @@ const Home = () => {
                         <img
                             src={slide.img}
                             alt={slide.caption}
-                            className="w-[85%] max-w-[900px] h-full object-cover object-top opacity-90"
+                            className="w-full h-full object-cover object-top"
                         />
                     </motion.div>
                 ))}
 
                 {/* Crosshairs & Grid Lines */}
-                <div className="absolute inset-0 z-10 pointer-events-none">
+                <div className="absolute inset-0 z-10 pointer-events-none opacity-40">
                     <div className="absolute top-1/2 left-0 w-full h-[1px] bg-white/10"></div>
                     <div className="absolute top-0 left-1/2 w-[1px] h-full bg-white/10"></div>
-                    <div className="absolute top-20 left-10 w-4 h-[1px] bg-white/40"></div>
-                    <div className="absolute top-20 left-10 w-[1px] h-4 bg-white/40"></div>
-                    <div className="absolute top-20 right-10 w-4 h-[1px] bg-white/40"></div>
-                    <div className="absolute top-20 right-10 w-[1px] h-4 bg-white/40"></div>
+                    <div className="absolute top-24 left-10 w-4 h-[1px] bg-white/60"></div>
+                    <div className="absolute top-24 left-10 w-[1px] h-4 bg-white/60"></div>
+                    <div className="absolute top-24 right-10 w-4 h-[1px] bg-white/60"></div>
+                    <div className="absolute top-24 right-10 w-[1px] h-4 bg-white/60"></div>
                 </div>
 
-                {/* Massive Brand Text - Lowered for Navbar */}
-                <motion.div
-                    className="absolute z-20 w-full text-center pointer-events-none mix-blend-difference mt-20"
-                    style={{ opacity: heroOpacity }}
-                >
-                    <h1 className="text-[12vw] font-black tracking-tighter leading-none text-white lowercase">
-                        s w e r r v
-                    </h1>
-                </motion.div>
-
-                {/* Brutalist Utility Text */}
-                <div className="absolute inset-0 z-30 pointer-events-none p-6 md:p-12 text-[9px] md:text-[10px] font-mono leading-tight tracking-[0.2em] text-white/50 uppercase">
-                    <div className="absolute top-28 left-6 md:left-20 max-w-[180px]">
-                        ORIGINATED FROM POLAND<br />ESTABLISHED 2024
+                {/* Minimalist Utility Text */}
+                <div className="absolute inset-0 z-30 pointer-events-none p-6 md:p-12 text-[8px] font-mono leading-tight tracking-[0.3em] text-white/50 uppercase">
+                    <div className="absolute top-28 left-6 md:left-20 max-w-[150px]">
+                        POLAND BASED OFFICE<br />ESTABLISHED 2024
                     </div>
                     <div className="absolute top-28 right-6 md:right-20 text-right max-w-[150px]">
-                        AUTUMN/WINTER '26<br />NEW DROP ONLINE
+                        COLLECTION 2026<br />AVAILABLE NOW
                     </div>
                     <div className="absolute bottom-12 left-6 md:left-20">
                         DESIGNED BY<br />SWERRV STUDIOS
                     </div>
                     <div className="absolute bottom-12 right-6 md:right-20 text-right">
-                        WORLDWIDE SHIPPING<br />AVAILABLE
+                        GLOBAL SHIPPING<br />ACTIVE
                     </div>
                 </div>
 
-                {/* Hero Caption & Buttons */}
-                <motion.div className="relative z-40 text-center px-6 mt-[25vh]" style={{ opacity: heroOpacity }}>
+                {/* Hero Caption & Buttons - Centered and Small */}
+                <motion.div className="relative z-40 text-center px-6 mt-auto mb-24" style={{ opacity: heroOpacity }}>
                     <AnimatePresence mode="wait">
                         <motion.p
                             key={heroSlide}
-                            className="text-white/80 text-sm md:text-lg font-light tracking-[0.2em] mb-8"
-                            initial={{ opacity: 0, y: 12 }}
+                            className="text-white/90 text-[10px] md:text-xs font-medium tracking-[0.3em] mb-6 uppercase"
+                            initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -12 }}
+                            exit={{ opacity: 0, y: -10 }}
                             transition={{ duration: 0.5 }}
                         >
                             {HERO_SLIDES[heroSlide].caption}
                         </motion.p>
                     </AnimatePresence>
-                    <div className="flex gap-4 justify-center">
-                        <Link to="/shop" className="btn-primary">Shop Now</Link>
-                        <Link to="/about" className="btn-secondary">Our Story</Link>
+                    <div className="flex gap-3 justify-center">
+                        <Link to="/shop" className="px-5 py-2 text-[9px] font-bold tracking-[0.2em] uppercase border border-white bg-white text-black hover:bg-black hover:text-white transition-all duration-300">Shop Now</Link>
+                        <Link to="/about" className="px-5 py-2 text-[9px] font-bold tracking-[0.2em] uppercase border border-white bg-transparent text-white hover:bg-white hover:text-black transition-all duration-300">Our Story</Link>
                     </div>
                 </motion.div>
             </section>
