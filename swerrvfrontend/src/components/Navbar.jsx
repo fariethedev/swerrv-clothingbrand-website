@@ -6,7 +6,6 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
 import { useCurrency } from '../context/CurrencyContext';
-import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import CartDrawer from './CartDrawer';
 
@@ -18,7 +17,7 @@ const Navbar = () => {
     const { cartCount, setIsCartOpen } = useCart();
     const { wishlist } = useWishlist();
     const { user, logout, isAdmin } = useAuth();
-    const { currency } = useCurrency();
+    const { currency, setCurrency } = useCurrency();
     const { t, language, setLanguage } = useLanguage();
     const navigate = useNavigate();
 
@@ -132,10 +131,11 @@ const Navbar = () => {
                                                 </select>
                                             </div>
                                             <div className="px-4 py-2 flex items-center justify-between hover:bg-white/5 transition-colors">
-                                                <span className="text-xs font-semibold text-grey-300">Theme</span>
-                                                <button onClick={toggleTheme} className="text-xs font-bold text-white uppercase tracking-wider">
-                                                    {theme === 'dark' ? 'Dark' : 'Light'}
-                                                </button>
+                                                <span className="text-xs font-semibold text-grey-300">Language</span>
+                                                <select value={language} onChange={(e) => setLanguage(e.target.value)} className="bg-transparent text-xs text-white font-bold outline-none cursor-pointer border-none uppercase">
+                                                    <option className="bg-grey-900" value="en">English</option>
+                                                    <option className="bg-grey-900" value="pl">Polski</option>
+                                                </select>
                                             </div>
                                         </div>
                                         <div className="py-1">
