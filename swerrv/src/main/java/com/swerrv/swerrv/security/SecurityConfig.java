@@ -46,35 +46,42 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        // Public auth endpoints
-                        .requestMatchers("/api/auth/**").permitAll()
-                        // Swagger / OpenAPI — always public
-                        .requestMatchers(
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/v3/api-docs/**",
-                                "/v3/api-docs.yaml")
-                        .permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/test-checkout/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/test-token/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/promo-content/active").permitAll()
-                        // Allow CORS preflight requests
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        // Admin-only endpoints
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        // Product write operations — admin only
-                        .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
+                .headers(headers -> headers
+                        .addHeaderWriter(new org.springframework.security.web.header.writers.StaticHeadersWriter(
+                                "Cross-Origin-Opener-Policy", "same-origin-allow-popups"))
+                        .addHeaderWriter(new org.springframework.security.web.header.writers.StaticHeadersWriter(
+                                "Cross-Origin-Embedder-Policy", "require-corp")))
+                .authorizeHttpRequests(auth -> {
+                    auth
+                            // Allow CORS preflight requests explicitly first
+                            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                            // Public auth endpoints
+                            .requestMatchers("/api/auth/**").permitAll()
+                            // Swagger / OpenAPI — always public
+                            .requestMatchers(
+                                    "/swagger-ui/**",
+                                    "/swagger-ui.html",
+                                    "/v3/api-docs/**",
+                                    "/v3/api-docs.yaml")
+                            .permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/test-checkout/**").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/test-token/**").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/promo-content/active").permitAll()
+                            // Admin-only endpoints
+                            .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                            // Product write operations — admin only
+                            .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
 
-                        // Payment operations
-                        .requestMatchers("/api/payments/**").authenticated()
+                            // Payment operations
+                            .requestMatchers("/api/payments/**").authenticated()
 
-                        // Everything else requires authentication
-                        .anyRequest().authenticated())
+                            // Everything else requires authentication
+                            .anyRequest().authenticated();
+                })
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -86,9 +93,19 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
+
+        // Use allowed origin patterns for better flexibility
+        List<String> origins = Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim)
+                .collect(java.util.stream.Collectors.toList());
+        config.setAllowedOriginPatterns(origins);
+
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+
+        // Allow all headers to prevent preflight failures
+        config.setAllowedHeaders(Arrays.asList("*"));
+
+        config.setExposedHeaders(Arrays.asList("Authorization", "Link", "X-Total-Count"));
         config.setAllowCredentials(true);
         config.setMaxAge(3600L);
 
