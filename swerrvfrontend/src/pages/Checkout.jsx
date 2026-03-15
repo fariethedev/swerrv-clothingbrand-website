@@ -46,11 +46,11 @@ const StripePaymentForm = ({ onPaymentSuccess, onBack, amount }) => {
 
     return (
         <form onSubmit={handlePayment} className="flex flex-col gap-6">
-            <div className="flex items-center gap-2 text-xs text-brand-green bg-brand-green/10 border border-brand-green/20 px-4 py-2.5">
+            <div className="flex items-center gap-2 text-xs text-white opacity-60 bg-white/5 border border-white/10 px-4 py-2.5">
                 <HiLockClosed size={14} /> Secured with 256-bit SSL encryption
             </div>
 
-            <div className="p-4 bg-white rounded-sm">
+            <div className="p-4 bg-white">
                 <PaymentElement />
             </div>
 
@@ -165,13 +165,13 @@ const Checkout = () => {
                 <div className="flex items-center gap-2">
                     {steps.map((s, i) => (
                         <div key={s} className="flex items-center gap-2">
-                            <div className={`flex items-center gap-2 text-xs font-semibold tracking-wider uppercase ${step > i ? 'text-accent' : step === i + 1 ? 'text-white' : 'text-grey-500'}`}>
-                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${step > i + 1 ? 'bg-accent text-black' : step === i + 1 ? 'bg-accent text-black' : 'bg-white/10'}`}>
+                            <div className={`flex items-center gap-2 text-xs font-semibold tracking-wider uppercase ${step > i ? 'text-white' : step === i + 1 ? 'text-white' : 'text-grey-500'}`}>
+                                <div className={`w-6 h-6 rounded-none flex items-center justify-center text-xs font-bold ${step > i + 1 ? 'bg-white text-black' : step === i + 1 ? 'bg-white text-black' : 'bg-white/10'}`}>
                                     {step > i + 1 ? <HiCheck size={12} /> : i + 1}
                                 </div>
                                 <span className="hidden sm:block">{s}</span>
                             </div>
-                            {i < steps.length - 1 && <div className={`w-12 h-px ${step > i + 1 ? 'bg-accent' : 'bg-grey-700'}`} />}
+                            {i < steps.length - 1 && <div className={`w-12 h-px ${step > i + 1 ? 'bg-white' : 'bg-grey-700'}`} />}
                         </div>
                     ))}
                 </div>
@@ -196,7 +196,7 @@ const Checkout = () => {
                                             <button
                                                 type="button"
                                                 onClick={() => handleAddressSelection('primary')}
-                                                className={`flex-1 p-3 border text-left text-xs uppercase tracking-widest font-bold transition-colors ${selectedAddressType === 'primary' ? 'border-accent bg-accent/10 text-accent' : 'border-white/10 text-grey-500 hover:border-white/30'}`}
+                                                className={`flex-1 p-3 border text-left text-xs uppercase tracking-widest font-bold transition-colors ${selectedAddressType === 'primary' ? 'border-white bg-white/10 text-white' : 'border-white/10 text-grey-500 hover:border-white/30'}`}
                                             >
                                                 Primary Address
                                             </button>
@@ -205,7 +205,7 @@ const Checkout = () => {
                                             <button
                                                 type="button"
                                                 onClick={() => handleAddressSelection('secondary')}
-                                                className={`flex-1 p-3 border text-left text-xs uppercase tracking-widest font-bold transition-colors ${selectedAddressType === 'secondary' ? 'border-accent bg-accent/10 text-accent' : 'border-white/10 text-grey-500 hover:border-white/30'}`}
+                                                className={`flex-1 p-3 border text-left text-xs uppercase tracking-widest font-bold transition-colors ${selectedAddressType === 'secondary' ? 'border-white bg-white/10 text-white' : 'border-white/10 text-grey-500 hover:border-white/30'}`}
                                             >
                                                 Secondary Address
                                             </button>
@@ -253,7 +253,7 @@ const Checkout = () => {
                                     <p>{form.email}</p>
                                 </div>
 
-                                <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night', variables: { colorPrimary: '#ccff00', colorBackground: '#111111', colorText: '#ffffff' } } }}>
+                                <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night', variables: { colorPrimary: '#ffffff', colorBackground: '#111111', colorText: '#ffffff', borderRadius: '0' } } }}>
                                     <StripePaymentForm amount={total} onBack={() => setStep(1)} onPaymentSuccess={handleCreateOrder} />
                                 </Elements>
                             </div>

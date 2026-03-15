@@ -76,7 +76,7 @@ const Contact = () => {
                         <textarea value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))} placeholder="Tell us what's on your mind..." rows={7} required className="form-input resize-y" />
                     </div>
                     {sent ? (
-                        <motion.div className="flex items-center gap-3 text-brand-green bg-brand-green/10 border border-brand-green/20 px-4 py-3 text-sm font-semibold" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                        <motion.div className="flex items-center gap-3 text-white bg-white/5 border border-white/10 px-4 py-3 text-sm font-semibold" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                             <HiCheckCircle size={20} /> Message sent! We'll get back to you within 24 hours.
                         </motion.div>
                     ) : (
@@ -94,7 +94,7 @@ const Contact = () => {
                             { icon: <HiLocationMarker size={18} />, label: 'Studio', value: 'New York, NY' },
                         ].map(item => (
                             <div key={item.label} className="flex items-start gap-3">
-                                <span className="text-accent mt-0.5 shrink-0">{item.icon}</span>
+                                <span className="text-white mt-0.5 shrink-0 opacity-70">{item.icon}</span>
                                 <div>
                                     <p className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-500">{item.label}</p>
                                     <p className="text-sm font-semibold mt-0.5">{item.value}</p>
