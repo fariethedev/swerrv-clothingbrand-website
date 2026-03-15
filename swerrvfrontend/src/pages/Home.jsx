@@ -335,7 +335,7 @@ const Home = () => {
         <div className="min-h-screen bg-black text-white">
 
             {/* ══ HERO SECTION (Refined Minimalist Imagery) ══ */}
-            <section ref={heroRef} className="always-dark relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden border-b border-white/10">
+            <section ref={heroRef} className="always-dark relative h-screen min-h-[600px] flex flex-col items-center justify-center overflow-hidden border-b border-white/10">
 
                 {/* Background Image - Static */}
                 <motion.div
