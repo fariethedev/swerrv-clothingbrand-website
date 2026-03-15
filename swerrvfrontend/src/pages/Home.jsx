@@ -174,7 +174,7 @@ const BrandStatement = () => (
                 </div>
                 <p className="text-[10px] font-mono tracking-[0.5em] text-grey-500 uppercase mb-8">Studios / Philosophy</p>
                 <h2 className="text-3xl md:text-5xl font-black tracking-tighter leading-[1.1] text-white">
-                    BRUTALIST SIMPLICITY<br />
+                    MODERN SIMPLICITY<br />
                     MEETS PREMIUM CRAFTSMANSHIP.
                 </h2>
                 <div className="mt-12 flex justify-center gap-12 text-[9px] font-mono tracking-widest text-grey-400 uppercase">
