@@ -88,31 +88,26 @@ const AppContent = () => {
   );
 };
 
-import { ThemeProvider } from './context/ThemeContext';
 import { CurrencyProvider } from './context/CurrencyContext';
 import { LanguageProvider } from './context/LanguageContext';
 
-const App = () => (
-  <HelmetProvider>
-    <BrowserRouter>
-      <LanguageProvider>
-        <ThemeProvider>
-          <CurrencyProvider>
-            <AuthProvider>
-              <CartProvider>
-                <WishlistProvider>
-                  <AppContent />
-                  <Toaster position="bottom-right" toastOptions={{
-                    style: { background: '#111', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }
-                  }} />
-                </WishlistProvider>
-              </CartProvider>
-            </AuthProvider>
-          </CurrencyProvider>
-        </ThemeProvider>
-      </LanguageProvider>
-    </BrowserRouter>
-  </HelmetProvider>
-);
+<HelmetProvider>
+  <BrowserRouter>
+    <LanguageProvider>
+      <CurrencyProvider>
+        <AuthProvider>
+          <CartProvider>
+            <WishlistProvider>
+              <AppContent />
+              <Toaster position="bottom-right" toastOptions={{
+                style: { background: '#111', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }
+              }} />
+            </WishlistProvider>
+          </CartProvider>
+        </AuthProvider>
+      </CurrencyProvider>
+    </LanguageProvider>
+  </BrowserRouter>
+</HelmetProvider>
 
 export default App;

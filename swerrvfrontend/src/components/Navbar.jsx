@@ -18,8 +18,7 @@ const Navbar = () => {
     const { cartCount, setIsCartOpen } = useCart();
     const { wishlist } = useWishlist();
     const { user, logout, isAdmin } = useAuth();
-    const { currency, setCurrency } = useCurrency();
-    const { theme, toggleTheme } = useTheme();
+    const { currency } = useCurrency();
     const { t, language, setLanguage } = useLanguage();
     const navigate = useNavigate();
 

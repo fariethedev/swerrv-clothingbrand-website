@@ -297,11 +297,11 @@ const Home = () => {
                 if (!feats || feats.length === 0) {
                     setFeatured([{
                         id: 'f1',
-                        name: 'CORE LOGO HOODIE',
-                        description: 'Premium heavyweight cotton hoodie with signature Swerrv embroidery. Designed for a boxy, oversized fit.',
-                        price: '350',
-                        image: '/images/swerrv_hoodie_model_1772058693065.png',
-                        images: ['/images/swerrv_hoodie_model_1772058693065.png', '/images/_DSC8113.jpg']
+                        name: 'FEATURED LOGO T-SHIRT',
+                        description: 'Premium heavyweight cotton tee with signature Swerrv embroidery. Designed for a boxy, oversized fit.',
+                        price: '59.99',
+                        image: '/images/_DSC8141.jpg',
+                        images: ['/images/_DSC8141.jpg', '/images/_DSC8113.jpg']
                     }]);
                 } else {
                     setFeatured(feats);
@@ -416,7 +416,7 @@ const Home = () => {
                             <div>
                                 <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-6 uppercase">{featured[0].name}</h2>
                                 <p className="text-grey-500 text-base leading-relaxed mb-8 max-w-lg">{featured[0].description}</p>
-                                <p className="text-2xl font-black mb-10">{featured[0].price} PLN</p>
+                                <p className="text-2xl font-black mb-10">{featured[0].price} zł</p>
                                 <Link to={`/product/${featured[0].id}`} className="btn-primary">View Product</Link>
                             </div>
                         </div>
