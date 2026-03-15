@@ -24,8 +24,11 @@ const Navbar = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const handleScroll = () => setScrolled(window.scrollY > 50);
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 20);
+        };
         window.addEventListener('scroll', handleScroll);
+        handleScroll(); // Initial check
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
