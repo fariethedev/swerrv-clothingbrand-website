@@ -46,12 +46,12 @@ const StripePaymentForm = ({ onPaymentSuccess, onBack, amount }) => {
 
     return (
         <form onSubmit={handlePayment} className="flex flex-col gap-6">
-            <div className="flex items-center gap-2 text-xs text-white opacity-60 bg-white/5 border border-white/10 px-4 py-2.5">
+            <div className="flex items-center gap-2 text-xs text-white/50 bg-white/5 border border-white/10 px-4 py-2.5">
                 <HiLockClosed size={14} /> Secured with 256-bit SSL encryption
             </div>
 
-            <div className="p-4 bg-white">
-                <PaymentElement />
+            <div className="p-4 bg-black border border-white/10">
+                <PaymentElement options={{ layout: 'tabs' }} />
             </div>
 
             <div className="flex gap-4 justify-between mt-4">
@@ -253,7 +253,27 @@ const Checkout = () => {
                                     <p>{form.email}</p>
                                 </div>
 
-                                <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night', variables: { colorPrimary: '#ffffff', colorBackground: '#111111', colorText: '#ffffff', borderRadius: '0' } } }}>
+                                <Elements stripe={stripePromise} options={{
+                                    clientSecret,
+                                    appearance: {
+                                        theme: 'night',
+                                        variables: {
+                                            colorPrimary: '#ffffff',
+                                            colorBackground: '#0a0a0a',
+                                            colorText: '#ffffff',
+                                            colorTextSecondary: '#808080',
+                                            colorIconTab: '#ffffff',
+                                            borderRadius: '0px',
+                                            fontFamily: 'Poppins, sans-serif',
+                                        },
+                                        rules: {
+                                            '.Input': { border: '1px solid rgba(255,255,255,0.15)', backgroundColor: 'rgba(255,255,255,0.04)' },
+                                            '.Input:focus': { border: '1px solid rgba(255,255,255,0.5)', outline: 'none' },
+                                            '.Tab': { border: '1px solid rgba(255,255,255,0.1)' },
+                                            '.Tab--selected': { border: '1px solid #fff', backgroundColor: 'rgba(255,255,255,0.08)' },
+                                        }
+                                    }
+                                }}>
                                     <StripePaymentForm amount={total} onBack={() => setStep(1)} onPaymentSuccess={handleCreateOrder} />
                                 </Elements>
                             </div>

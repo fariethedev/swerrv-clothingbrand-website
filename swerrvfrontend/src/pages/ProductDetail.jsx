@@ -114,13 +114,18 @@ const ProductDetail = () => {
         <div className="pd-root">
             <div className="pd-container">
 
-                {/* ── Top Bar: breadcrumbs etc ── */}
+                {/* ── Top Bar: nav ── */}
                 <div className="pd-top-bar">
-                    <Link to="/shop" className="pd-back">
-                        <HiArrowLeft size={16} />
-                        <span>Home</span>
-                        <span className="pd-back-sep">/</span>
-                        <span className="pd-back-current">Product details</span>
+                    <div className="pd-nav-links">
+                        <Link to="/shop" className="pd-back">
+                            <HiArrowLeft size={14} />
+                            <span>Shop</span>
+                            <span className="pd-back-sep">/</span>
+                            <span className="pd-back-current">{product ? product.name : 'Product'}</span>
+                        </Link>
+                    </div>
+                    <Link to="/" className="pd-home-btn">
+                        Home
                     </Link>
                 </div>
 
@@ -141,8 +146,8 @@ const ProductDetail = () => {
                                     className={`pd-main-img${product.comingSoon ? ' blur-[4px] scale-105' : ''}`}
                                 />
                                 {product.comingSoon && (
-                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center pointer-events-none rounded-2xl">
-                                        <span className="text-white text-sm font-bold tracking-[0.2em] uppercase border border-white/40 px-6 py-3 rounded-full backdrop-blur-sm">
+                                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center pointer-events-none">
+                                        <span className="text-white text-xs font-black tracking-[0.25em] uppercase border border-white/40 px-6 py-3 backdrop-blur-sm">
                                             Coming Soon
                                         </span>
                                     </div>
@@ -253,7 +258,7 @@ const ProductDetail = () => {
                         </div>
 
                         {/* Stock badge */}
-                        <div className="pd-stock-row mt-2">
+                        <div className="pd-stock-row">
                             <span className={`pd-stock ${product.stock < 10 ? 'pd-stock--low' : ''}`}>
                                 {product.stock < 10 ? `Only ${product.stock} left in stock` : 'In Stock'}
                             </span>
@@ -345,7 +350,7 @@ const ProductDetail = () => {
                 {/* ══ Styled With / You might also like ══ */}
                 {related.length > 0 && (
                     <section className="pd-styled-with">
-                        <h2 className="pd-section-title text-center text-4xl mb-12">You might also like</h2>
+                        <h2 className="pd-section-title">You might also like</h2>
                         <div className="pd-styled-with__scroll" ref={styledRef}>
                             {related.map((p, i) => (
                                 <div key={p.id} className="pd-styled-with__item">

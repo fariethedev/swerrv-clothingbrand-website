@@ -52,11 +52,11 @@ public class StripeService {
         Map<String, Object> params = new HashMap<>();
         params.put("amount", amountInSmallestUnit);
         params.put("currency", currency != null ? currency.toLowerCase() : "pln");
-        // Reverting to explicitly allowing only 'card' to prevent processing errors
-        // with automatic methods on some test accounts
-        java.util.List<String> paymentMethodTypes = new java.util.ArrayList<>();
-        paymentMethodTypes.add("card");
-        params.put("payment_method_types", paymentMethodTypes);
+        // Use automatic_payment_methods to enable BLIK (PLN), Apple Pay, Google Pay,
+        // card etc.
+        Map<String, Object> automaticPaymentMethods = new HashMap<>();
+        automaticPaymentMethods.put("enabled", true);
+        params.put("automatic_payment_methods", automaticPaymentMethods);
 
         try {
             PaymentIntent paymentIntent = PaymentIntent.create(params);

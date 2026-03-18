@@ -25,7 +25,7 @@ const CartDrawer = () => {
                         {/* Header */}
                         <div className="flex justify-between items-center px-6 py-5 border-b border-white/[0.08]">
                             <h2 className="text-base font-bold tracking-[0.1em] uppercase">Your Bag ({cartItems.length})</h2>
-                            <button className="text-white hover:text-accent transition-colors p-1" onClick={() => setIsCartOpen(false)}>
+                            <button className="text-white/60 hover:text-white transition-colors p-1" onClick={() => setIsCartOpen(false)}>
                                 <HiX size={22} />
                             </button>
                         </div>
@@ -49,20 +49,20 @@ const CartDrawer = () => {
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-[13px] font-semibold leading-snug mb-1">{item.name}</p>
                                                 <p className="text-xs text-grey-500 mb-1">Size: {item.size}</p>
-                                                <p className="text-sm font-bold text-accent mb-2">{formatPrice(item.price)}</p>
+                                                <p className="text-sm font-bold text-white mb-2">{formatPrice(item.price)}</p>
                                                 <div className="flex items-center gap-3">
                                                     <button onClick={() => updateQuantity(item.key, item.quantity - 1)}
-                                                        className="bg-white/10 text-white w-6 h-6 rounded-full flex items-center justify-center hover:bg-accent hover:text-black transition-all duration-200">
+                                                        className="bg-white/10 text-white w-6 h-6 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-200">
                                                         <HiMinus size={12} />
                                                     </button>
                                                     <span className="text-sm font-bold w-5 text-center">{item.quantity}</span>
                                                     <button onClick={() => updateQuantity(item.key, item.quantity + 1)}
-                                                        className="bg-white/10 text-white w-6 h-6 rounded-full flex items-center justify-center hover:bg-accent hover:text-black transition-all duration-200">
+                                                        className="bg-white/10 text-white w-6 h-6 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-200">
                                                         <HiPlus size={12} />
                                                     </button>
                                                 </div>
                                             </div>
-                                            <button onClick={() => removeFromCart(item.key)} className="text-grey-500 hover:text-brand-red transition-colors p-1 self-start">
+                                            <button onClick={() => removeFromCart(item.key)} className="text-white/30 hover:text-white transition-colors p-1 self-start">
                                                 <HiOutlineTrash size={16} />
                                             </button>
                                         </motion.div>
@@ -76,7 +76,7 @@ const CartDrawer = () => {
                                         <span>{formatPrice(cartTotal)}</span>
                                     </div>
                                     <p className="text-xs text-grey-500 mb-5">Shipping calculated at checkout</p>
-                                    <Link to="/checkout" className="block w-full bg-accent text-black text-center py-4 text-[13px] font-extrabold tracking-[0.15em] uppercase hover:bg-accent-dark transition-colors duration-200 mb-3" onClick={() => setIsCartOpen(false)}>
+                                    <Link to="/checkout" className="block w-full bg-white text-black text-center py-4 text-[11px] font-extrabold tracking-[0.18em] uppercase hover:bg-transparent hover:text-white border border-white transition-all duration-200 mb-3" onClick={() => setIsCartOpen(false)}>
                                         Checkout
                                     </Link>
                                     <button onClick={() => setIsCartOpen(false)}
