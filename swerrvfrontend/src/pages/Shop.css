@@ -69,9 +69,9 @@
 }
 
 .shop-cat-btn.active {
-    background: var(--accent);
-    color: var(--black);
-    border-color: var(--accent);
+    background: #fff;
+    color: #000;
+    border-color: #fff;
 }
 
 .shop-sort-wrap {
@@ -129,8 +129,8 @@
 }
 
 .filter-toggle-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
+    border-color: #fff;
+    color: #fff;
 }
 
 /* Filter Panel */
@@ -178,10 +178,10 @@
 
 .price-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: var(--accent);
+    width: 14px;
+    height: 14px;
+    border-radius: 0;
+    background: #fff;
     cursor: pointer;
 }
 
@@ -216,8 +216,8 @@
 }
 
 .filter-clear:hover {
-    color: var(--red);
-    border-color: var(--red);
+    color: #fff;
+    border-color: #fff;
 }
 
 /* Products Grid */

@@ -83,16 +83,16 @@ const Navbar = () => {
                     {/* Actions */}
                     <div className="flex items-center gap-2 md:gap-4 relative z-10">
                         {isAdmin && (
-                            <Link to="/admin" className="text-xs font-bold tracking-widest uppercase text-accent border border-accent px-3 py-1 hover:bg-accent hover:text-black transition-colors hidden md:block">
+                            <Link to="/admin" className="text-xs font-bold tracking-widest uppercase text-white border border-white/40 px-3 py-1 hover:bg-white hover:text-black transition-colors hidden md:block">
                                 Admin Dashboard
                             </Link>
                         )}
-                        <button onClick={() => setSearchOpen(true)} className="hidden md:block text-white p-1.5 hover:text-accent transition-colors duration-200">
+                        <button onClick={() => setSearchOpen(true)} className="hidden md:block text-white/60 p-1.5 hover:text-white transition-colors duration-200">
                             <HiOutlineSearch size={20} />
                         </button>
                         {user ? (
                             <div className="group relative">
-                                <button className="text-white p-1 hover:text-accent transition-colors duration-200">
+                                <button className="text-white/60 p-1 hover:text-white transition-colors duration-200">
                                     {user.profilePictureUrl ? (
                                         <div className="w-7 h-7 rounded-full overflow-hidden border border-white/20">
                                             <img src={user.profilePictureUrl} alt="Profile" className="w-full h-full object-cover" />
@@ -139,7 +139,7 @@ const Navbar = () => {
                                             </div>
                                         </div>
                                         <div className="py-1">
-                                            <button onClick={logout} className="w-full text-left px-4 py-2.5 text-xs tracking-widest uppercase font-bold text-grey-500 hover:text-brand-red hover:bg-white/5 transition-colors">
+                                            <button onClick={logout} className="w-full text-left px-4 py-2.5 text-xs tracking-widest uppercase font-bold text-grey-500 hover:text-white hover:bg-white/5 transition-colors">
                                                 Logout
                                             </button>
                                         </div>
@@ -151,13 +151,13 @@ const Navbar = () => {
                                 <HiOutlineUser size={20} />
                             </Link>
                         )}
-                        <Link to="/wishlist" className="hidden md:block relative text-white p-1.5 hover:text-accent transition-colors duration-200">
+                        <Link to="/wishlist" className="hidden md:block relative text-white/60 p-1.5 hover:text-white transition-colors duration-200">
                             <HiOutlineHeart size={20} />
                             {wishlist.length > 0 && (
                                 <span className="absolute -top-0.5 -right-1 bg-white text-black text-[8px] font-black w-3.5 h-3.5 flex items-center justify-center rounded-none">{wishlist.length}</span>
                             )}
                         </Link>
-                        <button onClick={() => setIsCartOpen(true)} className="relative text-white p-1.5 hover:text-accent transition-colors duration-200">
+                        <button onClick={() => setIsCartOpen(true)} className="relative text-white/60 p-1.5 hover:text-white transition-colors duration-200">
                             <HiOutlineShoppingBag size={20} />
                             {cartCount > 0 && (
                                 <span className="absolute -top-0.5 -right-1 bg-white text-black text-[8px] font-black w-3.5 h-3.5 flex items-center justify-center rounded-none">{cartCount}</span>
@@ -234,8 +234,8 @@ const Navbar = () => {
                                     <div className="flex items-center justify-between py-2 text-white">
                                         <span className="text-sm font-semibold text-grey-300">Language</span>
                                         <div className="flex gap-4">
-                                            <button onClick={() => setLanguage('en')} className={`text-sm font-bold ${language === 'en' ? 'text-accent' : 'text-grey-500'}`}>EN</button>
-                                            <button onClick={() => setLanguage('pl')} className={`text-sm font-bold ${language === 'pl' ? 'text-accent' : 'text-grey-500'}`}>PL</button>
+                                            <button onClick={() => setLanguage('en')} className={`text-sm font-bold ${language === 'en' ? 'text-white' : 'text-grey-500'}`}>EN</button>
+                                            <button onClick={() => setLanguage('pl')} className={`text-sm font-bold ${language === 'pl' ? 'text-white' : 'text-grey-500'}`}>PL</button>
                                         </div>
                                     </div>
                                 </div>

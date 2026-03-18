@@ -18,11 +18,11 @@
 }
 
 .success-icon-wrap {
-    color: var(--accent);
+    color: #fff;
 }
 
 .success-icon {
-    filter: drop-shadow(0 0 20px rgba(200, 255, 0, 0.4));
+    opacity: 0.9;
 }
 
 .success-title {
@@ -50,7 +50,7 @@
 }
 
 .success-order-id strong {
-    color: var(--accent);
+    color: #fff;
     font-size: 16px;
 }
 
@@ -76,7 +76,7 @@
 
 .success-step.done {
     opacity: 1;
-    border-color: rgba(200, 255, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.25);
 }
 
 .success-step-num {
@@ -93,8 +93,9 @@
 }
 
 .success-step.done .success-step-num {
-    background: var(--accent);
-    color: var(--black);
+    background: #fff;
+    color: #000;
+    border-radius: 0;
 }
 
 .success-step-label {
