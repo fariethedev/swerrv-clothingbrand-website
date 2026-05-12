@@ -31,6 +31,11 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getDashboardStats());
     }
 
+    @GetMapping("/stats")
+    public ResponseEntity<AdminDashboardDTO> getStats() {
+        return ResponseEntity.ok(adminService.getDashboardStats());
+    }
+
     // ── Users ─────────────────────────────────────────────────────────────────
 
     @GetMapping("/users")

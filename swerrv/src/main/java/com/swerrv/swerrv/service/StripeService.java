@@ -27,6 +27,7 @@ public class StripeService {
     }
 
     public String createPaymentIntent(Cart cart, String currency) {
+        //edge case
         if (cart == null || cart.getItems().isEmpty()) {
             throw new BadRequestException("Cart is empty");
         }
@@ -38,7 +39,7 @@ public class StripeService {
                     return price.multiply(BigDecimal.valueOf(ci.getQuantity()));
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-
+ 
         // Flat 8.99 PLN shipping (free for Lublin - handled on order confirmation)
         BigDecimal shippingCost = new BigDecimal("8.99");
 

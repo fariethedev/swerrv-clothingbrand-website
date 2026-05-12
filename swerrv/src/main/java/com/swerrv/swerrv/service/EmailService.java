@@ -1,14 +1,14 @@
 package com.swerrv.swerrv.service;
 
-import com.resend.Resend;
-import com.resend.core.exception.ResendException;
-import com.resend.services.emails.model.CreateEmailOptions;
-import com.resend.services.emails.model.CreateEmailResponse;
 import com.swerrv.swerrv.model.Order;
 import com.swerrv.swerrv.model.OrderItem;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -19,19 +19,16 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class EmailService {
 
-    @Value("${resend.api.key}")
-    private String resendApiKey;
+    private final JavaMailSender mailSender;
 
-    @Value("${swerrv.mail.from:onboarding@resend.dev}")
+    @Value("${swerrv.mail.from:orders@swerrv.shop}")
     private String fromEmail;
-
-    private Resend getResendClient() {
-        return new Resend(resendApiKey);
-    }
 
     @Async
     public void sendOrderConfirmation(Order order) {
         try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             StringBuilder html = new StringBuilder();
             html.append("<html><body style='font-family: Arial, sans-serif; color: #333;'>");
@@ -81,17 +78,15 @@ public class EmailService {
             html.append("<p>Best,<br><strong>The Swerrv Team</strong></p>");
             html.append("</div></body></html>");
 
-            CreateEmailOptions sendEmailRequest = CreateEmailOptions.builder()
-                    .from(fromEmail)
-                    .to(order.getUser().getEmail())
-                    .subject("Order Confirmation - #" + order.getId())
-                    .html(html.toString())
-                    .build();
+            helper.setFrom(fromEmail);
+            helper.setTo(order.getUser().getEmail());
+            helper.setSubject("Order Confirmation - #" + order.getId());
+            helper.setText(html.toString(), true);
 
-            CreateEmailResponse data = getResendClient().emails().send(sendEmailRequest);
-            log.info("Order confirmation email sent to: {}. Resend ID: {}", order.getUser().getEmail(), data.getId());
+            mailSender.send(message);
+            log.info("Order confirmation email sent successfully to: {}", order.getUser().getEmail());
 
-        } catch (ResendException e) {
+        } catch (MessagingException e) {
             log.error("Failed to send order confirmation email to {}", order.getUser().getEmail(), e);
         }
     }
@@ -99,6 +94,8 @@ public class EmailService {
     @Async
     public void sendPasswordResetEmail(String email, String code) {
         try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             StringBuilder html = new StringBuilder();
             html.append("<html><body style='font-family: Arial, sans-serif; color: #333;'>");
@@ -115,17 +112,15 @@ public class EmailService {
                     "<p style='color: #888; font-size: 12px;'>If you did not request a password reset, you can safely ignore this email.</p>");
             html.append("</div></body></html>");
 
-            CreateEmailOptions sendEmailRequest = CreateEmailOptions.builder()
-                    .from(fromEmail)
-                    .to(email)
-                    .subject("Swerrv - Password Reset Code")
-                    .html(html.toString())
-                    .build();
+            helper.setFrom(fromEmail);
+            helper.setTo(email);
+            helper.setSubject("Swerrv - Password Reset Code");
+            helper.setText(html.toString(), true);
 
-            CreateEmailResponse data = getResendClient().emails().send(sendEmailRequest);
-            log.info("Password reset email sent to: {}. Resend ID: {}", email, data.getId());
+            mailSender.send(message);
+            log.info("Password reset email sent successfully to: {}", email);
 
-        } catch (ResendException e) {
+        } catch (MessagingException e) {
             log.error("Failed to send password reset email to {}", email, e);
         }
     }

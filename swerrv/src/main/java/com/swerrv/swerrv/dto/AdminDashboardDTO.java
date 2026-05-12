@@ -15,6 +15,7 @@ import java.util.List;
 public class AdminDashboardDTO {
     private long totalOrders;
     private long pendingOrders;
+    private long deliveredOrders;
     private long totalProducts;
     private long totalUsers;
     private BigDecimal totalRevenue;

@@ -46,11 +46,6 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .headers(headers -> headers
-                        .addHeaderWriter(new org.springframework.security.web.header.writers.StaticHeadersWriter(
-                                "Cross-Origin-Opener-Policy", "same-origin-allow-popups"))
-                        .addHeaderWriter(new org.springframework.security.web.header.writers.StaticHeadersWriter(
-                                "Cross-Origin-Embedder-Policy", "require-corp")))
                 .authorizeHttpRequests(auth -> {
                     auth
                             // Allow CORS preflight requests explicitly first

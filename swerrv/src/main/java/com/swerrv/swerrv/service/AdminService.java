@@ -36,6 +36,7 @@ public class AdminService {
                 .totalOrders(orderRepository.count())
                 .pendingOrders(orderRepository.countByStatus(OrderStatus.PENDING)
                         + orderRepository.countByStatus(OrderStatus.CONFIRMED))
+                .deliveredOrders(orderRepository.countByStatus(OrderStatus.DELIVERED))
                 .totalProducts(productRepository.countByActiveTrue())
                 .totalUsers(userRepository.count())
                 .totalRevenue(orderRepository.getTotalRevenue())
