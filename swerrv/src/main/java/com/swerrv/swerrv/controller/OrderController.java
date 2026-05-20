@@ -27,7 +27,7 @@ public class OrderController {
                 .body(orderService.createOrder(user, request));
     }
 
-    @GetMapping
+    @GetMapping({"", "/my-orders"})
     public ResponseEntity<PagedResponse<OrderDTO>> getMyOrders(
             @AuthenticationPrincipal User user,
             @RequestParam(defaultValue = "0") int page,

@@ -8,6 +8,7 @@ const translations = {
         'nav.hoodies': 'Hoodies',
         'nav.tracksuits': 'Tracksuits',
         'nav.all': 'All',
+        'nav.collections': 'Collections',
         'nav.about': 'About',
         'nav.contact': 'Contact'
     },
@@ -16,6 +17,7 @@ const translations = {
         'nav.hoodies': 'Bluzy',
         'nav.tracksuits': 'Dresy',
         'nav.all': 'Wszystko',
+        'nav.collections': 'Kolekcje',
         'nav.about': 'O nas',
         'nav.contact': 'Kontakt'
     }

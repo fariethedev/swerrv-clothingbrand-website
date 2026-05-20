@@ -40,6 +40,7 @@ const Navbar = () => {
     };
 
     const navLinks = [
+        { to: '/archive', label: t('nav.collections') },
         { to: '/shop?category=T-Shirts', label: t('nav.tshirts') },
         { to: '/shop?category=Hoodies', label: t('nav.hoodies') },
         { to: '/shop?category=Tracksuits', label: t('nav.tracksuits') },

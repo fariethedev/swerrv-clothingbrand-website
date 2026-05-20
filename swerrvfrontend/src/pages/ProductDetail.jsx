@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
@@ -53,19 +52,34 @@ const ProductDetail = () => {
     const styledRef = useRef(null);
 
     useEffect(() => {
-        setLoading(true);
-        setSelectedImg(0);
-        setSelectedSize('');
-        setSelectedColor('');
+        let active = true;
+        const timeoutId = setTimeout(() => {
+            if (active) {
+                setLoading(true);
+                setSelectedImg(0);
+                setSelectedSize('');
+                setSelectedColor('');
+            }
+        }, 0);
         window.scrollTo(0, 0);
 
         api.getProductById(id).then(productData => {
+            if (!active) return;
             setProduct(productData);
             api.getProducts().then(all => {
+                if (!active) return;
                 setRelated(all.filter(p => p.category === productData.category && p.id !== productData.id).slice(0, 6));
                 setLoading(false);
             });
-        }).catch(() => setLoading(false));
+        }).catch(() => {
+            if (!active) return;
+            setLoading(false);
+        });
+
+        return () => {
+            active = false;
+            clearTimeout(timeoutId);
+        };
     }, [id]);
 
     if (loading) return (
@@ -144,6 +158,8 @@ const ProductDetail = () => {
                                     src={images[selectedImg]}
                                     alt={product.name}
                                     className={`pd-main-img${product.comingSoon ? ' blur-[4px] scale-105' : ''}`}
+                                    fetchpriority="high"
+                                    decoding="async"
                                 />
                                 {product.comingSoon && (
                                     <div className="absolute inset-0 bg-black/60 flex items-center justify-center pointer-events-none">
@@ -167,7 +183,7 @@ const ProductDetail = () => {
                                         className={`pd-thumb ${i === selectedImg ? 'pd-thumb--active' : ''}`}
                                         onClick={() => setSelectedImg(i)}
                                     >
-                                        <img src={img} alt={`View ${i + 1}`} />
+                                        <img src={img} alt={`View ${i + 1}`} loading="lazy" decoding="async" />
                                     </button>
                                 ))}
                             </div>
@@ -341,7 +357,7 @@ const ProductDetail = () => {
                                 </div>
                                 <div className="pd-rc-stars">★★★★★</div>
                                 <p className="pd-rc-text">"NextGen's dedication to sustainability and ethical practices resonates strongly with today's consumers, positioning the brand as a responsible choice in the fashion world."</p>
-                                <img src={`https://i.pravatar.cc/150?u=${product.id}`} alt="User" className="pd-rc-avatar" />
+                                <img src={`https://i.pravatar.cc/150?u=${product.id}`} alt="User" className="pd-rc-avatar" loading="lazy" decoding="async" />
                             </div>
                         </div>
                     </div>

@@ -57,7 +57,7 @@ public class AdminController {
         return ResponseEntity.ok(orderService.getAllOrders(page, size));
     }
 
-    @PatchMapping("/orders/{id}/status")
+    @RequestMapping(value = "/orders/{id}/status", method = {RequestMethod.PATCH, RequestMethod.PUT})
     public ResponseEntity<OrderDTO> updateOrderStatus(
             @PathVariable Long id,
             @RequestParam OrderStatus status) {

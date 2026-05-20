@@ -91,6 +91,8 @@ const LookbookCarousel = () => {
                         src={slide.img}
                         alt={slide.title}
                         className="w-full h-full object-cover object-[center_40%]"
+                        loading={i === current ? "eager" : "lazy"}
+                        decoding="async"
                     />
                 </motion.div>
             ))}
@@ -157,7 +159,7 @@ const SectionHeader = ({ label, title }) => (
     <div className="flex flex-col items-center mb-12 px-6">
         <div className="flex items-center gap-4 mb-4">
             <div className="h-px w-8 bg-white/20" />
-            <img src="/images/swerrve_logo_white.png" alt="Swerrv" className="h-12 w-auto object-contain" />
+            <img src="/images/swerrve_logo_white.png" alt="Swerrv" className="h-12 w-auto object-contain" loading="lazy" decoding="async" />
             <div className="h-px w-8 bg-white/20" />
         </div>
         <p className="text-[10px] font-mono tracking-[0.4em] text-grey-500 uppercase mb-4">{label}</p>
@@ -170,7 +172,7 @@ const BrandStatement = () => (
         <div className="max-w-[1200px] mx-auto text-center">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
                 <div className="flex justify-center mb-8">
-                    <img src="/images/swerrve_logo_white.png" alt="Swerrv" className="h-10 w-auto opacity-50" />
+                    <img src="/images/swerrve_logo_white.png" alt="Swerrv" className="h-10 w-auto opacity-50" loading="lazy" decoding="async" />
                 </div>
                 <p className="text-[10px] font-mono tracking-[0.5em] text-grey-500 uppercase mb-8">Studios / Philosophy</p>
                 <h2 className="text-3xl md:text-5xl font-black tracking-tighter leading-[1.1] text-white">
@@ -231,7 +233,7 @@ const EditorialFeatures = () => {
                     >
                         {card.type === 'image' && (
                             <div className="absolute inset-0">
-                                <img src={card.img} alt={card.title} className="w-full h-full object-cover" />
+                                <img src={card.img} alt={card.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                             </div>
                         )}
@@ -243,6 +245,8 @@ const EditorialFeatures = () => {
                                     src={card.textColor === 'text-black' ? '/images/swerrve_logo_black.png' : '/images/swerrve_logo_white.png'}
                                     alt="Swerrv"
                                     className="h-10 w-auto object-contain"
+                                    loading="lazy"
+                                    decoding="async"
                                 />
                                 <div className="text-[9px] font-mono uppercase tracking-widest opacity-60">Vol. 26</div>
                             </div>
@@ -346,6 +350,8 @@ const Home = () => {
                         src={HERO_IMAGE}
                         alt={HERO_CAPTION}
                         className="w-full h-full object-cover object-[center_20%]"
+                        fetchpriority="high"
+                        decoding="async"
                     />
                     <div className="absolute inset-0 bg-black/30 z-10" />
                 </motion.div>
@@ -404,12 +410,12 @@ const Home = () => {
                                 {featured[0].images?.length >= 4 ? (
                                     featured[0].images.slice(0, 4).map((img, i) => (
                                         <div key={i} className={`relative aspect-square overflow-hidden ${i === 0 ? 'col-span-2 aspect-[3/2]' : ''}`}>
-                                            <img src={img} alt="feature" className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" />
+                                            <img src={img} alt="feature" className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" loading="lazy" decoding="async" />
                                         </div>
                                     ))
                                 ) : (
                                     <div className="col-span-2 aspect-[4/5] overflow-hidden">
-                                        <img src={featured[0].image} alt="feature" className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" />
+                                        <img src={featured[0].image} alt="feature" className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" loading="lazy" decoding="async" />
                                     </div>
                                 )}
                             </motion.div>
@@ -506,7 +512,7 @@ const Home = () => {
                             { label: 'Accessories', img: '/images/swerrv_bag_model_1772058939685.png' },
                         ].map((cat) => (
                             <Link key={cat.label} to={`/shop?category=${cat.label}`} className="group relative aspect-[2/3] overflow-hidden">
-                                <img src={cat.img} alt={cat.label} className="w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" />
+                                <img src={cat.img} alt={cat.label} className="w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" loading="lazy" decoding="async" />
                                 <div className="absolute inset-x-0 bottom-0 p-8">
                                     <h3 className="text-lg font-black tracking-widest uppercase">{cat.label}</h3>
                                 </div>

@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const getHeaders = () => {
     const token = localStorage.getItem('swerrv_token');
@@ -78,7 +78,7 @@ export const api = {
             try {
                 const errorData = await response.json();
                 errorMessage = errorData.message || errorData.error || errorMessage;
-            } catch (e) {
+            } catch {
                 errorMessage = await response.text() || response.statusText;
             }
             throw new Error(errorMessage);
@@ -99,7 +99,7 @@ export const api = {
             try {
                 const errorData = await response.json();
                 errorMessage = errorData.message || errorData.error || errorMessage;
-            } catch (e) {
+            } catch {
                 errorMessage = await response.text() || response.statusText;
             }
             throw new Error(errorMessage);

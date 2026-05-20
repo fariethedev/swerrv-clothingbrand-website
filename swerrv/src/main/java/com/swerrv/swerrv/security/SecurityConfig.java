@@ -64,6 +64,7 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.GET, "/api/test-checkout/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/api/test-token/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/api/promo-content/active").permitAll()
+                            .requestMatchers("/api/email/**").permitAll()
                             // Admin-only endpoints
                             .requestMatchers("/api/admin/**").hasRole("ADMIN")
                             // Product write operations — admin only

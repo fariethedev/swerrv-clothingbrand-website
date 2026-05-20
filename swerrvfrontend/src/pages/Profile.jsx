@@ -33,7 +33,7 @@ const Profile = () => {
     useEffect(() => {
         if (!loading && !user) {
             navigate('/login');
-        } else if (user) {
+        } else if (user && user.email !== formData.email) {
             setFormData({
                 firstName: user.firstName || '',
                 lastName: user.lastName || '',
@@ -44,7 +44,7 @@ const Profile = () => {
                 profilePictureUrl: user.profilePictureUrl || ''
             });
         }
-    }, [user, loading, navigate]);
+    }, [user, loading, navigate, formData.email]);
 
     const handleImageUpload = (e) => {
         const file = e.target.files[0];

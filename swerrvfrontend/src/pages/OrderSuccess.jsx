@@ -1,14 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useMemo } from 'react';
+import { useState } from 'react';
 import { HiCheckCircle, HiOutlineShoppingBag, HiTruck } from 'react-icons/hi';
-import { useCurrency } from '../context/CurrencyContext';
 
 const OrderSuccess = () => {
     const location = useLocation();
-    const { formatPrice } = useCurrency();
     const order = location.state?.order;
-    const orderId = useMemo(() => order?.id || 'SWV-' + String(Math.floor(Math.random() * 900 + 100)), [order?.id]);
+    const [orderId] = useState(() => order?.id || 'SWV-' + String(Math.floor(Math.random() * 900 + 100)));
 
     return (
         <div className="min-h-screen bg-black flex items-center justify-center px-6 py-12">

@@ -5,6 +5,7 @@ const About = () => {
     const team = [
         { name: 'Farai Mahaso', role: 'Co-Founder & Creative Director', img: '/images/_DSC8211.jpg' },
         { name: 'Mike Thabani', role: 'Co-Founder & Brand Strategist', img: '/images/_DSC8220.jpg' },
+        { name: 'Takudwa Gombiro', role: 'Co-Founder', img: '/images/_DSC8144.jpg' },
     ];
 
     const values = [
@@ -19,7 +20,7 @@ const About = () => {
             {/* Hero */}
             <section className="relative h-[80vh] min-h-[500px] flex items-end justify-center overflow-hidden">
                 <motion.div className="absolute inset-0 z-0" initial={{ scale: 1.1 }} animate={{ scale: 1 }} transition={{ duration: 1.2 }}>
-                    <img src="/images/_DSC8144.jpg" alt="About Swerrv" className="w-full h-full object-cover" />
+                    <img src="/images/_DSC8144.jpg" alt="About Swerrv" className="w-full h-full object-cover" fetchpriority="high" decoding="async" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-black/30" />
                 </motion.div>
                 <motion.div className="relative z-10 text-center pb-16 px-6" initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}>
@@ -36,8 +37,8 @@ const About = () => {
                         <h2 className="text-3xl lg:text-5xl font-black leading-tight tracking-tight">SWERRV was born from a refusal to conform.</h2>
                     </motion.div>
                     <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, delay: 0.15 }}>
-                        <p className="text-grey-300 text-base leading-relaxed mb-5">Founded in Lublin, Poland in 2025 by Farai Mahaso and Mike Thabani, SWERRV began as a shared conviction — that streetwear should speak for the culture that created it. Not a trend. Not a statement for everyone. A brand forged for those who move with intention.</p>
-                        <p className="text-grey-300 text-base leading-relaxed mb-5">What started as late-night conversations between two creatives in Lublin became something real in September 2025 with the brand's debut drop — a tight, deliberate collection that sold out within days. The message was clear: SWERRV had arrived.</p>
+                        <p className="text-grey-300 text-base leading-relaxed mb-5">Founded in Lublin, Poland in 2025 by Farai Mahaso, Mike Thabani, and Takudwa Gombiro, SWERRV began as a shared conviction — that streetwear should speak for the culture that created it. Not a trend. Not a statement for everyone. A brand forged for those who move with intention.</p>
+                        <p className="text-grey-300 text-base leading-relaxed mb-5">What started as late-night conversations between the founders in Lublin became something real in September 2025 with the brand's debut drop — a tight, deliberate collection that sold out within days. The message was clear: SWERRV had arrived.</p>
                         <p className="text-grey-300 text-base leading-relaxed mb-8">Every piece since has been a chapter in an ongoing story. Past experiences, present energy, and unlimited possibility — that's the SWERRV timeline.</p>
                         <Link to="/shop" className="btn-primary">Shop the Collection</Link>
                     </motion.div>
@@ -68,7 +69,7 @@ const About = () => {
                         {team.map((m, i) => (
                             <motion.div key={m.name} className="flex flex-col items-center text-center gap-4" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.12 }}>
                                 <div className="w-56 h-64 overflow-hidden border border-white/10 grayscale hover:grayscale-0 transition-all duration-500">
-                                    <img src={m.img} alt={m.name} className="w-full h-full object-cover" />
+                                    <img src={m.img} alt={m.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                                 </div>
                                 <h3 className="text-lg font-black">{m.name}</h3>
                                 <p className="text-xs text-grey-500 tracking-[0.2em] uppercase font-bold">{m.role}</p>

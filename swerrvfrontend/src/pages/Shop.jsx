@@ -1,11 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiOutlineAdjustments, HiX, HiChevronDown } from 'react-icons/hi';
+import { HiOutlineAdjustments, HiChevronDown, HiX, HiCheck } from 'react-icons/hi';
 import ProductCard from '../components/ProductCard';
 import { api } from '../services/api';
 
-const categories = ["All", "T-Shirts", "Hoodies", "Bottoms", "Jackets", "Accessories"];
+const CATEGORIES = ["All", "T-Shirts", "Sweatshirts", "Hoodies", "Bottoms", "Jackets", "Accessories"];
+const MOCK_COLORS = [
+    { name: 'Black', hex: '#000000' },
+    { name: 'Red', hex: '#FF0000' },
+    { name: 'Brown', hex: '#8B4513' },
+    { name: 'Blue', hex: '#0000FF' },
+    { name: 'Grey', hex: '#808080' }
+];
 
 const Shop = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -13,25 +20,29 @@ const Shop = () => {
     const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
     const [sortBy, setSortBy] = useState('featured');
     const [priceMax, setPriceMax] = useState(200);
-    const [filtersOpen, setFiltersOpen] = useState(false);
+    const [selectedColor, setSelectedColor] = useState(null); // Mock filter
 
     const [filtered, setFiltered] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setLoading(true);
+        let active = true;
+        const timeoutId = setTimeout(() => {
+            if (active) setLoading(true);
+        }, 0);
 
         const params = {
             category: selectedCategory === 'All' ? undefined : selectedCategory,
             q: searchQuery || undefined,
             maxPrice: priceMax !== 200 ? priceMax : undefined,
-            sort: sortBy === 'rating' || sortBy === 'featured' ? undefined : sortBy // backend supports price-asc, price-desc, newest
+            sort: sortBy === 'rating' || sortBy === 'featured' ? undefined : sortBy
         };
 
         api.searchProducts(params).then(data => {
+            if (!active) return;
             let res = data || [];
 
-            // Client-side fallback sorting for unsupported backend sorts
+            // Client-side fallback sorting
             if (sortBy === 'rating') {
                 res = res.sort((a, b) => b.rating - a.rating);
             } else if (sortBy === 'featured') {
@@ -41,9 +52,15 @@ const Shop = () => {
             setFiltered(res);
             setLoading(false);
         }).catch(err => {
+            if (!active) return;
             console.error('Error fetching products:', err);
             setLoading(false);
         });
+
+        return () => {
+            active = false;
+            clearTimeout(timeoutId);
+        };
     }, [selectedCategory, searchQuery, sortBy, priceMax]);
 
     const handleCategory = (cat) => {
@@ -52,97 +69,166 @@ const Shop = () => {
     };
 
     return (
-        <div className="min-h-screen pt-[70px]">
-            {/* Hero */}
-            <div className="bg-grey-900 border-b border-white/[0.06] py-16 text-center px-6">
-                <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-                    <p className="section-label mb-3">Collection</p>
-                    <h1 className="text-5xl lg:text-7xl font-black tracking-[0.04em]">
-                        {searchQuery ? `"${searchQuery}"` : selectedCategory === 'All' ? 'All Products' : selectedCategory}
-                    </h1>
-                    <p className="text-grey-500 text-sm tracking-[0.1em] mt-3">{filtered.length} products</p>
-                </motion.div>
-            </div>
-
-            <div className="max-w-[1400px] mx-auto px-6 py-10 pb-20">
-                {/* Filters Bar */}
-                <div className="flex flex-wrap items-center justify-between gap-5 pb-6 border-b border-white/[0.06] mb-8">
-                    <div className="flex gap-2 flex-wrap">
-                        {categories.map(cat => (
-                            <button key={cat} onClick={() => handleCategory(cat)}
-                                className={`px-4 py-2 text-xs font-semibold tracking-[0.1em] uppercase border transition-all duration-200 ${selectedCategory === cat ? 'bg-accent text-black border-accent' : 'bg-transparent text-grey-300 border-transparent hover:border-grey-700 hover:text-white'}`}>
-                                {cat}
-                            </button>
-                        ))}
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <div className="relative flex items-center border border-grey-700 px-3 py-2 gap-2">
-                            <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="bg-transparent text-white text-xs font-semibold tracking-[0.08em] cursor-pointer appearance-none pr-5 outline-none">
-                                <option value="featured">Featured</option>
-                                <option value="newest">Newest</option>
-                                <option value="price-asc">Price: Low to High</option>
-                                <option value="price-desc">Price: High to Low</option>
-                                <option value="rating">Top Rated</option>
-                            </select>
-                            <HiChevronDown size={14} className="absolute right-2 pointer-events-none text-grey-500" />
+        <div className="min-h-screen pt-[70px] bg-black">
+            <div className="max-w-[1400px] mx-auto px-6 py-10 pb-24 flex flex-col lg:flex-row gap-8 lg:gap-12">
+                
+                {/* Desktop Sidebar */}
+                <aside className="hidden lg:flex flex-col w-56 shrink-0 gap-8">
+                    {/* Categories */}
+                    <div>
+                        <h3 className="text-sm font-bold text-white mb-4">Category</h3>
+                        <div className="flex flex-col gap-2">
+                            {CATEGORIES.map(cat => (
+                                <button 
+                                    key={cat} 
+                                    onClick={() => handleCategory(cat)}
+                                    className={`text-left text-sm transition-colors duration-200 ${selectedCategory === cat ? 'text-accent font-semibold' : 'text-grey-500 hover:text-white'}`}
+                                >
+                                    {cat}
+                                </button>
+                            ))}
                         </div>
-                        <button onClick={() => setFiltersOpen(!filtersOpen)}
-                            className="flex items-center gap-2 px-4 py-2 border border-grey-700 text-xs font-semibold tracking-[0.1em] uppercase hover:border-accent hover:text-accent transition-all duration-200">
-                            <HiOutlineAdjustments size={16} /> Filters
+                    </div>
+
+                    {/* Filter Section */}
+                    <div>
+                        <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                            <HiOutlineAdjustments size={16} /> Filter by:
+                        </h3>
+
+                        {/* Price Filter */}
+                        <div className="mb-6">
+                            <p className="text-xs font-semibold text-white/80 mb-3">Price</p>
+                            <input 
+                                type="range" 
+                                min="20" 
+                                max="200" 
+                                value={priceMax} 
+                                onChange={e => setPriceMax(Number(e.target.value))}
+                                className="w-full accent-accent h-1 bg-grey-800 rounded-lg appearance-none cursor-pointer" 
+                            />
+                            <div className="flex justify-between text-xs text-grey-500 mt-2">
+                                <span>$0</span>
+                                <span>${priceMax}</span>
+                            </div>
+                        </div>
+
+                        {/* Color Filter (Aesthetic) */}
+                        <div className="mb-8">
+                            <p className="text-xs font-semibold text-white/80 mb-3">Colour</p>
+                            <div className="flex flex-col gap-2.5">
+                                {MOCK_COLORS.map(color => (
+                                    <label key={color.name} className="flex items-center gap-3 cursor-pointer group">
+                                        <div 
+                                            className={`w-4 h-4 rounded flex items-center justify-center border transition-all duration-200 ${selectedColor === color.name ? 'border-accent bg-accent' : 'border-grey-700 group-hover:border-grey-500 bg-transparent'}`}
+                                            onClick={() => setSelectedColor(selectedColor === color.name ? null : color.name)}
+                                        >
+                                            {selectedColor === color.name && <HiCheck size={12} className="text-black" />}
+                                        </div>
+                                        <span className={`text-sm ${selectedColor === color.name ? 'text-white' : 'text-grey-500 group-hover:text-white'}`}>
+                                            {color.name}
+                                        </span>
+                                        <div 
+                                            className="w-3 h-3 rounded-full ml-auto"
+                                            style={{ backgroundColor: color.hex, border: color.name === 'Black' ? '1px solid #333' : 'none' }}
+                                        />
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+
+                        <button 
+                            className="w-full bg-accent text-black text-sm font-bold py-3 rounded-xl hover:bg-white transition-colors duration-300"
+                            onClick={() => { setPriceMax(200); setSelectedColor(null); }}
+                        >
+                            Reset Filters
                         </button>
                     </div>
-                </div>
+                </aside>
 
-                {/* Filter Panel */}
-                <AnimatePresence>
-                    {filtersOpen && (
-                        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }} style={{ overflow: 'hidden' }}>
-                            <div className="flex flex-wrap gap-10 p-6 bg-grey-900 border border-white/[0.08] mb-8">
-                                <div>
-                                    <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-grey-300 mb-3">Price Range</p>
-                                    <p className="text-sm font-semibold mb-2">0 PLN – {priceMax} PLN</p>
-                                    <input type="range" min="20" max="200" value={priceMax} onChange={e => setPriceMax(Number(e.target.value))}
-                                        className="w-48 accent-accent h-0.5" />
-                                </div>
-                                <button onClick={() => setPriceMax(200)} className="flex items-center gap-2 self-center text-xs text-grey-500 border border-grey-700 px-4 py-2 hover:text-brand-red hover:border-brand-red transition-all duration-200 ml-auto">
-                                    <HiX size={14} /> Clear
-                                </button>
+                {/* Main Content Area */}
+                <div className="flex-1 flex flex-col min-w-0">
+                    
+                    {/* Header Row */}
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                        <div>
+                            <div className="flex items-center gap-2 text-xs text-grey-500 mb-2">
+                                <span>Home</span>
+                                <span>/</span>
+                                <span>Category</span>
+                                <span>/</span>
+                                <span className="text-white">{selectedCategory}</span>
                             </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                            <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white capitalize">
+                                {searchQuery ? `Search: "${searchQuery}"` : selectedCategory}
+                            </h1>
+                        </div>
 
-                {/* Grid */}
-                <AnimatePresence mode="wait">
-                    {loading ? (
-                        <motion.div key="loading" className="grid grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                            {Array(8).fill(0).map((_, i) => (
-                                <div key={i} className="animate-pulse bg-grey-800 aspect-[3/4] rounded-sm"></div>
-                            ))}
-                        </motion.div>
-                    ) : filtered.length === 0 ? (
-                        <motion.div key="empty" className="text-center py-24 flex flex-col items-center gap-4 col-span-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                            <div className="w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden mix-blend-screen opacity-80 mb-4">
-                                <video
-                                    autoPlay
-                                    loop
-                                    muted
-                                    playsInline
-                                    className="w-full h-full object-cover"
+                        {/* Sort Dropdown & Mobile Filter Trigger */}
+                        <div className="flex items-center gap-3">
+                            <div className="relative bg-[#111] border border-white/10 rounded-xl px-4 py-2.5 flex items-center gap-2 hover:border-white/30 transition-colors">
+                                <span className="text-xs text-grey-500 whitespace-nowrap">Sort by:</span>
+                                <select 
+                                    value={sortBy} 
+                                    onChange={e => setSortBy(e.target.value)} 
+                                    className="bg-transparent text-white text-sm font-medium cursor-pointer appearance-none pr-5 outline-none"
                                 >
-                                    <source src="/images/logovideo.mov" type="video/mp4" />
-                                </video>
+                                    <option value="featured">Most Popular</option>
+                                    <option value="newest">New Arrivals</option>
+                                    <option value="price-asc">Price: Low to High</option>
+                                    <option value="price-desc">Price: High to Low</option>
+                                </select>
+                                <HiChevronDown size={16} className="absolute right-3 pointer-events-none text-grey-500" />
                             </div>
-                            <h3 className="text-2xl font-bold">No products found</h3>
-                            <p className="text-grey-500">Try adjusting your filters.</p>
-                            <button className="btn-primary mt-2" onClick={() => { setSelectedCategory('All'); setSearchParams({}); }}>Clear All Filters</button>
-                        </motion.div>
-                    ) : (
-                        <motion.div key={`${selectedCategory}-${searchQuery}-${sortBy}`} className="grid grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
-                            {filtered.map((product, i) => <ProductCard key={product.id} product={product} index={i} />)}
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                        </div>
+                    </div>
+
+                    {/* Active Filters Bar (Mobile & Desktop) */}
+                    <div className="flex flex-wrap gap-2 mb-8">
+                        {priceMax < 200 && (
+                            <div className="flex items-center gap-2 bg-[#111] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white">
+                                Max Price: ${priceMax}
+                                <button onClick={() => setPriceMax(200)} className="text-grey-500 hover:text-white"><HiX size={14} /></button>
+                            </div>
+                        )}
+                        {selectedColor && (
+                            <div className="flex items-center gap-2 bg-[#111] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white">
+                                Color: {selectedColor}
+                                <button onClick={() => setSelectedColor(null)} className="text-grey-500 hover:text-white"><HiX size={14} /></button>
+                            </div>
+                        )}
+                        {searchQuery && (
+                            <div className="flex items-center gap-2 bg-[#111] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white">
+                                Search: {searchQuery}
+                                <button onClick={() => { setSearchQuery(''); setSearchParams({}); }} className="text-grey-500 hover:text-white"><HiX size={14} /></button>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Grid */}
+                    <AnimatePresence mode="wait">
+                        {loading ? (
+                            <motion.div key="loading" className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                                {Array(8).fill(0).map((_, i) => (
+                                    <div key={i} className="animate-pulse bg-[#111] aspect-[4/5] rounded-2xl w-full"></div>
+                                ))}
+                            </motion.div>
+                        ) : filtered.length === 0 ? (
+                            <motion.div key="empty" className="text-center py-32 flex flex-col items-center gap-4 border border-white/5 bg-[#0d0d0d] rounded-3xl" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                                <HiOutlineAdjustments size={48} className="text-grey-700 mb-2" />
+                                <h3 className="text-2xl font-bold">No products found</h3>
+                                <p className="text-grey-500 text-sm max-w-sm mx-auto">We couldn't find any products matching your current filters. Try relaxing your search criteria.</p>
+                                <button className="bg-accent text-black px-6 py-2.5 rounded-xl text-sm font-bold mt-4 hover:bg-white transition-colors" onClick={() => { setSelectedCategory('All'); setPriceMax(200); setSelectedColor(null); setSearchParams({}); }}>
+                                    Clear All Filters
+                                </button>
+                            </motion.div>
+                        ) : (
+                            <motion.div key="grid" className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
+                                {filtered.map((product, i) => <ProductCard key={product.id} product={product} index={i} />)}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
             </div>
         </div>
     );

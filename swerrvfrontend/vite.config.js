@@ -8,13 +8,9 @@ export default defineConfig({
     host: '0.0.0.0', // Listen on all network interfaces
     allowedHosts: true, // Allow all incoming tunnel headers
     cors: true,
-    headers: {
-      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
-      'Cross-Origin-Embedder-Policy': 'require-corp',
-    },
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'http://127.0.0.1:8080',
         changeOrigin: true,
         secure: false, // Important for local development with HTTP
       },
