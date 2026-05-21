@@ -31,7 +31,8 @@ const ProductCard = ({ product, index = 0 }) => {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-40px' }}
-            transition={{ duration: 0.5, delay: index * 0.05 }}
+            whileHover={{ y: -6 }}
+        transition={{ duration: 0.5, delay: index * 0.05, type: 'spring', stiffness: 300, damping: 20 }}
         >
             <Link to={`/product/${product.id}`} className="block relative">
                 {/* Image Area */}
@@ -55,14 +56,24 @@ const ProductCard = ({ product, index = 0 }) => {
 
                     {/* Badges (Non-coming-soon) */}
                     {!product.comingSoon && product.originalPrice && (
-                        <span className="absolute top-3 left-3 px-2.5 py-1 text-[10px] font-bold tracking-widest uppercase rounded-full bg-red-500 text-white">
+                        <motion.span
+                            className="absolute top-3 left-3 px-2.5 py-1 text-[10px] font-bold tracking-widest uppercase rounded-full bg-red-500 text-white"
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                        >
                             Sale
-                        </span>
+                        </motion.span>
                     )}
                     {!product.comingSoon && !product.originalPrice && product.isNew && (
-                        <span className="absolute top-3 left-3 px-2.5 py-1 text-[10px] font-bold tracking-widest uppercase rounded-full bg-accent/20 text-accent border border-accent/20">
+                        <motion.span
+                            className="absolute top-3 left-3 px-2.5 py-1 text-[10px] font-bold tracking-widest uppercase rounded-full bg-accent/20 text-accent border border-accent/20"
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                        >
                             New
-                        </span>
+                        </motion.span>
                     )}
 
                     {/* Wishlist Button */}
@@ -97,12 +108,14 @@ const ProductCard = ({ product, index = 0 }) => {
 
                         {/* Cart Button */}
                         {!product.comingSoon && (
-                            <button
+                            <motion.button
                                 onClick={handleQuickAdd}
                                 className="w-10 h-10 rounded-xl bg-accent text-black flex items-center justify-center hover:bg-white transition-colors duration-300 z-10 relative"
+                                whileHover={{ scale: 1.12 }}
+                                whileTap={{ scale: 0.9 }}
                             >
                                 <HiOutlineShoppingCart size={18} />
-                            </button>
+                            </motion.button>
                         )}
                     </div>
                 </div>

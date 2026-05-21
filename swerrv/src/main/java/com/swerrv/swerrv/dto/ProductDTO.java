@@ -21,6 +21,7 @@ public class ProductDTO {
     private String description;
     private String material;
     private String category;
+    private String collection;
 
     // Pricing — named to match frontend convention
     private BigDecimal price; // the current/sale price (what you pay)

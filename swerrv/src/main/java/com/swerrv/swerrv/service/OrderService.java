@@ -132,12 +132,14 @@ public class OrderService {
 
         // ── User: Get My Orders ───────────────────────────────────────────────────
 
+        @Transactional(readOnly = true)
         public PagedResponse<OrderDTO> getMyOrders(User user, int page, int size) {
                 Pageable pageable = PageRequest.of(page, size);
                 Page<Order> orderPage = orderRepository.findByUserIdOrderByCreatedAtDesc(user.getId(), pageable);
                 return toPagedResponse(orderPage);
         }
 
+        @Transactional(readOnly = true)
         public OrderDTO getMyOrderById(User user, Long orderId) {
                 Order order = orderRepository.findById(orderId)
                                 .orElseThrow(() -> new ResourceNotFoundException("Order", orderId));
@@ -150,6 +152,7 @@ public class OrderService {
 
         // ── Admin: Get All Orders ─────────────────────────────────────────────────
 
+        @Transactional(readOnly = true)
         public PagedResponse<OrderDTO> getAllOrders(int page, int size) {
                 Page<Order> orderPage = orderRepository.findAllByOrderByCreatedAtDesc(
                                 PageRequest.of(page, size));

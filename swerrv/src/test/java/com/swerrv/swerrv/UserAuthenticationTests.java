@@ -60,7 +60,7 @@ public class UserAuthenticationTests {
         request.setFirstName("John");
         request.setLastName("Doe");
         request.setEmail("john.doe@example.com");
-        request.setPassword("password123");
+        request.setPassword("Password123!");
 
         AuthResponse response = AuthResponse.builder()
                 .userId(1L)
@@ -86,7 +86,7 @@ public class UserAuthenticationTests {
     void userCanLogin() throws Exception {
         AuthRequest request = new AuthRequest();
         request.setEmail("john.doe@example.com");
-        request.setPassword("password123");
+        request.setPassword("Password123!");
 
         AuthResponse response = AuthResponse.builder()
                 .userId(1L)
@@ -135,10 +135,10 @@ public class UserAuthenticationTests {
         request.setFirstName("John");
         request.setLastName("Doe");
         request.setEmail("john.doe@example.com");
-        request.setPassword("password123");
+        request.setPassword("Password123!");
 
         when(userRepository.existsByEmail("john.doe@example.com")).thenReturn(false);
-        when(passwordEncoder.encode("password123")).thenReturn("hashedPassword");
+        when(passwordEncoder.encode("Password123!")).thenReturn("hashedPassword");
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
             User u = invocation.getArgument(0);
             u.setId(1L);

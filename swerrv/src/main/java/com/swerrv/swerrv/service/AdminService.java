@@ -13,11 +13,13 @@ import com.swerrv.swerrv.repository.ProductRepository;
 import com.swerrv.swerrv.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AdminService {
 
     private final UserRepository userRepository;
@@ -64,6 +66,7 @@ public class AdminService {
                 .stream().map(productService::toDTO).toList();
     }
 
+    @Transactional
     public ProductDTO updateStock(Long id, int quantity) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", id));

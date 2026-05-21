@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { api } from '../services/api';
 import toast from 'react-hot-toast';
@@ -27,7 +28,14 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     useEffect(() => {
-        checkAuthStatus();
+        let active = true;
+        const timeoutId = setTimeout(() => {
+            if (active) checkAuthStatus();
+        }, 0);
+        return () => {
+            active = false;
+            clearTimeout(timeoutId);
+        };
     }, [checkAuthStatus]);
 
     const login = async (email, password) => {
@@ -98,4 +106,4 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => useContext(AuthContext) || { loading: true, user: null };

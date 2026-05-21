@@ -22,6 +22,7 @@ public class WishlistService {
     private final ProductRepository productRepository;
     private final ProductService productService;
 
+    @Transactional(readOnly = true)
     public List<ProductDTO> getWishlist(User user) {
         Wishlist wishlist = getOrCreateWishlist(user);
         return wishlist.getProducts().stream()

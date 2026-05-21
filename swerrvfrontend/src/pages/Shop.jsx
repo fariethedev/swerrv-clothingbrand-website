@@ -5,7 +5,7 @@ import { HiOutlineAdjustments, HiChevronDown, HiX, HiCheck } from 'react-icons/h
 import ProductCard from '../components/ProductCard';
 import { api } from '../services/api';
 
-const CATEGORIES = ["All", "T-Shirts", "Sweatshirts", "Hoodies", "Bottoms", "Jackets", "Accessories"];
+const CATEGORIES = ["All", "T-Shirts", "Tracksuits"];
 const MOCK_COLORS = [
     { name: 'Black', hex: '#000000' },
     { name: 'Red', hex: '#FF0000' },
@@ -17,6 +17,7 @@ const MOCK_COLORS = [
 const Shop = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'All');
+    const [selectedCollection, setSelectedCollection] = useState(searchParams.get('collection') || 'All');
     const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
     const [sortBy, setSortBy] = useState('featured');
     const [priceMax, setPriceMax] = useState(200);
@@ -26,6 +27,12 @@ const Shop = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        setSelectedCategory(searchParams.get('category') || 'All');
+        setSelectedCollection(searchParams.get('collection') || 'All');
+        setSearchQuery(searchParams.get('search') || '');
+    }, [searchParams]);
+
+    useEffect(() => {
         let active = true;
         const timeoutId = setTimeout(() => {
             if (active) setLoading(true);
@@ -33,6 +40,7 @@ const Shop = () => {
 
         const params = {
             category: selectedCategory === 'All' ? undefined : selectedCategory,
+            collection: selectedCollection === 'All' ? undefined : selectedCollection,
             q: searchQuery || undefined,
             maxPrice: priceMax !== 200 ? priceMax : undefined,
             sort: sortBy === 'rating' || sortBy === 'featured' ? undefined : sortBy
@@ -61,11 +69,24 @@ const Shop = () => {
             active = false;
             clearTimeout(timeoutId);
         };
-    }, [selectedCategory, searchQuery, sortBy, priceMax]);
+    }, [selectedCategory, selectedCollection, searchQuery, sortBy, priceMax]);
 
     const handleCategory = (cat) => {
         setSelectedCategory(cat);
-        setSearchParams(cat === 'All' ? {} : { category: cat });
+        const newParams = {};
+        if (cat !== 'All') newParams.category = cat;
+        if (selectedCollection !== 'All') newParams.collection = selectedCollection;
+        if (searchQuery) newParams.search = searchQuery;
+        setSearchParams(newParams);
+    };
+
+    const handleCollection = (col) => {
+        setSelectedCollection(col);
+        const newParams = {};
+        if (selectedCategory !== 'All') newParams.category = selectedCategory;
+        if (col !== 'All') newParams.collection = col;
+        if (searchQuery) newParams.search = searchQuery;
+        setSearchParams(newParams);
     };
 
     return (
@@ -85,6 +106,22 @@ const Shop = () => {
                                     className={`text-left text-sm transition-colors duration-200 ${selectedCategory === cat ? 'text-accent font-semibold' : 'text-grey-500 hover:text-white'}`}
                                 >
                                     {cat}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Collections */}
+                    <div>
+                        <h3 className="text-sm font-bold text-white mb-4">Collection</h3>
+                        <div className="flex flex-col gap-2">
+                            {["All", "Feeling Mutual 1", "Feeling Mutual 2"].map(col => (
+                                <button 
+                                    key={col} 
+                                    onClick={() => handleCollection(col)}
+                                    className={`text-left text-sm transition-colors duration-200 ${selectedCollection === col ? 'text-accent font-semibold' : 'text-grey-500 hover:text-white'}`}
+                                >
+                                    {col}
                                 </button>
                             ))}
                         </div>
@@ -138,8 +175,8 @@ const Shop = () => {
                         </div>
 
                         <button 
-                            className="w-full bg-accent text-black text-sm font-bold py-3 rounded-xl hover:bg-white transition-colors duration-300"
-                            onClick={() => { setPriceMax(200); setSelectedColor(null); }}
+                            className="w-full bg-accent text-black text-sm font-bold py-3 rounded-full hover:bg-white transition-colors duration-300"
+                            onClick={() => { setPriceMax(200); setSelectedColor(null); handleCollection('All'); }}
                         >
                             Reset Filters
                         </button>
@@ -159,9 +196,18 @@ const Shop = () => {
                                 <span>/</span>
                                 <span className="text-white">{selectedCategory}</span>
                             </div>
-                            <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white capitalize">
-                                {searchQuery ? `Search: "${searchQuery}"` : selectedCategory}
-                            </h1>
+                            <AnimatePresence mode="wait">
+                                <motion.h1
+                                    key={searchQuery || selectedCategory}
+                                    className="text-3xl md:text-4xl font-bold tracking-tight text-white capitalize"
+                                    initial={{ opacity: 0, y: 16 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    {searchQuery ? `Search: "${searchQuery}"` : selectedCategory}
+                                </motion.h1>
+                            </AnimatePresence>
                         </div>
 
                         {/* Sort Dropdown & Mobile Filter Trigger */}
@@ -185,6 +231,12 @@ const Shop = () => {
 
                     {/* Active Filters Bar (Mobile & Desktop) */}
                     <div className="flex flex-wrap gap-2 mb-8">
+                        {selectedCollection !== 'All' && (
+                            <div className="flex items-center gap-2 bg-[#111] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white">
+                                Collection: {selectedCollection}
+                                <button onClick={() => handleCollection('All')} className="text-grey-500 hover:text-white"><HiX size={14} /></button>
+                            </div>
+                        )}
                         {priceMax < 200 && (
                             <div className="flex items-center gap-2 bg-[#111] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white">
                                 Max Price: ${priceMax}
@@ -218,7 +270,7 @@ const Shop = () => {
                                 <HiOutlineAdjustments size={48} className="text-grey-700 mb-2" />
                                 <h3 className="text-2xl font-bold">No products found</h3>
                                 <p className="text-grey-500 text-sm max-w-sm mx-auto">We couldn't find any products matching your current filters. Try relaxing your search criteria.</p>
-                                <button className="bg-accent text-black px-6 py-2.5 rounded-xl text-sm font-bold mt-4 hover:bg-white transition-colors" onClick={() => { setSelectedCategory('All'); setPriceMax(200); setSelectedColor(null); setSearchParams({}); }}>
+                                <button className="bg-accent text-black px-6 py-2.5 rounded-xl text-sm font-bold mt-4 hover:bg-white transition-colors" onClick={() => { setSelectedCategory('All'); setSelectedCollection('All'); setPriceMax(200); setSelectedColor(null); setSearchParams({}); }}>
                                     Clear All Filters
                                 </button>
                             </motion.div>

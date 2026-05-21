@@ -29,13 +29,20 @@ public class DataInitializer implements CommandLineRunner {
         @Transactional
         public void run(String... args) {
                 // Clear dependencies to prevent foreign key errors when wiping products
+                jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 0");
                 jdbcTemplate.execute("DELETE FROM order_items");
                 jdbcTemplate.execute("DELETE FROM orders");
                 jdbcTemplate.execute("DELETE FROM cart_items");
+                jdbcTemplate.execute("DELETE FROM carts");
                 jdbcTemplate.execute("DELETE FROM wishlist_products");
-
-                // Now safe to wipe products
-                productRepository.deleteAllInBatch();
+                jdbcTemplate.execute("DELETE FROM wishlists");
+                jdbcTemplate.execute("DELETE FROM reviews");
+                jdbcTemplate.execute("DELETE FROM product_images");
+                jdbcTemplate.execute("DELETE FROM product_sizes");
+                jdbcTemplate.execute("DELETE FROM product_colors");
+                jdbcTemplate.execute("DELETE FROM products");
+                jdbcTemplate.execute("DELETE FROM users");
+                jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 1");
 
                 // Ensure image_url can hold massive Base64 strings
                 jdbcTemplate.execute("ALTER TABLE product_images MODIFY image_url LONGTEXT");
@@ -56,7 +63,7 @@ public class DataInitializer implements CommandLineRunner {
                                 .firstName("Admin")
                                 .lastName("Swerrv")
                                 .email("admin@swerrv.com")
-                                .password(passwordEncoder.encode("admin123"))
+                                .password(passwordEncoder.encode("AdminPassword123!"))
                                 .role(Role.ADMIN)
                                 .build());
                 cartRepository.save(Cart.builder().user(admin).build());
@@ -67,7 +74,7 @@ public class DataInitializer implements CommandLineRunner {
                                 .firstName("Alex")
                                 .lastName("Johnson")
                                 .email("alex@example.com")
-                                .password(passwordEncoder.encode("password123"))
+                                .password(passwordEncoder.encode("Password123!"))
                                 .role(Role.USER)
                                 .build());
                 cartRepository.save(Cart.builder().user(customer).build());
@@ -89,7 +96,8 @@ public class DataInitializer implements CommandLineRunner {
                                                 .description("Premium heavyweight black cotton t-shirt with signature Swerrv minimalist chest print. Made from 100% organic cotton.")
                                                 .price(new BigDecimal("44.99"))
                                                 .category("T-Shirts")
-                                                .images(List.of("/images/_DSC7934.jpg"))
+                                                .collection("Feeling Mutual 1")
+                                                .images(List.of("/images/_DSC7881.jpg", "/images/_DSC7881 (1).jpg", "/images/_DSC7889.jpg", "/images/_DSC7889 (1).jpg"))
                                                 .sizes(List.of("XS", "S", "M", "L", "XL", "XXL"))
                                                 .colors(List.of("Black"))
                                                 .stock(100)
@@ -102,16 +110,45 @@ public class DataInitializer implements CommandLineRunner {
                                                 .description("Premium heavyweight white cotton t-shirt with signature Swerrv minimalist chest print. Made from 100% organic cotton.")
                                                 .price(new BigDecimal("44.99"))
                                                 .category("T-Shirts")
-                                                .images(List.of("/images/_DSC7916.jpg"))
+                                                .collection("Feeling Mutual 1")
+                                                .images(List.of("/images/_DSC7916.jpg", "/images/_DSC7916 (1).jpg", "/images/_DSC7874.jpg", "/images/_DSC7874 (1).jpg"))
                                                 .sizes(List.of("XS", "S", "M", "L", "XL", "XXL"))
                                                 .colors(List.of("White"))
                                                 .stock(100)
                                                 .featured(true)
+                                                .build(),
+
+                                Product.builder()
+                                                .name("Swerrv Velour Tracksuit Black")
+                                                .slug("swerrv-velour-tracksuit-black")
+                                                .description("Heavyweight premium velour tracksuit set with embroidered logo details. Featuring an oversized top and relaxed pants.")
+                                                .price(new BigDecimal("149.99"))
+                                                .category("Tracksuits")
+                                                .collection("Feeling Mutual 2")
+                                                .images(List.of("/images/swerrv_cargo_1772060995951.png"))
+                                                .sizes(List.of("S", "M", "L", "XL"))
+                                                .colors(List.of("Black"))
+                                                .stock(50)
+                                                .featured(true)
+                                                .build(),
+
+                                Product.builder()
+                                                .name("Swerrv Signature Tracksuit Cream")
+                                                .slug("swerrv-signature-tracksuit-cream")
+                                                .description("Premium soft-touch cotton-fleece blend tracksuit. Clean lines and modern silhouette for premium streetwear comfort.")
+                                                .price(new BigDecimal("159.99"))
+                                                .category("Tracksuits")
+                                                .collection("Feeling Mutual 2")
+                                                .images(List.of("/images/swerrv_cargo_1772060995951.png"))
+                                                .sizes(List.of("S", "M", "L", "XL"))
+                                                .colors(List.of("Cream"))
+                                                .stock(35)
+                                                .featured(false)
                                                 .build()
                 );
 
                 for (Product product : products) {
-                        if (!"T-Shirts".equals(product.getCategory())) {
+                        if (!"T-Shirts".equals(product.getCategory()) && !"Tracksuits".equals(product.getCategory())) {
                                 product.setComingSoon(true);
                         }
                 }

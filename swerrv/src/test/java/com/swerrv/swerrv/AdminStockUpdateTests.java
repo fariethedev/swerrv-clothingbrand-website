@@ -42,6 +42,9 @@ public class AdminStockUpdateTests {
     private OrderService orderService;
 
     @MockBean
+    private com.swerrv.swerrv.service.NewsletterService newsletterService;
+
+    @MockBean
     private JwtUtil jwtUtil;
 
     @MockBean

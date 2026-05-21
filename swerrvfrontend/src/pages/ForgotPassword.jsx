@@ -2,8 +2,32 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
 import { useNavigate, Link } from 'react-router-dom';
-import { HiEye, HiEyeOff } from 'react-icons/hi';
+import { HiEye, HiEyeOff, HiCheck, HiX } from 'react-icons/hi';
 import { api } from '../services/api';
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const passwordRequirements = [
+    { id: 'length', text: 'At least 8 characters', regex: /.{8,}/ },
+    { id: 'uppercase', text: 'One uppercase letter', regex: /[A-Z]/ },
+    { id: 'lowercase', text: 'One lowercase letter', regex: /[a-z]/ },
+    { id: 'number', text: 'One number', regex: /[0-9]/ },
+    { id: 'special', text: 'One special character (@$!%*?&)', regex: /[@$!%*?&]/ }
+];
+
+const getPasswordStrength = (password) => {
+    let count = 0;
+    passwordRequirements.forEach(req => {
+        if (req.regex.test(password)) count++;
+    });
+    return count;
+};
+
+const getStrengthColor = (strength) => {
+    if (strength === 0) return 'transparent';
+    if (strength <= 2) return '#ef4444';
+    if (strength <= 4) return '#eab308';
+    return '#22c55e';
+};
 
 const ForgotPassword = () => {
     const navigate = useNavigate();
@@ -22,6 +46,9 @@ const ForgotPassword = () => {
 
     const handleRequestCode = async (e) => {
         e.preventDefault();
+        if (!emailRegex.test(email)) {
+            return toast.error("Please enter a valid email address");
+        }
         setLoading(true);
         try {
             await api.requestPasswordReset(email);
@@ -39,8 +66,8 @@ const ForgotPassword = () => {
         if (newPassword !== confirmPassword) {
             return toast.error("Passwords do not match!");
         }
-        if (newPassword.length < 6) {
-            return toast.error("Password must be at least 6 characters.");
+        if (getPasswordStrength(newPassword) < 5) {
+            return toast.error("Please meet all password requirements.");
         }
         if (token.length !== 6) {
             return toast.error("Reset code must be exactly 6 digits.");
@@ -129,6 +156,30 @@ const ForgotPassword = () => {
                                     {showNewPassword ? <HiEyeOff size={20} /> : <HiEye size={20} />}
                                 </button>
                             </div>
+                            {newPassword && (
+                                <div className="mt-4 mb-2 flex flex-col gap-2">
+                                    <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
+                                        <div 
+                                            className="h-full transition-all duration-300" 
+                                            style={{ 
+                                                width: `${(getPasswordStrength(newPassword) / 5) * 100}%`,
+                                                backgroundColor: getStrengthColor(getPasswordStrength(newPassword))
+                                            }}
+                                        />
+                                    </div>
+                                    <div className="flex flex-col gap-1">
+                                        {passwordRequirements.map((req, idx) => {
+                                            const isValid = req.regex.test(newPassword);
+                                            return (
+                                                <div key={idx} className={`flex items-center gap-2 text-xs transition-colors duration-300 ${isValid ? 'text-green-400' : 'text-gray-400'}`}>
+                                                    <span>{isValid ? <HiCheck size={14} /> : <HiX size={14} />}</span>
+                                                    {req.text}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-grey-300 mb-2 uppercase tracking-wider">Confirm New Password</label>

@@ -3,38 +3,25 @@ import { motion } from 'framer-motion';
 import { FaInstagram, FaTwitter, FaTiktok, FaYoutube } from 'react-icons/fa';
 import { HiArrowRight } from 'react-icons/hi';
 import { useState } from 'react';
+import { api } from '../services/api';
 
 const Footer = () => {
     const [email, setEmail] = useState('');
     const [subscribed, setSubscribed] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleSubscribe = async (e) => {
         e.preventDefault();
         if (!email) return;
-
-        const payload = {
-            access_key: "62af5c85-8d88-439d-921e-e50bd3c8ac1c",
-            email: email,
-            subject: "New Newsletter Subscriber",
-            from_name: "Swerrv Newsletter"
-        };
+        setErrorMessage('');
 
         try {
-            const response = await fetch("https://api.web3forms.com/submit", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-                body: JSON.stringify(payload)
-            });
-            const result = await response.json();
-            if (result.success) {
-                setSubscribed(true);
-                setEmail('');
-            }
+            await api.subscribeNewsletter(email);
+            setSubscribed(true);
+            setEmail('');
         } catch (error) {
             console.error("Subscription error:", error);
+            setErrorMessage(error.message || "Failed to subscribe. Please try again.");
         }
     };
 
@@ -60,19 +47,27 @@ const Footer = () => {
                     {subscribed ? (
                         <p className="text-accent text-lg font-semibold">✓ You're in. Stay locked in.</p>
                     ) : (
-                        <form onSubmit={handleSubscribe} className="inline-flex max-w-md w-full border border-grey-700 rounded-[4px] overflow-hidden">
-                            <input
-                                type="email"
-                                placeholder="your@email.com"
-                                value={email}
-                                onChange={e => setEmail(e.target.value)}
-                                required
-                                className="flex-1 bg-transparent border-none text-white px-5 py-3.5 text-sm placeholder:text-grey-500 outline-none"
-                            />
-                            <button type="submit" className="bg-accent text-black px-5 py-3.5 flex items-center hover:bg-accent-dark transition-colors duration-200">
-                                <HiArrowRight size={20} />
-                            </button>
-                        </form>
+                        <div className="flex flex-col items-center">
+                            <form onSubmit={handleSubscribe} className="inline-flex max-w-md w-full border border-grey-700 rounded-[4px] overflow-hidden">
+                                <input
+                                    type="email"
+                                    placeholder="your@email.com"
+                                    value={email}
+                                    onChange={e => {
+                                        setEmail(e.target.value);
+                                        if (errorMessage) setErrorMessage('');
+                                    }}
+                                    required
+                                    className="flex-1 bg-transparent border-none text-white px-5 py-3.5 text-sm placeholder:text-grey-500 outline-none"
+                                />
+                                <button type="submit" className="bg-accent text-black px-5 py-3.5 flex items-center hover:bg-accent-dark transition-colors duration-200">
+                                    <HiArrowRight size={20} />
+                                </button>
+                            </form>
+                            {errorMessage && (
+                                <p className="text-red-500 text-xs mt-2 font-medium">{errorMessage}</p>
+                            )}
+                        </div>
                     )}
                 </motion.div>
             </div>
@@ -97,7 +92,7 @@ const Footer = () => {
                 </div>
 
                 {[
-                    { title: 'Shop', links: [['T-Shirts', '/shop?category=T-Shirts'], ['Hoodies', '/shop?category=Hoodies'], ['Bottoms', '/shop?category=Bottoms'], ['Jackets', '/shop?category=Jackets'], ['Accessories', '/shop?category=Accessories'], ['New Arrivals', '/shop']] },
+                    { title: 'Shop', links: [['T-Shirts', '/shop?category=T-Shirts'], ['Tracksuits', '/shop?category=Tracksuits'], ['Feeling Mutual 1', '/shop?collection=Feeling+Mutual+1'], ['Feeling Mutual 2', '/shop?collection=Feeling+Mutual+2'], ['New Arrivals', '/shop']] },
                     { title: 'Info', links: [['About Us', '/about'], ['Contact', '/contact'], ['Sizing Guide', '#'], ['Shipping & Returns', '#'], ['FAQ', '#']] },
                     { title: 'Legal', links: [['Privacy Policy', '/privacy'], ['Terms of Service', '/terms'], ['Cookie Policy', '/cookie-policy']] },
                 ].map(col => (

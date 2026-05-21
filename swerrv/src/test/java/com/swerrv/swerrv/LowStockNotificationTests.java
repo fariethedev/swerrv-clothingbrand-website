@@ -41,6 +41,9 @@ public class LowStockNotificationTests {
     private OrderService orderService;
 
     @MockBean
+    private com.swerrv.swerrv.service.NewsletterService newsletterService;
+
+    @MockBean
     private JwtUtil jwtUtil;
 
     @MockBean

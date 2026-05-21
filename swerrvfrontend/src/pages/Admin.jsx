@@ -1,14 +1,29 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiOutlineShoppingBag, HiOutlineCurrencyDollar, HiOutlineClipboardList, HiOutlineCheck, HiOutlineLogout, HiOutlineMenu, HiOutlineCog, HiChartBar, HiOutlineVideoCamera, HiOutlineUsers, HiEye, HiEyeOff } from 'react-icons/hi';
+import { HiOutlineShoppingBag, HiOutlineCurrencyDollar, HiOutlineClipboardList, HiOutlineCheck, HiOutlineLogout, HiOutlineMenu, HiOutlineCog, HiChartBar, HiOutlineVideoCamera, HiOutlineUsers, HiEye, HiEyeOff, HiOutlineMail } from 'react-icons/hi';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import toast from 'react-hot-toast';
 
-const statusColors = { Delivered: '#34c759', Shipped: '#007aff', Processing: '#ff9500', Pending: '#ff3b30' };
+const statusColors = {
+    PENDING: '#ff3b30',
+    CONFIRMED: '#007aff',
+    PROCESSING: '#ff9500',
+    SHIPPED: '#007aff',
+    DELIVERED: '#34c759',
+    CANCELLED: '#ff3b30',
+    REFUNDED: '#8e8e93'
+};
+
+const getPaymentStatus = (o) => {
+    if (o.paymentMethod === 'card' || o.paymentIntentId || o.paymentReference) {
+        return 'Paid';
+    }
+    return 'Pending';
+};
 
 const INITIAL_PRODUCT_FORM = {
-    name: '', category: '', description: '', material: '',
+    name: '', category: '', collection: '', description: '', material: '',
     price: 0, salePrice: '', images: [], sizes: [], colors: [],
     stock: 0, featured: false, isNew: false, comingSoon: false
 };
@@ -25,17 +40,21 @@ const StatCard = ({ icon, label, value, change, color }) => (
 );
 
 const Admin = () => {
-    const { user, logout } = useAuth();
+    const { logout } = useAuth();
     const [activeTab, setActiveTab] = useState('dashboard');
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [filterStatus, setFilterStatus] = useState('All');
+    const [filterStatus, setFilterStatus] = useState('ALL');
 
     const [orders, setOrders] = useState([]);
     const [lowStock, setLowStock] = useState([]);
     const [allProducts, setAllProducts] = useState([]);
     const [promoContent, setPromoContent] = useState([]);
     const [users, setUsers] = useState([]);
+    const [subscribers, setSubscribers] = useState([]);
+    const [newsletterSubject, setNewsletterSubject] = useState('');
+    const [newsletterContent, setNewsletterContent] = useState('');
+    const [sendingNewsletter, setSendingNewsletter] = useState(false);
     const [stats, setStats] = useState({
         totalRevenue: 0,
         totalOrders: 0,
@@ -48,19 +67,21 @@ const Admin = () => {
     const loadAdminData = async () => {
         try {
             setLoading(true);
-            const [ordersData, statsData, lowStockData, productsData, promoData, usersData] = await Promise.all([
+            const [ordersData, statsData, lowStockData, productsData, promoData, usersData, subscribersData] = await Promise.all([
                 api.getAdminOrders(),
                 api.getAdminStats(),
                 api.getAdminLowStock(10),
                 api.getProducts(),
                 api.getPromoContent(),
-                api.getAdminUsers()
+                api.getAdminUsers(),
+                api.getNewsletterSubscribers()
             ]);
             setOrders(ordersData || []);
             setLowStock(lowStockData || []);
             setAllProducts(productsData || []);
             setPromoContent(promoData || []);
             setUsers(usersData || []);
+            setSubscribers(subscribersData || []);
             setStats(statsData || {
                 totalRevenue: 0,
                 totalOrders: 0,
@@ -80,10 +101,10 @@ const Admin = () => {
 
     const handleUpdateStatus = async (id, status) => {
         try {
-            await api.updateOrderStatus(id, status);
+            await api.updateOrderStatus(id, status.toUpperCase());
             toast.success('Status updated');
             loadAdminData(); // Refresh data
-        } catch (error) {
+        } catch {
             toast.error('Failed to update status');
         }
     };
@@ -96,7 +117,7 @@ const Admin = () => {
             await api.updateAdminStock(id, newStock);
             toast.success('Stock updated');
             loadAdminData(); // Refresh data
-        } catch (error) {
+        } catch {
             toast.error('Failed to update stock');
         }
     };
@@ -107,7 +128,7 @@ const Admin = () => {
             await api.deleteProduct(id);
             toast.success('Product deleted');
             loadAdminData();
-        } catch (error) {
+        } catch {
             toast.error('Failed to delete product');
         }
     };
@@ -118,7 +139,7 @@ const Admin = () => {
             await api.deletePromoContent(id);
             toast.success('Promo content deleted');
             loadAdminData();
-        } catch (error) {
+        } catch {
             toast.error('Failed to delete promo content');
         }
     };
@@ -128,8 +149,41 @@ const Admin = () => {
             await api.togglePromoContentActive(id);
             toast.success('Status updated');
             loadAdminData();
-        } catch (error) {
+        } catch {
             toast.error('Failed to update status');
+        }
+    };
+
+    const handleDeleteSubscriber = async (id) => {
+        if (!confirm('Are you sure you want to permanently delete this subscriber?')) return;
+        try {
+            await api.deleteNewsletterSubscriber(id);
+            toast.success('Subscriber deleted successfully');
+            loadAdminData();
+        } catch (error) {
+            toast.error(error.message || 'Failed to delete subscriber');
+        }
+    };
+
+    const handleSendNewsletter = async (e) => {
+        e.preventDefault();
+        if (!newsletterSubject.trim() || !newsletterContent.trim()) {
+            toast.error('Both Subject and Content are required');
+            return;
+        }
+
+        if (!confirm(`Are you sure you want to broadcast this newsletter to all active subscribers?`)) return;
+
+        try {
+            setSendingNewsletter(true);
+            await api.sendNewsletterContent(newsletterSubject, newsletterContent);
+            toast.success('Newsletter broadcast sent successfully!');
+            setNewsletterSubject('');
+            setNewsletterContent('');
+        } catch (error) {
+            toast.error(error.message || 'Failed to send newsletter');
+        } finally {
+            setSendingNewsletter(false);
         }
     };
 
@@ -186,7 +240,7 @@ const Admin = () => {
     const openEditModal = (p) => {
         setEditingProduct(p.id);
         setProductForm({
-            name: p.name || '', category: p.category || '', description: p.description || '',
+            name: p.name || '', category: p.category || '', collection: p.collection || '', description: p.description || '',
             material: p.material || '', price: p.price || 0, salePrice: p.originalPrice ? p.price : '', // if sale exists, current is salePrice
             images: p.images || [], sizes: p.sizes || [], colors: p.colors || [],
             stock: p.stock || 0, featured: p.featured || false, isNew: p.isNew || false, comingSoon: p.comingSoon || false
@@ -230,7 +284,7 @@ const Admin = () => {
         </div>
     );
 
-    const filteredOrders = filterStatus === 'All' ? orders : orders.filter(o => o.status === filterStatus);
+    const filteredOrders = filterStatus === 'ALL' ? orders : orders.filter(o => o.status === filterStatus);
     const revenueData = [45, 62, 80, 55, 92, 110, 85, 130, 95, 140, 120, 160];
     const maxRev = Math.max(...revenueData);
     const months = ['M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D', 'J', 'F'];
@@ -243,6 +297,7 @@ const Admin = () => {
         { id: 'customers', icon: <HiOutlineUsers size={20} />, label: 'Customers' },
         { id: 'payments', icon: <HiOutlineCurrencyDollar size={20} />, label: 'Payments' },
         { id: 'promo', icon: <HiOutlineVideoCamera size={20} />, label: 'Promo Content' },
+        { id: 'newsletter', icon: <HiOutlineMail size={20} />, label: 'Newsletter' },
         { id: 'settings', icon: <HiOutlineCog size={20} />, label: 'Settings' },
     ];
 
@@ -370,8 +425,8 @@ const Admin = () => {
                             {activeTab === 'orders' && (
                                 <div>
                                     <div className="flex gap-2 mb-5 flex-wrap">
-                                        {['All', 'Pending', 'Processing', 'Shipped', 'Delivered'].map(s => (
-                                            <button key={s} onClick={() => setFilterStatus(s)} className={`px-4 py-2 text-xs font-bold tracking-[0.1em] uppercase rounded border transition-all duration-200 ${filterStatus === s ? 'bg-accent text-black border-accent' : 'bg-transparent text-grey-300 border-white/10 hover:border-grey-500'}`}>{s}</button>
+                                        {['ALL', 'PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED'].map(s => (
+                                            <button key={s} onClick={() => setFilterStatus(s)} className={`px-4 py-2 text-xs font-bold tracking-[0.1em] uppercase rounded border transition-all duration-200 ${filterStatus === s ? 'bg-accent text-black border-accent' : 'bg-transparent text-grey-300 border-white/10 hover:border-grey-500'}`}>{s === 'ALL' ? 'All' : s.charAt(0) + s.slice(1).toLowerCase()}</button>
                                         ))}
                                     </div>
                                     <div className="admin-card">
@@ -388,12 +443,12 @@ const Admin = () => {
                                                             <td className="py-3.5 px-3 text-grey-500 text-xs">{o.email}</td>
                                                             <td className="py-3.5 px-3 text-grey-300 max-w-[160px] truncate">{o.items?.map(i => i.productName).join(', ')}</td>
                                                             <td className="py-3.5 px-3 font-black">${o.totalAmount}</td>
-                                                            <td className="py-3.5 px-3"><span className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${o.paymentStatus === 'Paid' ? 'text-brand-green bg-brand-green/10' : 'text-brand-red bg-brand-red/10'}`}>{o.paymentStatus}</span></td>
+                                                            <td className="py-3.5 px-3"><span className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${getPaymentStatus(o) === 'Paid' ? 'text-brand-green bg-brand-green/10' : 'text-brand-red bg-brand-red/10'}`}>{getPaymentStatus(o)}</span></td>
                                                             <td className="py-3.5 px-3"><span className="px-2.5 py-1 rounded-full text-[11px] font-bold" style={{ color: statusColors[o.status], background: `${statusColors[o.status]}18` }}>{o.status}</span></td>
                                                             <td className="py-3.5 px-3 text-grey-500 text-xs">{new Date(o.createdAt || o.date).toLocaleDateString()}</td>
                                                             <td className="py-3.5 px-3">
                                                                 <select value={o.status} onChange={e => handleUpdateStatus(o.id, e.target.value)} className="bg-white/5 border border-grey-700 text-white px-2.5 py-1.5 text-xs rounded cursor-pointer outline-none hover:border-grey-300 transition-colors">
-                                                                    {['Pending', 'Processing', 'Shipped', 'Delivered'].map(s => <option key={s} value={s} className="bg-grey-900">{s}</option>)}
+                                                                    {['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED'].map(s => <option key={s} value={s} className="bg-grey-900">{s.charAt(0) + s.slice(1).toLowerCase()}</option>)}
                                                                 </select>
                                                             </td>
                                                         </motion.tr>
@@ -526,9 +581,9 @@ const Admin = () => {
                                 <div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 mb-6 md:mb-8">
                                         <StatCard icon={<HiOutlineCurrencyDollar size={24} />} label="Total Revenue" value={`$${stats.totalRevenue}`} color="#c8ff00" />
-                                        <StatCard icon={<HiOutlineCheck size={24} />} label="Paid Orders" value={orders.filter(o => o.payment === 'Paid').length} color="#34c759" />
-                                        <StatCard icon={<HiOutlineClipboardList size={24} />} label="Pending Payment" value={orders.filter(o => o.payment === 'Pending').length} color="#ff3b30" />
-                                        <StatCard icon={<HiOutlineShoppingBag size={24} />} label="Avg Order Value" value={`$${Math.round(stats.totalRevenue / stats.totalOrders)}`} color="#007aff" />
+                                        <StatCard icon={<HiOutlineCheck size={24} />} label="Paid Orders" value={orders.filter(o => getPaymentStatus(o) === 'Paid').length} color="#34c759" />
+                                        <StatCard icon={<HiOutlineClipboardList size={24} />} label="Pending Payment" value={orders.filter(o => getPaymentStatus(o) === 'Pending').length} color="#ff3b30" />
+                                        <StatCard icon={<HiOutlineShoppingBag size={24} />} label="Avg Order Value" value={stats.totalOrders > 0 ? `$${Math.round(stats.totalRevenue / stats.totalOrders)}` : '$0'} color="#007aff" />
                                     </div>
                                     <div className="admin-card">
                                         <h3 className="text-sm font-bold tracking-[0.08em] mb-5">Payment Transactions</h3>
@@ -543,7 +598,7 @@ const Admin = () => {
                                                             <td className="py-3.5 px-3.5 text-accent font-bold text-xs">TXN-{o.id}</td>
                                                             <td className="py-3.5 px-3.5">{o.customerName}</td>
                                                             <td className="py-3.5 px-3.5 font-black">${o.totalAmount}</td>
-                                                            <td className="py-3.5 px-3.5"><span className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${o.paymentStatus === 'Paid' ? 'text-brand-green bg-brand-green/10' : 'text-brand-red bg-brand-red/10'}`}>{o.paymentStatus}</span></td>
+                                                            <td className="py-3.5 px-3.5"><span className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${getPaymentStatus(o) === 'Paid' ? 'text-brand-green bg-brand-green/10' : 'text-brand-red bg-brand-red/10'}`}>{getPaymentStatus(o)}</span></td>
                                                             <td className="py-3.5 px-3.5 text-grey-500 text-xs">{new Date(o.createdAt || o.date).toLocaleDateString()}</td>
                                                             <td className="py-3.5 px-3.5 text-grey-500 text-xs">Credit Card</td>
                                                         </tr>
@@ -590,6 +645,106 @@ const Admin = () => {
                                                     )}
                                                 </tbody>
                                             </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* NEWSLETTER */}
+                            {activeTab === 'newsletter' && (
+                                <div className="flex flex-col gap-6">
+                                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                                        {/* Left Column - Send Broadcast */}
+                                        <div className="admin-card lg:col-span-5 flex flex-col gap-4">
+                                            <h3 className="text-sm font-bold tracking-[0.08em] uppercase text-grey-300">Compose Newsletter</h3>
+                                            <form onSubmit={handleSendNewsletter} className="flex flex-col gap-4">
+                                                <div className="flex flex-col gap-1.5">
+                                                    <label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">Email Subject</label>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="e.g. SWERRV Summer Drop 2026"
+                                                        value={newsletterSubject}
+                                                        onChange={(e) => setNewsletterSubject(e.target.value)}
+                                                        className="form-input"
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="flex flex-col gap-1.5">
+                                                    <label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">Email Body (Supports plain text & inline HTML)</label>
+                                                    <textarea
+                                                        rows="12"
+                                                        placeholder="<h1>Summer Drop is live!</h1><p>Check out our new products now...</p>"
+                                                        value={newsletterContent}
+                                                        onChange={(e) => setNewsletterContent(e.target.value)}
+                                                        className="form-input font-mono text-xs text-white"
+                                                        required
+                                                    />
+                                                </div>
+                                                <button
+                                                    type="submit"
+                                                    disabled={sendingNewsletter}
+                                                    className="btn-primary mt-2 py-3 flex items-center justify-center gap-2"
+                                                >
+                                                    {sendingNewsletter ? (
+                                                        <>
+                                                            <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                                                            <span>Sending Broadcast...</span>
+                                                        </>
+                                                    ) : (
+                                                        <span>Send Broadcast</span>
+                                                    )}
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                        {/* Right Column - Subscribers list */}
+                                        <div className="admin-card lg:col-span-7 flex flex-col gap-4">
+                                            <div className="flex justify-between items-center border-b border-white/[0.06] pb-4">
+                                                <h3 className="text-sm font-bold tracking-[0.08em] uppercase text-grey-300">Newsletter Subscribers</h3>
+                                                <span className="bg-accent/15 text-accent text-xs px-2.5 py-1 rounded-full font-bold">
+                                                    {subscribers.length} total
+                                                </span>
+                                            </div>
+                                            <div className="overflow-x-auto">
+                                                <table className="w-full text-[13px]">
+                                                    <thead>
+                                                        <tr className="border-b border-white/[0.06]">
+                                                            {['Email', 'Status', 'Subscribed At', 'Action'].map(h => (
+                                                                <th key={h} className="text-left py-2.5 px-3.5 text-[10px] font-bold tracking-[0.12em] uppercase text-grey-500 whitespace-nowrap">{h}</th>
+                                                            ))}
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {subscribers.length === 0 ? (
+                                                            <tr>
+                                                                <td colSpan="4" className="py-8 text-center text-grey-500">No subscribers found.</td>
+                                                            </tr>
+                                                        ) : (
+                                                            subscribers.map((sub) => (
+                                                                <tr key={sub.id} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
+                                                                    <td className="py-3.5 px-3.5 font-medium max-w-[200px] truncate">{sub.email}</td>
+                                                                    <td className="py-3.5 px-3.5">
+                                                                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${sub.active ? 'text-brand-green bg-brand-green/10' : 'text-brand-red bg-brand-red/10'}`}>
+                                                                            {sub.active ? 'Active' : 'Unsubscribed'}
+                                                                        </span>
+                                                                    </td>
+                                                                    <td className="py-3.5 px-3.5 text-grey-500 text-xs">
+                                                                        {new Date(sub.subscribedAt).toLocaleString()}
+                                                                    </td>
+                                                                    <td className="py-3.5 px-3.5">
+                                                                        <button
+                                                                            onClick={() => handleDeleteSubscriber(sub.id)}
+                                                                            className="text-xs font-bold text-brand-red hover:underline"
+                                                                        >
+                                                                            Delete
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            ))
+                                                        )}
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -649,7 +804,7 @@ const Admin = () => {
                         <h2 className="text-xl font-black mb-6">{editingProduct ? 'Edit Product' : 'Add New Product'}</h2>
 
                         <form onSubmit={handleProductSubmit} className="flex flex-col gap-4 md:gap-5">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5">
                                 <div className="flex flex-col gap-1.5">
                                     <label className="text-[11px] font-bold tracking-[0.1em] uppercase text-grey-400">Name</label>
                                     <input required type="text" value={productForm.name} onChange={e => setProductForm({ ...productForm, name: e.target.value })} className="form-input text-sm py-2 px-3" />
@@ -659,11 +814,15 @@ const Admin = () => {
                                     <input required list="category-suggestions" type="text" value={productForm.category} onChange={e => setProductForm({ ...productForm, category: e.target.value })} className="form-input text-sm py-2 px-3" />
                                     <datalist id="category-suggestions">
                                         <option value="T-Shirts" />
-                                        <option value="Hoodies" />
                                         <option value="Tracksuits" />
-                                        <option value="Bottoms" />
-                                        <option value="Jackets" />
-                                        <option value="Accessories" />
+                                    </datalist>
+                                </div>
+                                <div className="flex flex-col gap-1.5">
+                                    <label className="text-[11px] font-bold tracking-[0.1em] uppercase text-grey-400">Collection</label>
+                                    <input list="collection-suggestions" type="text" value={productForm.collection} onChange={e => setProductForm({ ...productForm, collection: e.target.value })} className="form-input text-sm py-2 px-3" />
+                                    <datalist id="collection-suggestions">
+                                        <option value="Feeling Mutual 1" />
+                                        <option value="Feeling Mutual 2" />
                                     </datalist>
                                 </div>
                             </div>

@@ -6,12 +6,12 @@ import DetailedProductCard from '../components/DetailedProductCard';
 import { api } from '../services/api';
 import './Archive.css';
 
-const categories = ["All", "T-Shirts", "Hoodies", "Bottoms", "Jackets", "Accessories"];
+const categories = ["All", "T-Shirts", "Tracksuits"];
 
 const Archive = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'All');
-    const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+    const searchQuery = searchParams.get('search') || '';
     const [sortBy, setSortBy] = useState('featured');
     const [priceMax, setPriceMax] = useState(200);
     const [filtersOpen, setFiltersOpen] = useState(false);
@@ -63,7 +63,7 @@ const Archive = () => {
             {/* Brutalist Hero */}
             <section className="archive-hero">
                 <div className="archive-hero-bg">
-                    <img src="/images/_DSC8164.jpg" alt="Collection Hero" fetchpriority="high" decoding="async" />
+                    <img src="/images/_DSC8164.jpg" alt="Collection Hero" fetchPriority="high" decoding="async" />
                     <div className="archive-hero-overlay" />
                 </div>
 

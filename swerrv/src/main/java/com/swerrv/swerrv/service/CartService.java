@@ -30,6 +30,7 @@ public class CartService {
 
     // ── Get Cart ─────────────────────────────────────────────────────────────
 
+    @Transactional(readOnly = true)
     public CartDTO getCart(User user) {
         Cart cart = getOrCreateCart(user);
         return toDTO(cart);

@@ -11,12 +11,16 @@ const getHeaders = () => {
 const handleResponse = async (response) => {
     if (!response.ok) {
         let errorMessage = 'An error occurred';
-        try {
-            const errorData = await response.json();
-            errorMessage = errorData.message || errorData.error || errorMessage;
-        } catch (e) {
-            errorMessage = response.statusText;
-            console.error(e);
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            try {
+                const errorData = await response.json();
+                errorMessage = errorData.message || errorData.error || errorMessage;
+            } catch (e) {
+                console.error('Failed to parse error response JSON:', e);
+            }
+        } else {
+            errorMessage = response.statusText || `Error ${response.status}`;
         }
         throw new Error(errorMessage);
     }
@@ -364,6 +368,40 @@ export const api = {
         const response = await fetch(`${API_URL}/promo-content/${id}/toggle-active`, {
             method: 'PATCH',
             headers: getHeaders(),
+        });
+        return handleResponse(response);
+    },
+
+    // Newsletter
+    subscribeNewsletter: async (email) => {
+        const response = await fetch(`${API_URL}/newsletter/subscribe`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+        });
+        return handleResponse(response);
+    },
+
+    getNewsletterSubscribers: async () => {
+        const response = await fetch(`${API_URL}/admin/newsletter/subscribers`, {
+            headers: getHeaders(),
+        });
+        return handleResponse(response);
+    },
+
+    deleteNewsletterSubscriber: async (id) => {
+        const response = await fetch(`${API_URL}/admin/newsletter/subscribers/${id}`, {
+            method: 'DELETE',
+            headers: getHeaders(),
+        });
+        return handleResponse(response);
+    },
+
+    sendNewsletterContent: async (subject, content) => {
+        const response = await fetch(`${API_URL}/admin/newsletter/send`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({ subject, content }),
         });
         return handleResponse(response);
     },

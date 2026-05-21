@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import './CookieBanner.css';
@@ -6,14 +6,12 @@ import './CookieBanner.css';
 const COOKIE_KEY = 'swerrv_cookie_consent';
 
 const CookieBanner = () => {
-    const [visible, setVisible] = useState(false);
+    const [visible, setVisible] = useState(() => {
+        const saved = localStorage.getItem(COOKIE_KEY);
+        return !saved;
+    });
     const [showDetails, setShowDetails] = useState(false);
     const [prefs, setPrefs] = useState({ analytics: false, marketing: false });
-
-    useEffect(() => {
-        const saved = localStorage.getItem(COOKIE_KEY);
-        if (!saved) setVisible(true);
-    }, []);
 
     const save = (consent) => {
         localStorage.setItem(COOKIE_KEY, JSON.stringify({ ...consent, timestamp: Date.now() }));

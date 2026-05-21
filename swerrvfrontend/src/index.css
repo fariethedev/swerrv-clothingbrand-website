@@ -12,8 +12,10 @@
   --grey-300: #c0c0c0;
   --green: #34c759;
   --red: #ff3b30;
+  --brand-red: #ff3b30;
+  --brand-cream: #ffffff;
+  --brand-black: #000000;
 }
-
 
 @tailwind base;
 @tailwind components;
@@ -87,7 +89,6 @@
   .btn-primary {
     @apply px-8 py-3.5 text-xs font-bold tracking-widest uppercase transition-all duration-200 cursor-pointer inline-block text-black bg-white border border-white;
     border-radius: 0;
-    /* Brutalist sharp corners */
   }
 
   .btn-primary:hover {

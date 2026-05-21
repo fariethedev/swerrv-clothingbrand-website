@@ -22,6 +22,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ProductRepository productRepository;
 
+    @Transactional(readOnly = true)
     public List<ReviewDTO> getProductReviews(Long productId) {
         if (!productRepository.existsById(productId)) {
             throw new ResourceNotFoundException("Product", productId);

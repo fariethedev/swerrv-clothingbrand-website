@@ -1,66 +1,82 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
-import { HiOutlineLocationMarker, HiOutlinePlus, HiOutlinePencilAlt, HiOutlineTrash, HiOutlineUserCircle } from 'react-icons/hi';
+import {
+    HiOutlineLocationMarker, HiOutlinePlus, HiOutlinePencilAlt,
+    HiOutlineTrash, HiOutlineUserCircle, HiOutlineShoppingBag,
+    HiOutlineCamera, HiOutlineHeart, HiOutlineLogout
+} from 'react-icons/hi';
+import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 
+/* ── helpers ── */
+const inputCls = `w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3
+    text-sm text-white placeholder-white/30 outline-none
+    focus:border-white/40 focus:bg-white/8 transition-all duration-200`;
+
+const labelCls = `block text-[10px] font-bold tracking-[0.18em] uppercase text-white/40 mb-1.5`;
+
+const TAB_VARIANTS = {
+    initial: { opacity: 0, y: 12 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+    exit:    { opacity: 0, y: -8, transition: { duration: 0.2 } },
+};
+
+/* ════════════════════════════════════════════════════════
+   PROFILE PAGE
+════════════════════════════════════════════════════════ */
 const Profile = () => {
-    const { user, updateUserProfile, loading } = useAuth();
+    const { user, updateUserProfile, logout, loading } = useAuth();
     const navigate = useNavigate();
+    const { cartItems } = useCart();
+    const { wishlist } = useWishlist();
+    const fileRef = useRef();
 
-    const [activeTab, setActiveTab] = useState('details'); // 'details' or 'address'
+    const [activeTab, setActiveTab] = useState('details');
 
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        email: '',
-        dateOfBirth: '',
-        address: '',
-        secondAddress: '',
+        firstName: '', lastName: '', email: '',
+        dateOfBirth: '', address: '', secondAddress: '',
         profilePictureUrl: ''
     });
     const [submittingUser, setSubmittingUser] = useState(false);
+    const [saved, setSaved] = useState(false);
 
-    // MOCK Address State will be repurposed here to just handle editing 
-    // the user's two addresses (Primary Address and Second Address)
     const [isEditingAddress, setIsEditingAddress] = useState(false);
-    const [addressForm, setAddressForm] = useState({
-        type: 'primary',
-        addressString: ''
-    });
+    const [addressForm, setAddressForm] = useState({ type: 'primary', addressString: '' });
 
     useEffect(() => {
+        let active = true;
         if (!loading && !user) {
             navigate('/login');
         } else if (user && user.email !== formData.email) {
-            setFormData({
-                firstName: user.firstName || '',
-                lastName: user.lastName || '',
-                email: user.email || '',
-                dateOfBirth: user.dateOfBirth || '',
-                address: user.address || '',
-                secondAddress: user.secondAddress || '',
-                profilePictureUrl: user.profilePictureUrl || ''
-            });
+            const t = setTimeout(() => {
+                if (active) setFormData({
+                    firstName: user.firstName || '',
+                    lastName:  user.lastName  || '',
+                    email:     user.email     || '',
+                    dateOfBirth: user.dateOfBirth || '',
+                    address:      user.address      || '',
+                    secondAddress: user.secondAddress || '',
+                    profilePictureUrl: user.profilePictureUrl || ''
+                });
+            }, 0);
+            return () => { active = false; clearTimeout(t); };
         }
     }, [user, loading, navigate, formData.email]);
 
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setFormData(prev => ({ ...prev, profilePictureUrl: reader.result }));
-            };
-            reader.readAsDataURL(file);
-        }
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onloadend = () => setFormData(p => ({ ...p, profilePictureUrl: reader.result }));
+        reader.readAsDataURL(file);
     };
 
-    // Handle normal user details update
     const handleUserChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        setFormData(p => ({ ...p, [name]: value }));
     };
 
     const handleUserSubmit = async (e) => {
@@ -68,16 +84,13 @@ const Profile = () => {
         setSubmittingUser(true);
         await updateUserProfile(formData);
         setSubmittingUser(false);
-    };
-
-    // Address Box Handlers
-    const handleAddressChange = (e) => {
-        setAddressForm(prev => ({ ...prev, addressString: e.target.value }));
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2500);
     };
 
     const startEditAddress = (type) => {
         setAddressForm({
-            type: type,
+            type,
             addressString: type === 'primary' ? formData.address : formData.secondAddress
         });
         setIsEditingAddress(true);
@@ -86,207 +99,337 @@ const Profile = () => {
     const saveAddress = async (e) => {
         e.preventDefault();
         setSubmittingUser(true);
-        const newProfile = { ...formData };
-        if (addressForm.type === 'primary') {
-            newProfile.address = addressForm.addressString;
-        } else {
-            newProfile.secondAddress = addressForm.addressString;
-        }
-
-        await updateUserProfile(newProfile);
-        setFormData(newProfile);
+        const np = { ...formData };
+        if (addressForm.type === 'primary') np.address = addressForm.addressString;
+        else np.secondAddress = addressForm.addressString;
+        await updateUserProfile(np);
+        setFormData(np);
         setIsEditingAddress(false);
         setSubmittingUser(false);
     };
 
     const deleteAddress = async (type) => {
         setSubmittingUser(true);
-        const newProfile = { ...formData };
-        if (type === 'primary') {
-            // Shouldn't really delete primary, but if they want to...
-            newProfile.address = '';
-        } else {
-            newProfile.secondAddress = '';
-        }
-        await updateUserProfile(newProfile);
-        setFormData(newProfile);
+        const np = { ...formData };
+        if (type === 'primary') np.address = '';
+        else np.secondAddress = '';
+        await updateUserProfile(np);
+        setFormData(np);
         setSubmittingUser(false);
     };
 
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-black pt-[70px] flex items-center justify-center">
-                <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-            </div>
-        );
-    }
+    if (loading) return (
+        <div className="min-h-screen bg-black pt-[70px] flex items-center justify-center">
+            <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+        </div>
+    );
 
     if (!user) return null;
 
+    const initials = `${formData.firstName?.[0] || ''}${formData.lastName?.[0] || ''}`.toUpperCase() || '?';
+
+    const TABS = [
+        { id: 'details',  label: 'Profile',   icon: <HiOutlineUserCircle size={17} /> },
+        { id: 'address',  label: 'Addresses', icon: <HiOutlineLocationMarker size={17} /> },
+    ];
+
     return (
-        <div className="min-h-screen bg-black pt-[70px]">
-            {/* Small visual flair: spinning logo subtly in corner */}
-            <div className="fixed top-24 right-10 w-40 h-40 opacity-20 mix-blend-screen pointer-events-none rounded-full overflow-hidden z-0 hidden lg:block">
-                <video autoPlay loop muted playsInline className="w-full h-full object-cover">
-                    <source src="/images/logovideo.mov" type="video/mp4" />
-                </video>
-            </div>
+        <div className="min-h-screen bg-black text-white pt-[70px]">
 
-            <div className="max-w-[1000px] mx-auto px-6 py-10 relative z-10">
-                <div className="mb-10 border-b border-white/10 pb-6 flex flex-col md:flex-row items-start md:items-end justify-between gap-5">
-                    <div>
-                        <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight uppercase mb-2">My Account</h1>
-                        <p className="text-grey-400">Manage your profile and shipping details.</p>
+            {/* ── Page wrapper ── */}
+            <div className="max-w-[900px] mx-auto px-4 md:px-6 py-10 space-y-8">
+
+                {/* ══ HERO CARD ══ */}
+                <motion.div
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.06] to-white/[0.02] backdrop-blur-sm p-8"
+                >
+                    {/* Subtle decorative glow */}
+                    <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-white/5 blur-3xl pointer-events-none" />
+
+                    <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 relative z-10">
+
+                        {/* Avatar */}
+                        <div className="relative shrink-0">
+                            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-white/20 bg-white/10 flex items-center justify-center">
+                                {formData.profilePictureUrl
+                                    ? <img src={formData.profilePictureUrl} alt="Avatar" className="w-full h-full object-cover" />
+                                    : <span className="text-2xl font-black text-white/70">{initials}</span>
+                                }
+                            </div>
+                            {/* Upload trigger */}
+                            <button
+                                onClick={() => fileRef.current?.click()}
+                                className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
+                                title="Change photo"
+                            >
+                                <HiOutlineCamera size={14} />
+                            </button>
+                            <input ref={fileRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                        </div>
+
+                        {/* Name & email */}
+                        <div className="flex-1 text-center sm:text-left">
+                            <h1 className="text-2xl md:text-3xl font-black tracking-tight">
+                                {formData.firstName || formData.lastName
+                                    ? `${formData.firstName} ${formData.lastName}`.trim()
+                                    : 'Your Account'}
+                            </h1>
+                            <p className="text-sm text-white/40 mt-1">{formData.email}</p>
+                        </div>
+
+                        {/* Stats chips */}
+                        <div className="flex gap-3 shrink-0">
+                            <Link to="/shop/orders" className="flex flex-col items-center bg-white/5 border border-white/10 rounded-xl px-4 py-3 hover:bg-white/10 transition-colors min-w-[70px]">
+                                <HiOutlineShoppingBag size={18} className="text-white/60 mb-1" />
+                                <span className="text-lg font-black">{cartItems?.length ?? 0}</span>
+                                <span className="text-[10px] text-white/40 uppercase tracking-wider">Cart</span>
+                            </Link>
+                            <Link to="/wishlist" className="flex flex-col items-center bg-white/5 border border-white/10 rounded-xl px-4 py-3 hover:bg-white/10 transition-colors min-w-[70px]">
+                                <HiOutlineHeart size={18} className="text-white/60 mb-1" />
+                                <span className="text-lg font-black">{wishlist?.length ?? 0}</span>
+                                <span className="text-[10px] text-white/40 uppercase tracking-wider">Saved</span>
+                            </Link>
+                        </div>
                     </div>
-                </div>
+                </motion.div>
 
-                <div className="flex flex-col md:flex-row gap-8 lg:gap-12">
-                    {/* Sidebar Tabs */}
-                    <div className="w-full md:w-64 shrink-0 flex flex-col gap-2">
+                {/* ══ TAB NAV ══ */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.4, delay: 0.15 }}
+                    className="flex gap-2 bg-white/5 border border-white/10 rounded-2xl p-1.5"
+                >
+                    {TABS.map(tab => (
                         <button
-                            onClick={() => setActiveTab('details')}
-                            className={`flex items-center gap-3 px-5 py-4 text-sm font-bold tracking-widest uppercase transition-all duration-300 border-l-2 ${activeTab === 'details' ? 'bg-grey-900 border-accent text-white' : 'border-transparent text-grey-500 hover:text-white hover:bg-white/5'}`}
+                            key={tab.id}
+                            onClick={() => { setActiveTab(tab.id); setIsEditingAddress(false); }}
+                            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all duration-250 ${
+                                activeTab === tab.id
+                                    ? 'bg-white text-black shadow'
+                                    : 'text-white/50 hover:text-white'
+                            }`}
                         >
-                            <HiOutlineUserCircle size={20} /> Profile Details
+                            {tab.icon}
+                            {tab.label}
                         </button>
-                        <button
-                            onClick={() => setActiveTab('address')}
-                            className={`flex items-center gap-3 px-5 py-4 text-sm font-bold tracking-widest uppercase transition-all duration-300 border-l-2 ${activeTab === 'address' ? 'bg-grey-900 border-accent text-white' : 'border-transparent text-grey-500 hover:text-white hover:bg-white/5'}`}
-                        >
-                            <HiOutlineLocationMarker size={20} /> Address Book
-                        </button>
-                    </div>
+                    ))}
+                </motion.div>
 
-                    {/* Main Content Area */}
-                    <div className="flex-1">
-                        <AnimatePresence mode="wait">
-                            {/* Profile Details Tab */}
-                            {activeTab === 'details' && (
-                                <motion.div key="details" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="bg-grey-900 border border-white/10 p-6 md:p-8">
-                                    <h2 className="text-lg font-bold tracking-widest uppercase text-white mb-6">Personal Information</h2>
-                                    <form onSubmit={handleUserSubmit} className="space-y-6">
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                            <div className="space-y-2">
-                                                <label className="text-[11px] font-bold tracking-[0.2em] uppercase text-grey-400">First Name</label>
-                                                <input type="text" name="firstName" value={formData.firstName} onChange={handleUserChange} required className="form-input" />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[11px] font-bold tracking-[0.2em] uppercase text-grey-400">Last Name</label>
-                                                <input type="text" name="lastName" value={formData.lastName} onChange={handleUserChange} required className="form-input" />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[11px] font-bold tracking-[0.2em] uppercase text-grey-400">Date of Birth</label>
-                                                <input type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleUserChange} className="form-input" style={{ color: formData.dateOfBirth ? 'inherit' : 'gray' }} />
-                                            </div>
+                {/* ══ CONTENT ══ */}
+                <AnimatePresence mode="wait">
+
+                    {/* ─ Profile Details ─ */}
+                    {activeTab === 'details' && (
+                        <motion.div key="details" variants={TAB_VARIANTS} initial="initial" animate="animate" exit="exit">
+                            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 md:p-8 space-y-6">
+                                <div className="flex items-center justify-between">
+                                    <h2 className="text-sm font-bold tracking-widest uppercase text-white/60">Personal Information</h2>
+                                </div>
+
+                                <form onSubmit={handleUserSubmit} className="space-y-5">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className={labelCls}>First Name</label>
+                                            <input type="text" name="firstName" value={formData.firstName} onChange={handleUserChange} required className={inputCls} placeholder="John" />
                                         </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[11px] font-bold tracking-[0.2em] uppercase text-grey-400">Email Address <span className="text-grey-600 lowercase tracking-normal">(Read Only if Google Auth)</span></label>
-                                            <input type="email" name="email" value={formData.email} onChange={handleUserChange} required className="form-input opacity-80" readOnly />
+                                        <div>
+                                            <label className={labelCls}>Last Name</label>
+                                            <input type="text" name="lastName" value={formData.lastName} onChange={handleUserChange} required className={inputCls} placeholder="Doe" />
                                         </div>
-
-                                        <div className="space-y-2">
-                                            <label className="text-[11px] font-bold tracking-[0.2em] uppercase text-grey-400">Profile Picture</label>
-                                            <div className="flex items-center gap-4">
-                                                {formData.profilePictureUrl && (
-                                                    <div className="w-16 h-16 rounded-full overflow-hidden border border-white/20 shrink-0">
-                                                        <img src={formData.profilePictureUrl} alt="Profile" className="w-full h-full object-cover" />
-                                                    </div>
-                                                )}
-                                                <input type="file" accept="image/*" onChange={handleImageUpload} className="text-sm text-grey-300" />
-                                            </div>
+                                        <div>
+                                            <label className={labelCls}>Date of Birth</label>
+                                            <input type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleUserChange} className={inputCls} />
                                         </div>
+                                        <div>
+                                            <label className={labelCls}>Email <span className="normal-case tracking-normal text-white/25 font-normal">(read-only)</span></label>
+                                            <input type="email" name="email" value={formData.email} readOnly className={`${inputCls} opacity-50 cursor-not-allowed`} />
+                                        </div>
+                                    </div>
 
-                                        <button type="submit" disabled={submittingUser} className="btn-primary w-full sm:w-auto mt-4">
-                                            {submittingUser ? 'Saving...' : 'Save Changes'}
-                                        </button>
-                                    </form>
-                                </motion.div>
-                            )}
+                                    <div className="pt-2 flex items-center gap-4">
+                                        <motion.button
+                                            type="submit"
+                                            disabled={submittingUser}
+                                            whileHover={{ scale: 1.02 }}
+                                            whileTap={{ scale: 0.97 }}
+                                            className="bg-white text-black text-xs font-bold tracking-widest uppercase px-8 py-3 rounded-full hover:bg-white/90 transition-colors disabled:opacity-50"
+                                        >
+                                            {submittingUser ? 'Saving…' : 'Save Changes'}
+                                        </motion.button>
 
-                            {/* Address Book Tab */}
-                            {activeTab === 'address' && (
-                                <motion.div key="address" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                                    {!isEditingAddress ? (
-                                        <>
-                                            <div className="flex items-center justify-between mb-6">
-                                                <h2 className="text-lg font-bold tracking-widest uppercase text-white">Saved Addresses</h2>
-                                                {(!formData.address || !formData.secondAddress) && (
-                                                    <button onClick={() => startEditAddress(formData.address ? 'secondary' : 'primary')} className="btn-secondary flex items-center gap-2 text-xs py-2 px-4">
-                                                        <HiOutlinePlus size={16} /> Add Address
-                                                    </button>
-                                                )}
-                                            </div>
-
-                                            {(!formData.address && !formData.secondAddress) ? (
-                                                <div className="bg-grey-900 border border-white/5 border-dashed p-10 text-center flex flex-col items-center">
-                                                    <HiOutlineLocationMarker size={40} className="text-grey-600 mb-4" />
-                                                    <p className="text-grey-400 mb-4">No shipping addresses saved yet.</p>
-                                                    <button onClick={() => startEditAddress('primary')} className="text-accent underline text-sm font-bold uppercase tracking-widest">Add your first address</button>
-                                                </div>
-                                            ) : (
-                                                <div className="grid grid-cols-1 gap-5">
-                                                    {formData.address && (
-                                                        <div className={`bg-grey-900 border p-5 relative transition-all border-accent`}>
-                                                            <span className="absolute -top-3 left-4 bg-accent text-black text-[10px] font-black uppercase tracking-widest px-2 py-0.5">Primary</span>
-                                                            <div className="absolute top-4 right-4 flex gap-3 text-grey-500">
-                                                                <button onClick={() => startEditAddress('primary')} className="hover:text-white transition-colors" title="Edit"><HiOutlinePencilAlt size={18} /></button>
-                                                            </div>
-                                                            <p className="font-bold text-white mb-2 tracking-wide truncate pr-16">{formData.firstName} {formData.lastName}</p>
-                                                            <p className="text-sm text-grey-400 leading-relaxed max-w-[90%] whitespace-pre-line">
-                                                                {formData.address}
-                                                            </p>
-                                                        </div>
-                                                    )}
-
-                                                    {formData.secondAddress && (
-                                                        <div className={`bg-grey-900 border p-5 relative transition-all border-white/10`}>
-                                                            <span className="absolute -top-3 left-4 bg-grey-700 text-white text-[10px] font-black uppercase tracking-widest px-2 py-0.5">Secondary</span>
-                                                            <div className="absolute top-4 right-4 flex gap-3 text-grey-500">
-                                                                <button onClick={() => startEditAddress('secondary')} className="hover:text-white transition-colors" title="Edit"><HiOutlinePencilAlt size={18} /></button>
-                                                                <button onClick={() => deleteAddress('secondary')} className="hover:text-brand-red transition-colors" title="Delete"><HiOutlineTrash size={18} /></button>
-                                                            </div>
-                                                            <p className="font-bold text-white mb-2 tracking-wide truncate pr-16">{formData.firstName} {formData.lastName}</p>
-                                                            <p className="text-sm text-grey-400 leading-relaxed max-w-[90%] whitespace-pre-line">
-                                                                {formData.secondAddress}
-                                                            </p>
-                                                        </div>
-                                                    )}
-                                                </div>
+                                        <AnimatePresence>
+                                            {saved && (
+                                                <motion.span
+                                                    key="saved"
+                                                    initial={{ opacity: 0, x: -8 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    exit={{ opacity: 0 }}
+                                                    className="text-xs text-white/50 font-medium"
+                                                >
+                                                    ✓ Saved
+                                                </motion.span>
                                             )}
-                                        </>
-                                    ) : (
-                                        <div className="bg-grey-900 border border-white/10 p-6 md:p-8">
-                                            <h2 className="text-lg font-bold tracking-widest uppercase text-white mb-6">
+                                        </AnimatePresence>
+                                    </div>
+                                </form>
+                            </div>
+
+                            {/* Danger zone */}
+                            <div className="mt-4 rounded-2xl border border-white/5 bg-white/[0.02] p-5 flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-semibold text-white/70">Sign out</p>
+                                    <p className="text-xs text-white/30 mt-0.5">You'll be redirected to login</p>
+                                </div>
+                                <button
+                                    onClick={() => { logout(); navigate('/login'); }}
+                                    className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-white/50 border border-white/10 px-4 py-2 rounded-full hover:border-white/30 hover:text-white transition-all"
+                                >
+                                    <HiOutlineLogout size={15} />
+                                    Logout
+                                </button>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {/* ─ Address Book ─ */}
+                    {activeTab === 'address' && (
+                        <motion.div key="address" variants={TAB_VARIANTS} initial="initial" animate="animate" exit="exit" className="space-y-4">
+                            <AnimatePresence mode="wait">
+
+                                {/* List view */}
+                                {!isEditingAddress && (
+                                    <motion.div key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <h2 className="text-sm font-bold tracking-widest uppercase text-white/60">Saved Addresses</h2>
+                                            {(!formData.address || !formData.secondAddress) && (
+                                                <motion.button
+                                                    whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                                                    onClick={() => startEditAddress(formData.address ? 'secondary' : 'primary')}
+                                                    className="flex items-center gap-1.5 text-xs font-bold tracking-wider uppercase border border-white/20 px-4 py-2 rounded-full hover:bg-white hover:text-black transition-all"
+                                                >
+                                                    <HiOutlinePlus size={14} /> Add Address
+                                                </motion.button>
+                                            )}
+                                        </div>
+
+                                        {!formData.address && !formData.secondAddress ? (
+                                            <div className="rounded-2xl border border-dashed border-white/10 p-12 text-center flex flex-col items-center gap-4">
+                                                <HiOutlineLocationMarker size={36} className="text-white/20" />
+                                                <p className="text-sm text-white/40">No addresses saved yet</p>
+                                                <button
+                                                    onClick={() => startEditAddress('primary')}
+                                                    className="text-xs font-bold uppercase tracking-widest text-white underline underline-offset-4 hover:text-white/70 transition-colors"
+                                                >
+                                                    Add your first address
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="grid gap-4">
+                                                {formData.address && (
+                                                    <AddressCard
+                                                        label="Primary"
+                                                        address={formData.address}
+                                                        name={`${formData.firstName} ${formData.lastName}`}
+                                                        onEdit={() => startEditAddress('primary')}
+                                                        accent
+                                                    />
+                                                )}
+                                                {formData.secondAddress && (
+                                                    <AddressCard
+                                                        label="Secondary"
+                                                        address={formData.secondAddress}
+                                                        name={`${formData.firstName} ${formData.lastName}`}
+                                                        onEdit={() => startEditAddress('secondary')}
+                                                        onDelete={() => deleteAddress('secondary')}
+                                                    />
+                                                )}
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                )}
+
+                                {/* Edit view */}
+                                {isEditingAddress && (
+                                    <motion.div key="edit" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+                                        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 md:p-8 space-y-5">
+                                            <h2 className="text-sm font-bold tracking-widest uppercase text-white/60">
                                                 {addressForm.type === 'primary' ? 'Edit Primary Address' : 'Edit Secondary Address'}
                                             </h2>
                                             <form onSubmit={saveAddress} className="space-y-5">
-                                                <div className="space-y-1.5">
-                                                    <label className="text-[11px] font-bold tracking-[0.2em] uppercase text-grey-400">Full Address</label>
+                                                <div>
+                                                    <label className={labelCls}>Full Address</label>
                                                     <textarea
-                                                        rows="4"
+                                                        rows={4}
                                                         value={addressForm.addressString}
-                                                        onChange={handleAddressChange}
+                                                        onChange={e => setAddressForm(p => ({ ...p, addressString: e.target.value }))}
                                                         required
                                                         placeholder="123 Main Street, City, State, ZIP, Country"
-                                                        className="form-input py-2.5 resize-none"
+                                                        className={`${inputCls} resize-none`}
                                                     />
                                                 </div>
-
-                                                <div className="flex items-center gap-4 pt-4 border-t border-white/10">
-                                                    <button type="submit" disabled={submittingUser} className="btn-primary py-3 px-8 text-xs">{submittingUser ? 'Saving...' : 'Save Address'}</button>
-                                                    <button type="button" onClick={() => setIsEditingAddress(false)} className="text-white hover:text-brand-red font-bold text-xs uppercase tracking-widest transition-colors py-3 px-4">Cancel</button>
+                                                <div className="flex items-center gap-3 pt-2">
+                                                    <motion.button
+                                                        type="submit"
+                                                        disabled={submittingUser}
+                                                        whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+                                                        className="bg-white text-black text-xs font-bold tracking-widest uppercase px-8 py-3 rounded-full hover:bg-white/90 transition-colors disabled:opacity-50"
+                                                    >
+                                                        {submittingUser ? 'Saving…' : 'Save Address'}
+                                                    </motion.button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setIsEditingAddress(false)}
+                                                        className="text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors px-4 py-3"
+                                                    >
+                                                        Cancel
+                                                    </button>
                                                 </div>
                                             </form>
                                         </div>
-                                    )}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
-                </div>
+                                    </motion.div>
+                                )}
+
+                            </AnimatePresence>
+                        </motion.div>
+                    )}
+
+                </AnimatePresence>
             </div>
         </div>
     );
 };
+
+/* ── Address Card sub-component ── */
+const AddressCard = ({ label, address, name, onEdit, onDelete, accent }) => (
+    <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={`relative rounded-2xl border p-5 ${accent ? 'border-white/30 bg-white/[0.05]' : 'border-white/10 bg-white/[0.03]'}`}
+    >
+        {/* Label badge */}
+        <span className={`absolute -top-3 left-5 text-[9px] font-black tracking-[0.2em] uppercase px-3 py-0.5 rounded-full ${accent ? 'bg-white text-black' : 'bg-white/10 text-white/60 border border-white/10'}`}>
+            {label}
+        </span>
+
+        {/* Action buttons */}
+        <div className="absolute top-4 right-4 flex gap-2">
+            <button onClick={onEdit} className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all" title="Edit">
+                <HiOutlinePencilAlt size={15} />
+            </button>
+            {onDelete && (
+                <button onClick={onDelete} className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-red-400 hover:bg-red-500/10 transition-all" title="Delete">
+                    <HiOutlineTrash size={15} />
+                </button>
+            )}
+        </div>
+
+        <p className="font-bold text-white text-sm mb-1.5 pr-20">{name}</p>
+        <p className="text-sm text-white/40 leading-relaxed whitespace-pre-line">{address}</p>
+    </motion.div>
+);
 
 export default Profile;

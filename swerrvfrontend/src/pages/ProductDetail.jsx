@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { HiHeart, HiOutlineHeart, HiArrowLeft, HiChevronDown, HiChevronUp } from 'react-icons/hi';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import { useAuth } from '../context/AuthContext';
 import ProductCard from '../components/ProductCard';
 import toast from 'react-hot-toast';
 import { api } from '../services/api';
@@ -21,12 +22,17 @@ const Accordion = ({ title, children }) => {
             </button>
             <AnimatePresence initial={false}>
                 {open && (
-                    <div
+                    <motion.div
                         key="content"
                         className="pd-accordion-body"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                        style={{ overflow: 'hidden' }}
                     >
                         {children}
-                    </div>
+                    </motion.div>
                 )}
             </AnimatePresence>
         </div>
@@ -39,15 +45,21 @@ const ProductDetail = () => {
     const { addToCart } = useCart();
     const { toggleWishlist, isWishlisted } = useWishlist();
     const { formatPrice } = useCurrency();
+    const { user } = useAuth();
 
     const [product, setProduct] = useState(null);
     const [related, setRelated] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [reviews, setReviews] = useState([]);
 
     const [selectedImg, setSelectedImg] = useState(0);
     const [selectedSize, setSelectedSize] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
     const [quantity] = useState(1);
+
+    const [reviewRating, setReviewRating] = useState(5);
+    const [reviewComment, setReviewComment] = useState('');
+    const [submittingReview, setSubmittingReview] = useState(false);
 
     const styledRef = useRef(null);
 
@@ -59,6 +71,7 @@ const ProductDetail = () => {
                 setSelectedImg(0);
                 setSelectedSize('');
                 setSelectedColor('');
+                setReviews([]);
             }
         }, 0);
         window.scrollTo(0, 0);
@@ -66,6 +79,14 @@ const ProductDetail = () => {
         api.getProductById(id).then(productData => {
             if (!active) return;
             setProduct(productData);
+
+            api.getProductReviews(id).then(reviewsData => {
+                if (!active) return;
+                setReviews(reviewsData || []);
+            }).catch(err => {
+                console.error("Error fetching reviews:", err);
+            });
+
             api.getProducts().then(all => {
                 if (!active) return;
                 setRelated(all.filter(p => p.category === productData.category && p.id !== productData.id).slice(0, 6));
@@ -104,6 +125,52 @@ const ProductDetail = () => {
         if (productColors.length > 0 && !selectedColor) { toast.error('Please select a colour'); return; }
         addToCart({ ...product, selectedColor }, selectedSize, quantity);
         toast.success('Added to bag!', { style: { background: '#111', color: '#fff', border: '1px solid #333' } });
+    };
+
+    const handleReviewSubmit = async (e) => {
+        e.preventDefault();
+        if (!user) {
+            toast.error('You must be logged in to leave a review.');
+            return;
+        }
+        if (!reviewComment.trim()) {
+            toast.error('Please write a comment.');
+            return;
+        }
+        setSubmittingReview(true);
+        try {
+            const payload = {
+                rating: reviewRating,
+                comment: reviewComment.trim(),
+                reviewerName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email
+            };
+            const newReview = await api.createReview(product.id, payload);
+            setReviews(prev => [newReview, ...prev]);
+            setReviewComment('');
+            setReviewRating(5);
+            toast.success('Thank you for your review!');
+        } catch (err) {
+            toast.error(err.message || 'Failed to submit review.');
+        } finally {
+            setSubmittingReview(false);
+        }
+    };
+
+    const totalReviews = reviews.length;
+    const avgRating = totalReviews > 0 
+        ? (reviews.reduce((acc, r) => acc + r.rating, 0) / totalReviews).toFixed(1)
+        : '0.0';
+    
+    const ratingDistribution = [0, 0, 0, 0, 0, 0];
+    reviews.forEach(r => {
+        if (r.rating >= 1 && r.rating <= 5) {
+            ratingDistribution[r.rating]++;
+        }
+    });
+    
+    const getPercentage = (star) => {
+        if (totalReviews === 0) return '0%';
+        return `${((ratingDistribution[star] / totalReviews) * 100).toFixed(0)}%`;
     };
 
     /* ── Sizes catalogue ── */
@@ -150,15 +217,19 @@ const ProductDetail = () => {
                     <div className="pd-gallery">
                         {/* Main image */}
                         <AnimatePresence mode="wait">
-                            <div
+                            <motion.div
                                 key={selectedImg}
                                 className="pd-main-img-wrap"
+                                initial={{ opacity: 0, scale: 1.03 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.35, ease: 'easeOut' }}
                             >
                                 <img
                                     src={images[selectedImg]}
                                     alt={product.name}
                                     className={`pd-main-img${product.comingSoon ? ' blur-[4px] scale-105' : ''}`}
-                                    fetchpriority="high"
+                                    fetchPriority="high"
                                     decoding="async"
                                 />
                                 {product.comingSoon && (
@@ -171,7 +242,7 @@ const ProductDetail = () => {
                                 {isOnSale && (
                                     <span className="pd-badge pd-badge--sale">Sale</span>
                                 )}
-                            </div>
+                            </motion.div>
                         </AnimatePresence>
 
                         {/* Thumbnail strip */}
@@ -197,9 +268,30 @@ const ProductDetail = () => {
                         {/* Category Tag */}
                         <span className="pd-category-tag">{product.category || 'Fashion'}</span>
 
-                        {/* Name & Price */}
-                        <h1 className="pd-name">{product.name}</h1>
-                        <div className="pd-price-row">
+                        {/* Name */}
+                        <motion.h1
+                            className="pd-name"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.45, delay: 0.1 }}
+                        >
+                            {product.name}
+                        </motion.h1>
+
+                        {/* Star Rating Summary */}
+                        <div className="flex items-center gap-2 mt-1.5 mb-3.5">
+                            <div className="text-accent flex gap-0.5 text-sm select-none">
+                                {'★'.repeat(Math.round(parseFloat(avgRating)))}{'☆'.repeat(5 - Math.round(parseFloat(avgRating)))}
+                            </div>
+                            <span className="text-xs text-grey-500 font-medium">({totalReviews} verified {totalReviews === 1 ? 'review' : 'reviews'})</span>
+                        </div>
+
+                        <motion.div
+                            className="pd-price-row"
+                            initial={{ opacity: 0, y: 12 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: 0.2 }}
+                        >
                             {product.comingSoon ? (
                                 <span className="pd-price--soon">Coming Soon</span>
                             ) : (
@@ -210,7 +302,7 @@ const ProductDetail = () => {
                                     )}
                                 </>
                             )}
-                        </div>
+                        </motion.div>
 
                         {/* Delivery Estimate Box */}
                         <div className="pd-delivery-estimate">
@@ -257,21 +349,40 @@ const ProductDetail = () => {
                         </div>
 
                         {/* CTAs */}
-                        <div className="pd-ctas">
-                            <button
+                        <motion.div
+                            className="pd-ctas"
+                            initial={{ opacity: 0, y: 16 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: 0.35 }}
+                        >
+                            <motion.button
                                 onClick={handleAddToCart}
                                 disabled={product.comingSoon}
                                 className={`pd-add-btn ${product.comingSoon ? 'pd-add-btn--disabled' : ''}`}
+                                whileHover={!product.comingSoon ? { scale: 1.02 } : {}}
+                                whileTap={!product.comingSoon ? { scale: 0.97 } : {}}
                             >
                                 {product.comingSoon ? 'Coming Soon' : 'Add to Cart'}
-                            </button>
-                            <button
+                            </motion.button>
+                            <motion.button
                                 onClick={() => toggleWishlist(product)}
                                 className={`pd-wishlist-btn ${wishlisted ? 'pd-wishlist-btn--active' : ''}`}
+                                whileHover={{ scale: 1.08 }}
+                                whileTap={{ scale: 0.92 }}
                             >
-                                {wishlisted ? <HiHeart size={20} /> : <HiOutlineHeart size={20} />}
-                            </button>
-                        </div>
+                                <AnimatePresence mode="wait">
+                                    <motion.span
+                                        key={wishlisted ? 'filled' : 'outline'}
+                                        initial={{ scale: 0.6, opacity: 0 }}
+                                        animate={{ scale: 1, opacity: 1 }}
+                                        exit={{ scale: 0.6, opacity: 0 }}
+                                        transition={{ duration: 0.2 }}
+                                    >
+                                        {wishlisted ? <HiHeart size={20} /> : <HiOutlineHeart size={20} />}
+                                    </motion.span>
+                                </AnimatePresence>
+                            </motion.button>
+                        </motion.div>
 
                         {/* Stock badge */}
                         <div className="pd-stock-row">
@@ -333,9 +444,9 @@ const ProductDetail = () => {
                     <div className="pd-reviews-container">
                         <div className="pd-reviews-summary">
                             <div className="pd-score-big">
-                                4.5 <span className="pd-score-slash">/ 5</span>
+                                {avgRating} <span className="pd-score-slash">/ 5</span>
                             </div>
-                            <p className="pd-reviews-count">(50 New Reviews)</p>
+                            <p className="pd-reviews-count">({totalReviews} Verified {totalReviews === 1 ? 'Review' : 'Reviews'})</p>
                         </div>
 
                         <div className="pd-reviews-bars">
@@ -343,22 +454,85 @@ const ProductDetail = () => {
                                 <div key={star} className="pd-review-bar-row">
                                     <span className="pd-star">★ {star}</span>
                                     <div className="pd-bar-bg">
-                                        <div className="pd-bar-fill" style={{ width: star === 5 ? '80%' : star === 4 ? '15%' : '5%' }}></div>
+                                        <div className="pd-bar-fill" style={{ width: getPercentage(star) }}></div>
                                     </div>
                                 </div>
                             ))}
                         </div>
 
-                        <div className="pd-review-cards">
-                            <div className="pd-review-card">
-                                <div className="pd-rc-header">
-                                    <h4>Alex Mathio</h4>
-                                    <span className="pd-rc-date">13 Oct 2026</span>
+                        {/* Review Submission Form */}
+                        <div className="bg-white/[0.03] border border-white/10 p-6 md:p-8 rounded-3xl w-full max-w-xl mx-auto lg:mx-0 my-6">
+                            <h3 className="text-sm font-bold text-white mb-4 uppercase tracking-wider">Leave a Review</h3>
+                            {user ? (
+                                <form onSubmit={handleReviewSubmit} className="flex flex-col gap-4">
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-xs text-grey-400 uppercase tracking-wider font-semibold">Your Rating:</span>
+                                        <div className="flex gap-1">
+                                            {[1, 2, 3, 4, 5].map(star => (
+                                                <button
+                                                    key={star}
+                                                    type="button"
+                                                    onClick={() => setReviewRating(star)}
+                                                    className="text-2xl focus:outline-none transition-colors duration-200"
+                                                >
+                                                    <span className={star <= reviewRating ? "text-accent" : "text-grey-600"}>★</span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <textarea
+                                            rows="3"
+                                            value={reviewComment}
+                                            onChange={e => setReviewComment(e.target.value)}
+                                            placeholder="Write your honest review here..."
+                                            className="w-full bg-black/60 border border-white/15 rounded-xl p-3.5 text-sm text-white focus:border-accent focus:outline-none placeholder:text-grey-600 transition-colors duration-200"
+                                        />
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        disabled={submittingReview}
+                                        className="btn-primary py-2.5 px-6 self-start text-[10px] font-black tracking-widest uppercase transition-all duration-300 disabled:opacity-50 hover:bg-white hover:text-black"
+                                    >
+                                        {submittingReview ? 'Submitting...' : 'Submit Review'}
+                                    </button>
+                                </form>
+                            ) : (
+                                <p className="text-xs text-grey-400">
+                                    Please <Link to="/login" className="text-accent underline hover:text-white transition-colors">login</Link> to leave your review.
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="pd-review-cards w-full flex flex-col gap-4">
+                            {reviews.length === 0 ? (
+                                <div className="text-center py-8 border border-white/5 bg-white/[0.01] rounded-2xl">
+                                    <p className="text-grey-500 text-sm italic">No reviews yet for this product. Be the first to leave one!</p>
                                 </div>
-                                <div className="pd-rc-stars">★★★★★</div>
-                                <p className="pd-rc-text">"NextGen's dedication to sustainability and ethical practices resonates strongly with today's consumers, positioning the brand as a responsible choice in the fashion world."</p>
-                                <img src={`https://i.pravatar.cc/150?u=${product.id}`} alt="User" className="pd-rc-avatar" loading="lazy" decoding="async" />
-                            </div>
+                            ) : (
+                                reviews.map(review => (
+                                    <div key={review.id} className="pd-review-card relative flex flex-col md:flex-row gap-4 items-start bg-white/[0.02] border border-white/5 p-6 rounded-2xl hover:border-white/10 transition-colors duration-300">
+                                        {/* Avatar */}
+                                        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white font-bold uppercase text-xs">
+                                            {review.reviewerName ? review.reviewerName.substring(0, 2) : 'AN'}
+                                        </div>
+                                        <div className="flex-1 w-full">
+                                            <div className="pd-rc-header flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
+                                                <h4 className="font-bold text-white text-sm tracking-wide capitalize">{review.reviewerName || 'Anonymous User'}</h4>
+                                                <span className="pd-rc-date text-grey-500 text-xs font-mono">
+                                                    {new Date(review.createdAt || new Date()).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                </span>
+                                            </div>
+                                            <div className="pd-rc-stars text-accent text-sm mb-2 select-none tracking-wider">
+                                                {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}
+                                            </div>
+                                            <p className="pd-rc-text text-grey-300 text-sm leading-relaxed font-light">
+                                                "{review.comment}"
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </div>
                 </section>

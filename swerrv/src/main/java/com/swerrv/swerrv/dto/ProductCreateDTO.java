@@ -17,6 +17,8 @@ public class ProductCreateDTO {
     @NotBlank
     private String category;
 
+    private String collection;
+
     private String description;
     private String material;
 

@@ -78,4 +78,26 @@ public class AdminController {
             @RequestParam int quantity) {
         return ResponseEntity.ok(adminService.updateStock(id, quantity));
     }
+
+    // ── Newsletter Management ──────────────────────────────────────────────────
+
+    private final com.swerrv.swerrv.service.NewsletterService newsletterService;
+
+    @GetMapping("/newsletter/subscribers")
+    public ResponseEntity<List<com.swerrv.swerrv.model.NewsletterSubscriber>> getSubscribers() {
+        return ResponseEntity.ok(newsletterService.getAllSubscribers());
+    }
+
+    @DeleteMapping("/newsletter/subscribers/{id}")
+    public ResponseEntity<java.util.Map<String, String>> deleteSubscriber(@PathVariable Long id) {
+        newsletterService.deleteSubscriber(id);
+        return ResponseEntity.ok(java.util.Map.of("message", "Subscriber deleted successfully."));
+    }
+
+    @PostMapping("/newsletter/send")
+    public ResponseEntity<java.util.Map<String, String>> sendNewsletter(
+            @jakarta.validation.Valid @RequestBody com.swerrv.swerrv.dto.SendNewsletterRequest request) {
+        newsletterService.sendNewsletter(request.getSubject(), request.getContent());
+        return ResponseEntity.ok(java.util.Map.of("message", "Newsletter broadcast initiated successfully."));
+    }
 }

@@ -34,13 +34,14 @@ public class ProductController {
     public ResponseEntity<PagedResponse<ProductDTO>> searchProducts(
             @RequestParam(required = false) String q,
             @RequestParam(required = false) String category,
+            @RequestParam(required = false) String collection,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
             @RequestParam(required = false) String sort) {
         return ResponseEntity.ok(
-                productService.searchProducts(q, category, minPrice, maxPrice, page, size, sort));
+                productService.searchProducts(q, category, collection, minPrice, maxPrice, page, size, sort));
     }
 
     @GetMapping("/featured")

@@ -58,12 +58,12 @@ public class ProductService {
     }
 
     public PagedResponse<ProductDTO> searchProducts(
-            String query, String category, BigDecimal minPrice,
+            String query, String category, String collection, BigDecimal minPrice,
             BigDecimal maxPrice, int page, int size, String sort) {
 
         Pageable pageable = buildPageable(page, size, sort);
         Page<Product> result = productRepository.searchProducts(
-                query, category, minPrice, maxPrice, pageable);
+                query, category, collection, minPrice, maxPrice, pageable);
         return toPagedResponse(result);
     }
 
@@ -79,6 +79,7 @@ public class ProductService {
                 .price(dto.getPrice())
                 .salePrice(dto.getSalePrice())
                 .category(dto.getCategory())
+                .collection(dto.getCollection())
                 .images(dto.getImages() != null ? dto.getImages() : List.of())
                 .sizes(dto.getSizes() != null ? dto.getSizes() : List.of())
                 .colors(dto.getColors() != null ? dto.getColors() : List.of())
@@ -103,6 +104,7 @@ public class ProductService {
         product.setPrice(dto.getPrice());
         product.setSalePrice(dto.getSalePrice());
         product.setCategory(dto.getCategory());
+        product.setCollection(dto.getCollection());
         if (dto.getImages() != null)
             product.setImages(dto.getImages());
         if (dto.getSizes() != null)
@@ -153,6 +155,7 @@ public class ProductService {
                 .description(p.getDescription())
                 .material(p.getMaterial())
                 .category(p.getCategory())
+                .collection(p.getCollection())
                 .price(displayPrice)
                 .originalPrice(originalPrice)
                 .image(p.getImages().isEmpty() ? null : p.getImages().get(0))

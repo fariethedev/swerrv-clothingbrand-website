@@ -49,6 +49,9 @@ public class AdminAuthenticationTests {
     private com.swerrv.swerrv.service.OrderService orderService;
 
     @MockBean
+    private com.swerrv.swerrv.service.NewsletterService newsletterService;
+
+    @MockBean
     private JwtUtil jwtUtil;
 
     @MockBean
@@ -113,7 +116,7 @@ public class AdminAuthenticationTests {
 
         AuthRequest request = new AuthRequest();
         request.setEmail("admin@swerrv.com");
-        request.setPassword("adminPassword");
+        request.setPassword("AdminPassword123!");
 
         Authentication auth = mock(Authentication.class);
         when(auth.getPrincipal()).thenReturn(adminUser);
