@@ -9,7 +9,7 @@ import './Home.css';
 
 const AnimatedNumber = ({ value }) => {
     return (
-        <div className="relative overflow-hidden h-[1.1em] flex justify-center items-center">
+        <div className="relative overflow-hidden text-3xl sm:text-5xl h-[1.1em] flex justify-center items-center">
             <AnimatePresence mode="popLayout">
                 <motion.span
                     key={value}
@@ -17,7 +17,7 @@ const AnimatedNumber = ({ value }) => {
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: '-30%', opacity: 0 }}
                     transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
-                    className="block font-mono text-white font-black text-3xl sm:text-5xl tracking-tight"
+                    className="block font-mono text-white font-black tracking-tight"
                 >
                     {value}
                 </motion.span>
