@@ -3,3 +3,7 @@
 
 # Docker
 docker-compose.override.yml
+
+# Agent skills
+.agents/
+skills-lock.json

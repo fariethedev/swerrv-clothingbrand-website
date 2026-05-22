@@ -92,7 +92,7 @@ const Footer = () => {
                 </div>
 
                 {[
-                    { title: 'Shop', links: [['T-Shirts', '/shop?category=T-Shirts'], ['Tracksuits', '/shop?category=Tracksuits'], ['Feeling Mutual 1', '/shop?collection=Feeling+Mutual+1'], ['Feeling Mutual 2', '/shop?collection=Feeling+Mutual+2'], ['New Arrivals', '/shop']] },
+                    { title: 'Shop', links: [['T-Shirts', '/shop?category=T-Shirts'], ['Tracksuits', '/shop?category=Tracksuits'], ['Feeling Mutual I', '/shop?collection=Feeling+Mutual+1'], ['Feeling Mutual II', '/shop?collection=Feeling+Mutual+2'], ['New Arrivals', '/shop']] },
                     { title: 'Info', links: [['About Us', '/about'], ['Contact', '/contact'], ['Sizing Guide', '#'], ['Shipping & Returns', '#'], ['FAQ', '#']] },
                     { title: 'Legal', links: [['Privacy Policy', '/privacy'], ['Terms of Service', '/terms'], ['Cookie Policy', '/cookie-policy']] },
                 ].map(col => (

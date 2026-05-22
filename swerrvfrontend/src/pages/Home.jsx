@@ -117,18 +117,21 @@ const CountdownTimer = ({ targetDate }) => {
 
 const OurCollections = () => {
     const cards = [
-        { img: '/images/_DSC8113.jpg', label: 'Feeling Mutual 1', sub: 'T-Shirts', to: '/shop?collection=Feeling+Mutual+1' },
-        { img: '/images/_DSC8164.jpg', label: 'Feeling Mutual 2', sub: 'Tracksuits', to: '/shop?collection=Feeling+Mutual+2' },
+        { img: '/images/_DSC8113.jpg', label: 'Feeling Mutual 1', displayName: 'Feeling Mutual I', sub: 'T-Shirts', to: '/shop?collection=Feeling+Mutual+1' },
+        { img: '/images/_DSC8164.jpg', label: 'Feeling Mutual 2', displayName: 'Feeling Mutual II', sub: 'Tracksuits', to: '/shop?collection=Feeling+Mutual+2' },
     ];
 
     return (
-        <section className="bg-white text-black py-10 px-6 md:px-12">
+        <section className="bg-black text-white py-16 px-6 md:px-12">
             {/* Section header */}
-            <div className="flex items-center justify-between mb-6">
-                <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Our collections</h2>
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+                <div>
+                    <span className="text-[10px] font-bold tracking-[0.25em] uppercase text-grey-500 mb-1.5 block">01 // THE SELECTIONS</span>
+                    <h2 className="text-3xl md:text-5xl font-black tracking-tight uppercase text-white font-grotesk">Our collections</h2>
+                </div>
                 <Link
                     to="/shop"
-                    className="flex items-center gap-2 text-sm font-medium border border-black/20 px-4 py-2 rounded-full hover:bg-black hover:text-white transition-colors"
+                    className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase border border-white/10 px-6 py-3 rounded-full hover:bg-white hover:text-black transition-all duration-300"
                 >
                     view more
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -138,12 +141,12 @@ const OurCollections = () => {
             </div>
 
             {/* 2-card grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {cards.map((card, i) => (
                     <motion.div
                         key={i}
-                        className="relative overflow-hidden group cursor-pointer"
-                        style={{ height: '72vh', minHeight: '420px' }}
+                        className="relative overflow-hidden group cursor-pointer rounded-2xl"
+                        style={{ height: '75vh', minHeight: '460px' }}
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
@@ -152,20 +155,36 @@ const OurCollections = () => {
                         <Link to={card.to} className="block w-full h-full">
                             <img
                                 src={card.img}
-                                alt={card.label}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                alt={card.displayName}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[800ms] ease-out"
                                 loading="lazy"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                            <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between">
-                                <div>
-                                    <p className="text-white font-bold text-xl leading-tight">{card.label}</p>
-                                    <p className="text-white/70 text-sm mt-0.5">{card.sub}</p>
-                                </div>
-                                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shrink-0 mb-1 group-hover:bg-black group-hover:text-white transition-colors">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M7 17L17 7M17 7H7M17 7V17"/>
-                                    </svg>
+                            {/* Premium dark gradient overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/45 to-black/85 group-hover:from-black/40 group-hover:via-black/60 group-hover:to-black/90 transition-all duration-500 z-10" />
+                            
+                            {/* Centered content overlay */}
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 z-20">
+                                {/* Giant semi-transparent Roman Numeral */}
+                                <span className="absolute text-[15rem] sm:text-[18rem] md:text-[22rem] font-serif font-light text-white/[0.04] group-hover:text-white/[0.07] group-hover:scale-110 select-none pointer-events-none leading-none transition-all duration-[800ms] ease-out z-0">
+                                    {i === 0 ? 'I' : 'II'}
+                                </span>
+                                
+                                {/* Collection details */}
+                                <div className="relative z-10 flex flex-col items-center">
+                                    <h3 className="text-white font-grotesk font-extrabold text-3xl sm:text-4xl tracking-[0.16em] uppercase transition-transform duration-500 group-hover:translate-y-[-8px]">
+                                        {card.displayName}
+                                    </h3>
+                                    <p className="text-white/60 font-mono text-[10px] tracking-[0.3em] uppercase mt-2 transition-transform duration-500 group-hover:translate-y-[-6px]">
+                                        {card.sub}
+                                    </p>
+                                    
+                                    {/* Action button appearing on hover */}
+                                    <span className="mt-8 inline-flex items-center gap-2.5 text-[9px] font-black tracking-widest uppercase border border-white/20 px-6 py-3.5 rounded-full bg-white/5 backdrop-blur-md opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 group-hover:border-white transition-all duration-500 ease-out">
+                                        EXPLORE DROP
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                                        </svg>
+                                    </span>
                                 </div>
                             </div>
                         </Link>
@@ -177,7 +196,7 @@ const OurCollections = () => {
 };
 
 const BrandStatement = () => (
-    <section className="bg-white text-black overflow-hidden">
+    <section className="bg-black text-white overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2" style={{ minHeight: '540px' }}>
 
             {/* Left — full portrait photo */}
@@ -189,7 +208,7 @@ const BrandStatement = () => (
                     loading="lazy"
                 />
                 {/* Subtle right fade */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-white/40" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-black/40" />
                 {/* Large decorative S */}
                 <span
                     className="absolute bottom-[-0.1em] left-2 font-black select-none pointer-events-none text-white/15 leading-none"
@@ -200,7 +219,7 @@ const BrandStatement = () => (
             </div>
 
             {/* Right — text block */}
-            <div className="flex flex-col justify-center gap-8 px-10 md:px-16 py-20 bg-white">
+            <div className="flex flex-col justify-center gap-8 px-10 md:px-16 py-20 bg-black">
                 <motion.h2
                     className="text-4xl md:text-5xl font-bold leading-[1.1] tracking-tight"
                     initial={{ opacity: 0, y: 24 }}
@@ -212,7 +231,7 @@ const BrandStatement = () => (
                 </motion.h2>
 
                 <motion.p
-                    className="text-sm text-black/50 leading-relaxed max-w-xs"
+                    className="text-sm text-white/50 leading-relaxed max-w-xs"
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
@@ -232,7 +251,7 @@ const BrandStatement = () => (
                 >
                     <Link
                         to="/about"
-                        className="inline-flex items-center gap-2 text-sm font-semibold border border-black px-5 py-2.5 rounded-full hover:bg-black hover:text-white transition-colors"
+                        className="inline-flex items-center gap-2 text-sm font-semibold border border-white px-5 py-2.5 rounded-full hover:bg-white hover:text-black transition-colors"
                     >
                         Our story
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -241,7 +260,7 @@ const BrandStatement = () => (
                     </Link>
                     <Link
                         to="/contact"
-                        className="inline-flex items-center gap-2 text-sm font-semibold border border-black px-5 py-2.5 rounded-full hover:bg-black hover:text-white transition-colors"
+                        className="inline-flex items-center gap-2 text-sm font-semibold border border-white px-5 py-2.5 rounded-full hover:bg-white hover:text-black transition-colors"
                     >
                         Contact us
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -308,7 +327,7 @@ const LookbookGallery = () => {
         [
             { id: 17, src: '/images/_DSC8188.jpg', span: 'col-span-1 row-span-2', label: 'CONCRETE JUNGLE' },
             { id: 18, src: '/images/_DSC8190.jpg', span: 'col-span-2 row-span-1', label: 'SILHOUETTE PLAY' },
-            { id: 19, src: '/images/_DSC8192.jpg', span: 'col-span-1 row-span-1', label: 'FEELING MUTUAL 2' },
+            { id: 19, src: '/images/_DSC8192.jpg', span: 'col-span-1 row-span-1', label: 'FEELING MUTUAL II' },
             { id: 20, src: '/images/_DSC8195.jpg', span: 'col-span-1 row-span-1', label: 'RAW DETAILS' },
             { id: 21, src: '/images/_DSC8211.jpg', span: 'col-span-1 row-span-1', label: 'WARSAW VIBES' },
             { id: 22, src: '/images/_DSC8221.jpg', span: 'col-span-1 row-span-1', label: 'DESIGN ROOM' },

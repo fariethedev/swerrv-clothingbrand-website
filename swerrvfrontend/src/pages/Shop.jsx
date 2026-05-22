@@ -6,6 +6,12 @@ import ProductCard from '../components/ProductCard';
 import { api } from '../services/api';
 
 const CATEGORIES = ["All", "T-Shirts", "Tracksuits"];
+
+const COLLECTION_DISPLAY_NAMES = {
+    'All': 'All',
+    'Feeling Mutual 1': 'Feeling Mutual I',
+    'Feeling Mutual 2': 'Feeling Mutual II'
+};
 const MOCK_COLORS = [
     { name: 'Black', hex: '#000000' },
     { name: 'Red', hex: '#FF0000' },
@@ -121,7 +127,7 @@ const Shop = () => {
                                     onClick={() => handleCollection(col)}
                                     className={`text-left text-sm transition-colors duration-200 ${selectedCollection === col ? 'text-accent font-semibold' : 'text-grey-500 hover:text-white'}`}
                                 >
-                                    {col}
+                                    {COLLECTION_DISPLAY_NAMES[col] || col}
                                 </button>
                             ))}
                         </div>
@@ -233,7 +239,7 @@ const Shop = () => {
                     <div className="flex flex-wrap gap-2 mb-8">
                         {selectedCollection !== 'All' && (
                             <div className="flex items-center gap-2 bg-[#111] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white">
-                                Collection: {selectedCollection}
+                                Collection: {COLLECTION_DISPLAY_NAMES[selectedCollection] || selectedCollection}
                                 <button onClick={() => handleCollection('All')} className="text-grey-500 hover:text-white"><HiX size={14} /></button>
                             </div>
                         )}
