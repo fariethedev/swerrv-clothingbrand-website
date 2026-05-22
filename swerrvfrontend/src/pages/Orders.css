@@ -1,0 +1,189 @@
+/* Modern Order History & Tracking Styles for SWERRV */
+
+.orders-page {
+    position: relative;
+    background: var(--black);
+    min-height: 100vh;
+    padding: 120px 24px 80px;
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+}
+
+.orders-card {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 20px !important;
+    padding: 28px !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.orders-card:hover {
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5) !important;
+    transform: translateY(-2px);
+}
+
+/* Header summary fields */
+.order-header-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 24px;
+}
+
+/* Tracking Drawer */
+.tracking-drawer {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    margin-top: 24px;
+    padding-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Vertical / Horizontal Stepper */
+.orders-stepper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    margin: 20px 0 32px;
+    padding: 0 10px;
+}
+
+.orders-stepper::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    right: 20px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.08);
+    z-index: 1;
+}
+
+.orders-stepper-progress {
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    height: 2px;
+    width: var(--progress-percent, 0%);
+    background: var(--white);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+    z-index: 2;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.orders-stepper-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 3;
+    width: 80px;
+    text-align: center;
+}
+
+.orders-step-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50% !important;
+    background: var(--black);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.orders-stepper-step.active .orders-step-dot,
+.orders-stepper-step.done .orders-step-dot {
+    background: var(--white) !important;
+    border-color: var(--white) !important;
+    color: var(--black) !important;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.35);
+}
+
+.orders-step-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 12px;
+    color: var(--grey-500);
+    transition: color 0.3s ease;
+}
+
+.orders-stepper-step.active .orders-step-label,
+.orders-stepper-step.done .orders-step-label {
+    color: var(--white) !important;
+}
+
+/* Info Box (Courier & Tracking Number) */
+.carrier-info-box {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px !important;
+    padding: 16px 20px !important;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.carrier-info-pill {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--white);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+/* Stepper Steppers for Mobile Screen sizes */
+@media (max-width: 640px) {
+    .orders-stepper {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+        padding-left: 20px;
+        margin-bottom: 24px;
+    }
+
+    .orders-stepper::before {
+        top: 20px;
+        bottom: 20px;
+        left: 25px;
+        width: 2px;
+        height: auto;
+    }
+
+    .orders-stepper-progress {
+        top: 20px;
+        left: 25px;
+        width: 2px !important;
+        height: var(--progress-percent, 0%) !important;
+        transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .orders-stepper-step {
+        flex-direction: row;
+        width: auto;
+        text-align: left;
+        gap: 16px;
+    }
+
+    .orders-step-label {
+        margin-top: 0;
+    }
+}

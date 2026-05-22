@@ -392,31 +392,44 @@ const LookbookGallery = () => {
             <AnimatePresence>
                 {selectedImage && (
                     <motion.div
-                        className="fixed inset-0 bg-black/95 backdrop-blur-md z-[2000] flex items-center justify-center p-4"
+                        className="fixed inset-0 bg-black/80 backdrop-blur-md z-[2000] flex items-center justify-center p-4"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={() => setSelectedImage(null)}
                     >
-                        <button
-                            className="absolute top-6 right-6 text-white/60 hover:text-white p-2 transition-colors z-[2001]"
-                            onClick={() => setSelectedImage(null)}
-                        >
-                            <HiX size={30} />
-                        </button>
                         <motion.div
-                            className="relative max-w-5xl max-h-[85vh] overflow-hidden"
-                            initial={{ scale: 0.95, y: 15 }}
+                            className="relative max-w-[500px] w-full bg-white/[0.03] border border-white/[0.1] backdrop-blur-2xl rounded-[24px] p-6 shadow-2xl flex flex-col gap-4"
+                            initial={{ scale: 0.9, y: 20 }}
                             animate={{ scale: 1, y: 0 }}
-                            exit={{ scale: 0.95, y: 15 }}
-                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                            exit={{ scale: 0.9, y: 20 }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 220 }}
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <img
-                                src={selectedImage}
-                                alt="Expanded Lookbook"
-                                className="max-w-full max-h-[85vh] object-contain rounded-xl border border-white/10"
-                            />
+                            <div className="flex justify-between items-center pb-2 border-b border-white/5">
+                                <h3 className="text-xs font-bold tracking-[0.12em] uppercase text-grey-400">Lookbook Preview</h3>
+                                <button
+                                    className="text-white/60 hover:text-white transition-colors bg-white/5 hover:bg-white/10 w-8 h-8 rounded-full flex items-center justify-center border border-white/10"
+                                    onClick={() => setSelectedImage(null)}
+                                >
+                                    <HiX size={16} />
+                                </button>
+                            </div>
+                            
+                            <div className="relative w-full overflow-hidden bg-black/40 rounded-2xl border border-white/[0.05] flex items-center justify-center aspect-[3/4]">
+                                <img
+                                    src={selectedImage}
+                                    alt="Expanded Lookbook"
+                                    className="w-full h-full object-cover rounded-xl"
+                                />
+                            </div>
+                            
+                            <button
+                                onClick={() => setSelectedImage(null)}
+                                className="btn-secondary w-full py-3.5 rounded-xl text-center text-xs font-bold uppercase tracking-widest"
+                            >
+                                Close Preview
+                            </button>
                         </motion.div>
                     </motion.div>
                 )}

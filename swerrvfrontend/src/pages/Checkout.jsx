@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { HiCheck, HiLockClosed, HiArrowLeft } from 'react-icons/hi';
+import { motion, AnimatePresence } from 'framer-motion';
+import { HiCheck, HiLockClosed, HiArrowLeft, HiX } from 'react-icons/hi';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useCurrency } from '../context/CurrencyContext';
 import { api } from '../services/api';
 import toast from 'react-hot-toast';
+import './Checkout.css';
 
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
@@ -46,16 +47,16 @@ const StripePaymentForm = ({ onPaymentSuccess, onBack, amount }) => {
 
     return (
         <form onSubmit={handlePayment} className="flex flex-col gap-6">
-            <div className="flex items-center gap-2 text-xs text-white/50 bg-white/5 border border-white/10 px-4 py-2.5">
-                <HiLockClosed size={14} /> Secured with 256-bit SSL encryption
+            <div className="flex items-center gap-2 text-xs text-white/60 bg-white/[0.03] border border-white/[0.08] px-4 py-3 rounded-xl">
+                <HiLockClosed size={15} className="text-white/80" /> Secured with 256-bit SSL encryption
             </div>
 
-            <div className="p-4 bg-black border border-white/10">
+            <div className="p-5 bg-white/[0.01] border border-white/[0.08] rounded-xl shadow-inner">
                 <PaymentElement options={{ layout: 'tabs' }} />
             </div>
 
             <div className="flex gap-4 justify-between mt-4">
-                <button type="button" className="btn-secondary flex items-center gap-2" onClick={onBack} disabled={isProcessing}>
+                <button type="button" className="btn-secondary flex items-center gap-2 justify-center" onClick={onBack} disabled={isProcessing}>
                     <HiArrowLeft size={16} /> Back
                 </button>
                 <button type="submit" disabled={isProcessing || !stripe} className="btn-primary flex-1 disabled:opacity-70 flex justify-center items-center">
@@ -78,6 +79,15 @@ const Checkout = () => {
     const [step, setStep] = useState(1);
     const [clientSecret, setClientSecret] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') setSelectedImage(null);
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     // Address Selection State
     const [selectedAddressType, setSelectedAddressType] = useState('primary');
@@ -158,21 +168,21 @@ const Checkout = () => {
     const steps = ['Shipping', 'Payment & Review'];
 
     return (
-        <div className="min-h-screen bg-black">
+        <div className="min-h-screen bg-black checkout-page">
             {/* Header */}
             <div className="border-b border-white/[0.08] px-6 py-5 flex flex-wrap items-center justify-between gap-4 max-w-[1200px] mx-auto">
-                <Link to="/" className="text-xl font-black tracking-[0.12em]">SWERRV</Link>
+                <Link to="/" className="text-xl font-black tracking-[0.12em] hover:text-white/80 transition-colors">SWERRV</Link>
                 <div className="flex items-center gap-2">
                     {steps.map((s, i) => (
-                        <div key={s} className="flex items-center gap-2">
-                            <div className={`flex items-center gap-2 text-xs font-semibold tracking-wider uppercase ${step > i ? 'text-white' : step === i + 1 ? 'text-white' : 'text-grey-500'}`}>
-                                <div className={`w-6 h-6 rounded-none flex items-center justify-center text-xs font-bold ${step > i + 1 ? 'bg-white text-black' : step === i + 1 ? 'bg-white text-black' : 'bg-white/10'}`}>
-                                    {step > i + 1 ? <HiCheck size={12} /> : i + 1}
-                                </div>
-                                <span className="hidden sm:block">{s}</span>
-                            </div>
-                            {i < steps.length - 1 && <div className={`w-12 h-px ${step > i + 1 ? 'bg-white' : 'bg-grey-700'}`} />}
-                        </div>
+                          <div key={s} className="flex items-center gap-2">
+                              <div className={`flex items-center gap-2 text-xs font-semibold tracking-wider uppercase ${step > i ? 'text-white' : step === i + 1 ? 'text-white' : 'text-grey-500'}`}>
+                                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${step > i + 1 ? 'bg-white text-black' : step === i + 1 ? 'bg-white text-black' : 'bg-white/10'}`}>
+                                      {step > i + 1 ? <HiCheck size={12} /> : i + 1}
+                                  </div>
+                                  <span className="hidden sm:block">{s}</span>
+                              </div>
+                              {i < steps.length - 1 && <div className={`w-12 h-px ${step > i + 1 ? 'bg-white' : 'bg-grey-700'}`} />}
+                          </div>
                     ))}
                 </div>
             </div>
@@ -186,111 +196,119 @@ const Checkout = () => {
 
                         {/* Use CSS to hide/show steps instead of completely unmounting Step 2 which contains Stripe Elements */}
                         <div className={step === 1 ? 'block' : 'hidden'}>
-                            <form onSubmit={handleProceedToPayment} className="flex flex-col gap-5">
-                                <h2 className="text-2xl font-black tracking-tight">Shipping Information</h2>
+                            <div className="checkout-card">
+                                <form onSubmit={handleProceedToPayment} className="flex flex-col gap-5">
+                                    <h2 className="text-2xl font-black tracking-tight mb-4">Shipping Information</h2>
 
-                                {/* Saved Address Selection */}
-                                {user && (user.address || user.secondAddress) && (
-                                    <div className="flex gap-4 mb-4">
-                                        {user.address && (
-                                            <button
-                                                type="button"
-                                                onClick={() => handleAddressSelection('primary')}
-                                                className={`flex-1 p-3 border text-left text-xs uppercase tracking-widest font-bold transition-colors ${selectedAddressType === 'primary' ? 'border-white bg-white/10 text-white' : 'border-white/10 text-grey-500 hover:border-white/30'}`}
-                                            >
-                                                Primary Address
-                                            </button>
-                                        )}
-                                        {user.secondAddress && (
-                                            <button
-                                                type="button"
-                                                onClick={() => handleAddressSelection('secondary')}
-                                                className={`flex-1 p-3 border text-left text-xs uppercase tracking-widest font-bold transition-colors ${selectedAddressType === 'secondary' ? 'border-white bg-white/10 text-white' : 'border-white/10 text-grey-500 hover:border-white/30'}`}
-                                            >
-                                                Secondary Address
-                                            </button>
-                                        )}
+                                    {/* Saved Address Selection */}
+                                    {user && (user.address || user.secondAddress) && (
+                                        <div className="flex gap-4 mb-4">
+                                            {user.address && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleAddressSelection('primary')}
+                                                    className={`flex-1 p-3.5 text-center text-xs uppercase tracking-widest font-bold transition-all duration-300 address-btn ${selectedAddressType === 'primary' ? 'active' : ''}`}
+                                                >
+                                                    Primary Address
+                                                </button>
+                                            )}
+                                            {user.secondAddress && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleAddressSelection('secondary')}
+                                                    className={`flex-1 p-3.5 text-center text-xs uppercase tracking-widest font-bold transition-all duration-300 address-btn ${selectedAddressType === 'secondary' ? 'active' : ''}`}
+                                                >
+                                                    Secondary Address
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="flex flex-col gap-1.5"><label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">First Name</label><input name="firstName" value={form.firstName} onChange={handleChange} required placeholder="John" className="form-input" /></div>
+                                        <div className="flex flex-col gap-1.5"><label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">Last Name</label><input name="lastName" value={form.lastName} onChange={handleChange} required placeholder="Doe" className="form-input" /></div>
                                     </div>
-                                )}
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="flex flex-col gap-1.5"><label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">First Name</label><input name="firstName" value={form.firstName} onChange={handleChange} required placeholder="John" className="form-input" /></div>
-                                    <div className="flex flex-col gap-1.5"><label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">Last Name</label><input name="lastName" value={form.lastName} onChange={handleChange} required placeholder="Doe" className="form-input" /></div>
-                                </div>
-                                <div className="flex flex-col gap-1.5"><label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">Email</label><input type="email" name="email" value={form.email} onChange={handleChange} required placeholder="you@email.com" className="form-input" /></div>
-                                <div className="flex flex-col gap-1.5"><label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">Phone</label><input name="phone" value={form.phone} onChange={handleChange} placeholder="+1 (555) 000-0000" className="form-input" /></div>
-                                <div className="flex flex-col gap-1.5"><label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">Address</label><input name="address" value={form.address} onChange={handleChange} required placeholder="123 Main Street" className="form-input" /></div>
-                                <div className="grid grid-cols-3 gap-4">
-                                    <div className="flex flex-col gap-1.5"><label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">City</label><input name="city" value={form.city} onChange={handleChange} required placeholder="New York" className="form-input" /></div>
-                                    <div className="flex flex-col gap-1.5"><label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">State</label><input name="state" value={form.state} onChange={handleChange} required placeholder="NY" className="form-input" /></div>
-                                    <div className="flex flex-col gap-1.5"><label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">ZIP</label><input name="zip" value={form.zip} onChange={handleChange} required placeholder="10001" className="form-input" /></div>
-                                </div>
-                                <div className="flex flex-col gap-1.5">
-                                    <label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">Country</label>
-                                    <select name="country" value={form.country} onChange={handleChange} className="form-input bg-grey-900">
-                                        {['Poland', 'United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'Nigeria', 'South Africa', 'Ghana'].map(c => <option key={c}>{c}</option>)}
-                                    </select>
-                                </div>
-                                <div className="mt-6">
-                                    <button type="submit" disabled={isLoading} className="btn-primary w-full disabled:opacity-70 flex justify-center items-center">
-                                        {isLoading ? (
-                                            <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                                        ) : (
-                                            'Continue to Payment'
-                                        )}
-                                    </button>
-                                </div>
-                            </form>
+                                    <div className="flex flex-col gap-1.5"><label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">Email</label><input type="email" name="email" value={form.email} onChange={handleChange} required placeholder="you@email.com" className="form-input" /></div>
+                                    <div className="flex flex-col gap-1.5"><label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">Phone</label><input name="phone" value={form.phone} onChange={handleChange} placeholder="+1 (555) 000-0000" className="form-input" /></div>
+                                    <div className="flex flex-col gap-1.5"><label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">Address</label><input name="address" value={form.address} onChange={handleChange} required placeholder="123 Main Street" className="form-input" /></div>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="flex flex-col gap-1.5"><label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">City</label><input name="city" value={form.city} onChange={handleChange} required placeholder="New York" className="form-input" /></div>
+                                        <div className="flex flex-col gap-1.5"><label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">State</label><input name="state" value={form.state} onChange={handleChange} required placeholder="NY" className="form-input" /></div>
+                                        <div className="flex flex-col gap-1.5"><label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">ZIP</label><input name="zip" value={form.zip} onChange={handleChange} required placeholder="10001" className="form-input" /></div>
+                                    </div>
+                                    <div className="flex flex-col gap-1.5">
+                                        <label className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-300">Country</label>
+                                        <select name="country" value={form.country} onChange={handleChange} className="form-input bg-grey-900">
+                                            {['Poland', 'United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'Nigeria', 'South Africa', 'Ghana'].map(c => <option key={c}>{c}</option>)}
+                                        </select>
+                                    </div>
+                                    <div className="mt-6">
+                                        <button type="submit" disabled={isLoading} className="btn-primary w-full disabled:opacity-70 flex justify-center items-center">
+                                            {isLoading ? (
+                                                <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                                            ) : (
+                                                'Continue to Payment'
+                                            )}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
 
                         {clientSecret && (
                             <div className={step === 2 ? 'flex flex-col gap-8' : 'hidden'}>
-                                <div className="border border-white/[0.08] p-5 flex flex-col gap-1 text-sm text-grey-300">
-                                    <h4 className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-500 mb-3">Review Details</h4>
-                                    <p className="font-semibold text-white">{form.firstName} {form.lastName}</p>
-                                    <p>{form.address}</p>
-                                    <p>{form.city}, {form.state} {form.zip} - {form.country}</p>
-                                    <p>{form.email}</p>
-                                </div>
+                                <div className="checkout-card flex flex-col gap-6">
+                                    <div className="bg-white/[0.03] border border-white/[0.08] p-5 rounded-xl flex flex-col gap-1 text-sm text-grey-300">
+                                        <h4 className="text-[11px] font-bold tracking-[0.12em] uppercase text-grey-500 mb-3">Review Details</h4>
+                                        <p className="font-semibold text-white">{form.firstName} {form.lastName}</p>
+                                        <p>{form.address}</p>
+                                        <p>{form.city}, {form.state} {form.zip} - {form.country}</p>
+                                        <p>{form.email}</p>
+                                    </div>
 
-                                <Elements stripe={stripePromise} options={{
-                                    clientSecret,
-                                    appearance: {
-                                        theme: 'night',
-                                        variables: {
-                                            colorPrimary: '#ffffff',
-                                            colorBackground: '#0a0a0a',
-                                            colorText: '#ffffff',
-                                            colorTextSecondary: '#808080',
-                                            colorIconTab: '#ffffff',
-                                            borderRadius: '0px',
-                                            fontFamily: 'Poppins, sans-serif',
-                                        },
-                                        rules: {
-                                            '.Input': { border: '1px solid rgba(255,255,255,0.15)', backgroundColor: 'rgba(255,255,255,0.04)' },
-                                            '.Input:focus': { border: '1px solid rgba(255,255,255,0.5)', outline: 'none' },
-                                            '.Tab': { border: '1px solid rgba(255,255,255,0.1)' },
-                                            '.Tab--selected': { border: '1px solid #fff', backgroundColor: 'rgba(255,255,255,0.08)' },
+                                    <Elements stripe={stripePromise} options={{
+                                        clientSecret,
+                                        appearance: {
+                                            theme: 'night',
+                                            variables: {
+                                                colorPrimary: '#ffffff',
+                                                colorBackground: '#0d0d0d',
+                                                colorText: '#ffffff',
+                                                colorTextSecondary: '#808080',
+                                                colorIconTab: '#ffffff',
+                                                borderRadius: '12px',
+                                                fontFamily: 'Poppins, sans-serif',
+                                            },
+                                            rules: {
+                                                '.Input': { border: '1px solid rgba(255,255,255,0.08)', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '12px', padding: '12px' },
+                                                '.Input:focus': { border: '1px solid rgba(255,255,255,0.4)', outline: 'none', boxShadow: '0 0 0 3px rgba(255, 255, 255, 0.05)' },
+                                                '.Tab': { border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px' },
+                                                '.Tab--selected': { border: '1px solid #fff', backgroundColor: 'rgba(255,255,255,0.08)' },
+                                            }
                                         }
-                                    }
-                                }}>
-                                    <StripePaymentForm amount={total} onBack={() => setStep(1)} onPaymentSuccess={handleCreateOrder} />
-                                </Elements>
+                                    }}>
+                                        <StripePaymentForm amount={total} onBack={() => setStep(1)} onPaymentSuccess={handleCreateOrder} />
+                                    </Elements>
+                                </div>
                             </div>
                         )}
 
                     </motion.div>
                 </div>
 
-                {/* Order Summary */}
-                <div className="bg-grey-900 border border-white/[0.08] p-7 sticky top-6">
+                 {/* Order Summary */}
+                <div className="checkout-summary-card p-7 sticky top-6">
                     <h3 className="text-sm font-bold tracking-[0.12em] uppercase mb-6">Order Summary</h3>
                     <div className="flex flex-col gap-4 mb-6 pb-6 border-b border-white/[0.06]">
                         {cartItems.map(item => (
                             <div key={item.key} className="flex items-center gap-4">
-                                <div className="relative w-16 h-20 shrink-0 bg-grey-700">
+                                <div 
+                                    className="relative w-16 h-20 shrink-0 bg-grey-700 rounded-lg overflow-hidden border border-white/[0.06] cursor-pointer hover:opacity-80 transition-opacity"
+                                    onClick={() => setSelectedImage(item.image)}
+                                    title="Click to view image"
+                                >
                                     <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                                    <span className="absolute -top-1.5 -right-1.5 bg-grey-500 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center">{item.quantity}</span>
+                                    <span className="absolute -top-1.5 -right-1.5 bg-white text-black text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-md">{item.quantity}</span>
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-[13px] font-semibold leading-snug">{item.name}</p>
@@ -309,6 +327,53 @@ const Checkout = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Premium Fullscreen Lightbox Modal */}
+            <AnimatePresence>
+                {selectedImage && (
+                    <motion.div
+                        className="fixed inset-0 bg-black/80 backdrop-blur-md z-[2000] flex items-center justify-center p-4"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setSelectedImage(null)}
+                    >
+                        <motion.div
+                            className="relative max-w-[500px] w-full bg-white/[0.03] border border-white/[0.1] backdrop-blur-2xl rounded-[24px] p-6 shadow-2xl flex flex-col gap-4"
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, y: 20 }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 220 }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="flex justify-between items-center pb-2 border-b border-white/5">
+                                <h3 className="text-xs font-bold tracking-[0.12em] uppercase text-grey-400">Product Preview</h3>
+                                <button
+                                    className="text-white/60 hover:text-white transition-colors bg-white/5 hover:bg-white/10 w-8 h-8 rounded-full flex items-center justify-center border border-white/10"
+                                    onClick={() => setSelectedImage(null)}
+                                >
+                                    <HiX size={16} />
+                                </button>
+                            </div>
+                            
+                            <div className="relative w-full overflow-hidden bg-black/40 rounded-2xl border border-white/[0.05] flex items-center justify-center aspect-[3/4]">
+                                <img
+                                    src={selectedImage}
+                                    alt="Expanded Product"
+                                    className="w-full h-full object-cover rounded-xl"
+                                />
+                            </div>
+                            
+                            <button
+                                onClick={() => setSelectedImage(null)}
+                                className="btn-secondary w-full py-3.5 rounded-xl text-center text-xs font-bold uppercase tracking-widest"
+                            >
+                                Close Preview
+                            </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

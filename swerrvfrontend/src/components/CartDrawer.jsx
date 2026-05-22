@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiX, HiPlus, HiMinus, HiOutlineTrash } from 'react-icons/hi';
 import { Link } from 'react-router-dom';
@@ -7,6 +8,15 @@ import { useCurrency } from '../context/CurrencyContext';
 const CartDrawer = () => {
     const { cartItems, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, cartTotal } = useCart();
     const { formatPrice } = useCurrency();
+    const [selectedImage, setSelectedImage] = useState(null);
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') setSelectedImage(null);
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     return (
         <AnimatePresence>
@@ -43,7 +53,11 @@ const CartDrawer = () => {
                                     {cartItems.map(item => (
                                         <motion.div key={item.key} layout initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
                                             className="flex gap-4 py-4 border-b border-white/[0.06]">
-                                            <div className="w-20 h-24 shrink-0 overflow-hidden bg-grey-700">
+                                            <div 
+                                                className="w-20 h-24 shrink-0 overflow-hidden bg-grey-700 cursor-pointer hover:opacity-80 transition-opacity"
+                                                onClick={() => setSelectedImage(item.image)}
+                                                title="Click to view image"
+                                            >
                                                 <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                                             </div>
                                             <div className="flex-1 min-w-0">
@@ -87,6 +101,53 @@ const CartDrawer = () => {
                             </>
                         )}
                     </motion.div>
+
+                    {/* Premium Fullscreen Lightbox Modal */}
+                    <AnimatePresence>
+                        {selectedImage && (
+                            <motion.div
+                                className="fixed inset-0 bg-black/80 backdrop-blur-md z-[2000] flex items-center justify-center p-4"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                onClick={() => setSelectedImage(null)}
+                            >
+                                <motion.div
+                                    className="relative max-w-[500px] w-full bg-white/[0.03] border border-white/[0.1] backdrop-blur-2xl rounded-[24px] p-6 shadow-2xl flex flex-col gap-4"
+                                    initial={{ scale: 0.9, y: 20 }}
+                                    animate={{ scale: 1, y: 0 }}
+                                    exit={{ scale: 0.9, y: 20 }}
+                                    transition={{ type: 'spring', damping: 25, stiffness: 220 }}
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    <div className="flex justify-between items-center pb-2 border-b border-white/5">
+                                        <h3 className="text-xs font-bold tracking-[0.12em] uppercase text-grey-400">Product Preview</h3>
+                                        <button
+                                            className="text-white/60 hover:text-white transition-colors bg-white/5 hover:bg-white/10 w-8 h-8 rounded-full flex items-center justify-center border border-white/10"
+                                            onClick={() => setSelectedImage(null)}
+                                        >
+                                            <HiX size={16} />
+                                        </button>
+                                    </div>
+                                    
+                                    <div className="relative w-full overflow-hidden bg-black/40 rounded-2xl border border-white/[0.05] flex items-center justify-center aspect-[3/4]">
+                                        <img
+                                            src={selectedImage}
+                                            alt="Expanded Product"
+                                            className="w-full h-full object-cover rounded-xl"
+                                        />
+                                    </div>
+                                    
+                                    <button
+                                        onClick={() => setSelectedImage(null)}
+                                        className="btn-secondary w-full py-3.5 rounded-xl text-center text-xs font-bold uppercase tracking-widest"
+                                    >
+                                        Close Preview
+                                    </button>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </>
             )}
         </AnimatePresence>
