@@ -399,8 +399,8 @@
 /* ── CTAs ── */
 .pd-ctas {
     display: flex;
-    gap: 10px;
-    margin-top: 8px;
+    gap: 12px;
+    margin-top: 12px;
 }
 
 .pd-add-btn {
@@ -408,31 +408,41 @@
     background: #fff;
     color: #000;
     border: 1px solid #fff;
-    padding: 16px 24px;
+    padding: 16px 28px;
     font-size: 11px;
     font-weight: 800;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     cursor: pointer;
-    transition: background 0.2s, color 0.2s;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
 }
 
 .pd-add-btn:hover {
     background: transparent;
     color: #fff;
+    letter-spacing: 0.18em;
+    box-shadow: 0 0 24px rgba(255, 255, 255, 0.25);
+    border-color: #fff;
 }
 
 .pd-add-btn--disabled {
-    background: rgba(255, 255, 255, 0.1);
-    color: #555;
-    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.05);
     cursor: not-allowed;
+    box-shadow: none;
 }
 
 .pd-add-btn--disabled:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: #555;
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 0.14em;
+    box-shadow: none;
+    border-color: rgba(255, 255, 255, 0.05);
 }
 
 .pd-wishlist-btn {
@@ -440,24 +450,34 @@
     height: 54px;
     flex-shrink: 0;
     background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     border-radius: 999px;
 }
 
 .pd-wishlist-btn:hover {
     border-color: #fff;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
 }
 
 .pd-wishlist-btn--active {
-    color: #fff;
-    border-color: #fff;
+    color: #ff3f3f;
+    border-color: rgba(255, 63, 63, 0.4);
+    background: rgba(255, 63, 63, 0.08);
+    box-shadow: 0 0 15px rgba(255, 63, 63, 0.15);
+}
+
+.pd-wishlist-btn--active:hover {
+    color: #ff3f3f;
+    border-color: #ff3f3f;
+    background: rgba(255, 63, 63, 0.12);
+    box-shadow: 0 0 25px rgba(255, 63, 63, 0.3);
 }
 
 /* Stock indicator */

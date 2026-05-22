@@ -640,7 +640,7 @@ const Home = () => {
     return (
         <div className="min-h-screen bg-black text-white">
             {/* ══ HERO SECTION ══ */}
-            <section ref={heroRef} className="relative h-screen min-h-[600px] w-full bg-black overflow-hidden text-white">
+            <section ref={heroRef} className="relative h-[65vh] min-h-[420px] md:h-screen md:min-h-[600px] w-full bg-black overflow-hidden text-white">
                 {/* Background Image */}
                 <div className="absolute inset-0 z-0">
                     <motion.img

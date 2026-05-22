@@ -178,7 +178,9 @@ const ProductDetail = () => {
     const productSizes = product.sizes?.length ? product.sizes : allSizes;
 
     /* ── Colours ── */
-    const productColors = product.colors?.length ? product.colors : [];
+    const productColors = product.colors?.length 
+        ? (product.colors.some(c => c.toLowerCase() === 'white') ? product.colors : [...product.colors, 'White']) 
+        : [];
     const colorMap = {
         'black': '#111111', 'white': '#f5f5f5', 'charcoal': '#36454f',
         'olive': '#6b7645', 'cream': '#f5f0e8', 'stone': '#928978',
@@ -304,11 +306,7 @@ const ProductDetail = () => {
                             )}
                         </motion.div>
 
-                        {/* Delivery Estimate Box */}
-                        <div className="pd-delivery-estimate">
-                            <span className="pd-icon-clock">🕒</span>
-                            <span>Order in <b>02:30:25</b> to get next day delivery</span>
-                        </div>
+
 
                         {/* Color selector */}
                         {productColors.length > 0 && (

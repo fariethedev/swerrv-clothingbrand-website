@@ -9,6 +9,30 @@ import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 import CartDrawer from './CartDrawer';
 
+const drawerVariants = {
+    hidden: { x: '100%' },
+    show: { 
+        x: 0, 
+        transition: { 
+            type: 'spring', 
+            stiffness: 260, 
+            damping: 30, 
+            staggerChildren: 0.05, 
+            delayChildren: 0.1 
+        } 
+    }
+};
+
+const overlayVariants = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1, transition: { duration: 0.3 } }
+};
+
+const linkItemVariants = {
+    hidden: { x: 30, opacity: 0 },
+    show: { x: 0, opacity: 1, transition: { type: 'spring', stiffness: 200, damping: 22 } }
+};
+
 const Navbar = () => {
     const [scrolled, setScrolled] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -231,47 +255,156 @@ const Navbar = () => {
             <AnimatePresence>
                 {mobileOpen && (
                     <>
-                        <motion.div className="fixed inset-0 bg-black/70 z-[998]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setMobileOpen(false)} />
+                        <motion.div 
+                            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[998]" 
+                            variants={overlayVariants}
+                            initial="hidden"
+                            animate="show"
+                            exit="hidden"
+                            onClick={() => setMobileOpen(false)} 
+                        />
                         <motion.div
-                            className="fixed top-0 left-0 w-[300px] h-screen bg-grey-900 z-[999] flex flex-col overflow-y-auto"
-                            initial={{ x: '-100%' }}
-                            animate={{ x: 0 }}
-                            exit={{ x: '-100%' }}
-                            transition={{ type: 'tween', duration: 0.3 }}
+                            className="fixed top-0 right-0 w-full sm:w-[420px] h-screen bg-black/95 backdrop-blur-3xl border-l border-white/10 z-[999] flex flex-col justify-between p-6 overflow-y-auto shadow-2xl"
+                            variants={drawerVariants}
+                            initial="hidden"
+                            animate="show"
+                            exit="hidden"
                         >
-                            <div className="flex items-center justify-between p-6 border-b border-grey-700">
-                                <img src="/images/swerrve_logo_white.png" alt="Swerrv" className="h-20 object-contain" />
-                                <button onClick={() => setMobileOpen(false)} className="text-white"><HiX size={22} /></button>
+                            {/* Header */}
+                            <div className="flex items-center justify-between pb-6 border-b border-white/10">
+                                <Link to="/" onClick={() => setMobileOpen(false)}>
+                                    <img src="/images/swerrve_logo_white.png" alt="Swerrv" className="h-16 object-contain" />
+                                </Link>
+                                <button 
+                                    onClick={() => setMobileOpen(false)} 
+                                    className="text-white w-10 h-10 rounded-full border border-white/10 flex items-center justify-center bg-white/5 hover:bg-white/10 hover:rotate-90 transition-all duration-300"
+                                >
+                                    <HiX size={20} />
+                                </button>
                             </div>
-                            <nav className="flex flex-col p-6 gap-1">
-                                <motion.div initial={{ x: -30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0 }}>
-                                    <button onClick={() => { setMobileOpen(false); setSearchOpen(true); }} className="w-full text-left text-lg font-semibold py-4 border-b border-white/5 text-white flex items-center gap-3">
-                                        <HiOutlineSearch size={20} className="text-grey-400" /> Search
+
+                            {/* Nav Links */}
+                            <nav className="flex flex-col gap-1 mt-6">
+                                <motion.div variants={linkItemVariants}>
+                                    <button 
+                                        onClick={() => { setMobileOpen(false); setSearchOpen(true); }} 
+                                        className="w-full text-left text-2xl font-black uppercase tracking-[0.2em] py-3.5 border-b border-white/5 text-white flex items-center justify-between hover:text-white/80 transition-colors"
+                                    >
+                                        Search
+                                        <HiOutlineSearch size={22} className="text-white/40" />
                                     </button>
                                 </motion.div>
-                                <motion.div initial={{ x: -30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.1 }}>
-                                    <Link to="/wishlist" className="w-full text-left text-lg font-semibold py-4 border-b border-white/5 text-white flex items-center justify-between" onClick={() => setMobileOpen(false)}>
-                                        <div className="flex items-center gap-3"><HiOutlineHeart size={20} className="text-grey-400" /> Saved Items</div>
-                                        {wishlist.length > 0 && <span className="bg-white text-black text-[9px] font-black px-2 py-0.5 rounded-none">{wishlist.length}</span>}
+                                <motion.div variants={linkItemVariants}>
+                                    <Link 
+                                        to="/wishlist" 
+                                        className="w-full text-left text-2xl font-black uppercase tracking-[0.2em] py-3.5 border-b border-white/5 text-white flex items-center justify-between hover:text-white/80 transition-colors" 
+                                        onClick={() => setMobileOpen(false)}
+                                    >
+                                        <span>Wishlist</span>
+                                        <div className="flex items-center gap-2">
+                                            {wishlist.length > 0 && (
+                                                <span className="bg-white text-black text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full">
+                                                    {wishlist.length}
+                                                </span>
+                                            )}
+                                            <HiOutlineHeart size={22} className="text-white/40" />
+                                        </div>
                                     </Link>
                                 </motion.div>
-                                {navLinks.map((link, i) => (
-                                    <motion.div key={link.label} initial={{ x: -30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: (i + 2) * 0.07 }}>
-                                        <Link to={link.to} className="block text-lg font-semibold py-4 border-b border-white/5 text-white" onClick={() => setMobileOpen(false)}>
+                                {navLinks.map((link) => (
+                                    <motion.div key={link.label} variants={linkItemVariants}>
+                                        <Link 
+                                            to={link.to} 
+                                            className="block text-2xl font-black uppercase tracking-[0.2em] py-3.5 border-b border-white/5 text-white hover:text-white/80 transition-colors duration-300" 
+                                            onClick={() => setMobileOpen(false)}
+                                        >
                                             {link.label}
                                         </Link>
                                     </motion.div>
                                 ))}
-                                <div className="mt-4 border-t border-white/5 pt-4">
-                                    <div className="flex items-center justify-between py-2 text-white">
-                                        <span className="text-sm font-semibold text-grey-300">Language</span>
+                            </nav>
+
+                            {/* User Profile Info / Login Status */}
+                            {user ? (
+                                <motion.div variants={linkItemVariants} className="mt-8 mb-6 p-4 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-md">
+                                    <div className="flex items-center gap-3.5 mb-4 pb-4 border-b border-white/5">
+                                        {user.profilePictureUrl ? (
+                                            <img src={user.profilePictureUrl} alt="Profile" className="w-10 h-10 rounded-full object-cover border border-white/20" />
+                                        ) : (
+                                            <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/70">
+                                                <HiOutlineUser size={20} />
+                                            </div>
+                                        )}
+                                        <div className="overflow-hidden">
+                                            <p className="text-[10px] font-bold tracking-widest text-grey-500 uppercase">Signed in as</p>
+                                            <p className="text-sm font-black text-white truncate capitalize mt-0.5">
+                                                {user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.name || user.email}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <Link to="/profile" className="text-center py-2.5 text-[10px] font-bold tracking-widest uppercase text-white/70 hover:text-white bg-white/5 border border-white/5 hover:border-white/10 hover:bg-white/10 transition-all duration-300 rounded-xl" onClick={() => setMobileOpen(false)}>
+                                            Profile
+                                        </Link>
+                                        <Link to="/orders" className="text-center py-2.5 text-[10px] font-bold tracking-widest uppercase text-white/70 hover:text-white bg-white/5 border border-white/5 hover:border-white/10 hover:bg-white/10 transition-all duration-300 rounded-xl" onClick={() => setMobileOpen(false)}>
+                                            Orders
+                                        </Link>
+                                    </div>
+                                    <button onClick={() => { logout(); setMobileOpen(false); }} className="w-full mt-2.5 py-2.5 text-[10px] font-bold tracking-widest uppercase text-red-500 hover:text-red-400 bg-red-500/5 border border-red-500/10 hover:bg-red-500/10 hover:border-red-500/20 transition-all duration-300 rounded-xl">
+                                        Logout
+                                    </button>
+                                </motion.div>
+                            ) : (
+                                <motion.div variants={linkItemVariants} className="mt-8 mb-6">
+                                    <Link 
+                                        to="/login" 
+                                        className="flex items-center justify-center gap-2.5 w-full py-4 bg-white text-black text-xs font-black tracking-[0.2em] uppercase hover:bg-white/90 transition-all duration-300 rounded-full shadow-lg" 
+                                        onClick={() => setMobileOpen(false)}
+                                    >
+                                        <HiOutlineUser size={16} />
+                                        <span>Login / Register</span>
+                                    </Link>
+                                </motion.div>
+                            )}
+
+                            {/* Footer Selectors and Socials */}
+                            <motion.div variants={linkItemVariants} className="mt-auto border-t border-white/10 pt-6">
+                                <div className="flex flex-col gap-4 bg-white/[0.02] border border-white/5 rounded-2xl p-4">
+                                    {/* Currency */}
+                                    <div className="flex items-center justify-between text-white/80">
+                                        <span className="text-[10px] font-bold tracking-widest text-grey-400 uppercase">Currency</span>
+                                        <select value={currency} onChange={(e) => setCurrency(e.target.value)} className="bg-transparent text-xs text-white font-black tracking-wider outline-none cursor-pointer border-none uppercase pr-1">
+                                            <option className="bg-black text-white" value="PLN">PLN (zł)</option>
+                                            <option className="bg-black text-white" value="EUR">EUR (€)</option>
+                                            <option className="bg-black text-white" value="GBP">GBP (£)</option>
+                                            <option className="bg-black text-white" value="CAD">CAD ($)</option>
+                                            <option className="bg-black text-white" value="USD">USD ($)</option>
+                                            <option className="bg-black text-white" value="ZAR">ZAR (R)</option>
+                                        </select>
+                                    </div>
+                                    {/* Language */}
+                                    <div className="flex items-center justify-between text-white/80 border-t border-white/5 pt-3.5">
+                                        <span className="text-[10px] font-bold tracking-widest text-grey-400 uppercase">Language</span>
                                         <div className="flex gap-4">
-                                            <button onClick={() => setLanguage('en')} className={`text-sm font-bold ${language === 'en' ? 'text-white' : 'text-grey-500'}`}>EN</button>
-                                            <button onClick={() => setLanguage('pl')} className={`text-sm font-bold ${language === 'pl' ? 'text-white' : 'text-grey-500'}`}>PL</button>
+                                            <button onClick={() => setLanguage('en')} className={`text-xs font-black tracking-wider ${language === 'en' ? 'text-white border-b-2 border-white' : 'text-grey-500'}`}>EN</button>
+                                            <button onClick={() => setLanguage('pl')} className={`text-xs font-black tracking-wider ${language === 'pl' ? 'text-white border-b-2 border-white' : 'text-grey-500'}`}>PL</button>
                                         </div>
                                     </div>
                                 </div>
-                            </nav>
+
+                                {/* Social Links */}
+                                <div className="flex justify-center gap-6 mt-6 pb-2 text-white/40">
+                                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors duration-300">
+                                        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                                    </a>
+                                    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors duration-300">
+                                        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/></svg>
+                                    </a>
+                                    <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors duration-300">
+                                        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.02 1.63 4.14 1.01.99 2.38 1.54 3.79 1.66v3.42c-.89-.11-1.78-.38-2.61-.75-.76-.35-1.46-.86-2.04-1.48v5.86c.03 2.05-.72 4.05-2.12 5.51-1.46 1.44-3.5 2.19-5.54 2.03-2.02-.12-3.92-1.15-5.16-2.77-1.37-1.74-1.85-4.04-1.32-6.22.45-1.92 1.7-3.6 3.42-4.54 1.16-.65 2.47-.97 3.8-.94v3.41c-.72-.03-1.45.13-2.1.47-.72.38-1.29.99-1.61 1.73-.39.89-.39 1.9 0 2.79.31.74.88 1.35 1.61 1.73.74.39 1.59.45 2.38.19.86-.27 1.6-.87 2.07-1.65.34-.58.52-1.25.53-1.93l-.02-12.98z"/></svg>
+                                    </a>
+                                </div>
+                            </motion.div>
                         </motion.div>
                     </>
                 )}
