@@ -237,77 +237,33 @@ const Login = () => {
 
     return (
         <div className="auth-page">
-            {/* ===== LEFT PANEL — Image Carousel ===== */}
-            <div className="auth-left">
-                {/* Slides */}
+            {/* Fullscreen Changing Slideshow Background */}
+            <div className="auth-bg-carousel">
                 {SLIDE_IMAGES.map((img, i) => (
                     <div
                         key={img}
-                        className={`auth-slide ${i === currentSlide ? 'auth-slide--active' : ''}`}
+                        className={`auth-bg-slide ${i === currentSlide ? 'auth-bg-slide--active' : ''}`}
                         style={{ backgroundImage: `url(${img})` }}
                     />
                 ))}
-
-                {/* Dark gradient overlay for readability */}
-                <div className="auth-left-overlay" />
-
-                {/* Top bar: logo + back link */}
-                <div className="auth-left-topbar">
-                    <Link to="/" className="auth-logo">
-                        <img src="/images/swerrve_logo_white.png" alt="Swerrv" className="auth-logo-img" />
-                    </Link>
-                    <Link to="/" className="auth-back-btn">
-                        Back to website <span>&rarr;</span>
-                    </Link>
-                </div>
-
-                {/* Bottom: tagline + dots */}
-                <div className="auth-left-bottom">
-                    <AnimatePresence mode="wait">
-                        <motion.p
-                            key={currentSlide}
-                            className="auth-caption"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.5 }}
-                        >
-                            {SLIDE_CAPTIONS[currentSlide]}
-                        </motion.p>
-                    </AnimatePresence>
-
-                    {/* Dot indicators */}
-                    <div className="auth-dots">
-                        {SLIDE_IMAGES.map((_, i) => (
-                            <button
-                                key={i}
-                                className={`auth-dot ${i === currentSlide ? 'auth-dot--active' : ''}`}
-                                onClick={() => setCurrentSlide(i)}
-                                aria-label={`Slide ${i + 1}`}
-                            />
-                        ))}
-                    </div>
-                </div>
+                <div className="auth-bg-overlay" />
             </div>
 
-            {/* ===== RIGHT PANEL — Form ===== */}
-            <div className="auth-right">
-                {/* Mobile Header (Visible only when auth-left is hidden) */}
-                <div className="auth-mobile-header">
-                    <Link to="/" className="auth-logo">
-                        <img src="/images/swerrve_logo_white.png" alt="Swerrv" className="auth-logo-img" />
-                    </Link>
-                    <Link to="/" className="auth-back-btn">
-                        Back <span>&rarr;</span>
-                    </Link>
-                </div>
-
+            {/* Centered Glassmorphic Form Card */}
+            <div className="auth-content-container">
                 <motion.div
-                    className="auth-form-container"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.45 }}
+                    className="auth-card"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.55, ease: 'easeOut' }}
                 >
+                    {/* Centered Logo returning to home page */}
+                    <div className="auth-logo-wrap">
+                        <Link to="/" className="auth-logo">
+                            <img src="/images/swerrve_logo_white.png" alt="Swerrv" className="auth-logo-img" />
+                        </Link>
+                    </div>
+
                     {/* Progress Indicator for Sign Up */}
                     {!isLogin && (
                         <div className="auth-progress-container">
@@ -412,14 +368,14 @@ const Login = () => {
                                     <span className="auth-divider-line" />
                                 </div>
 
-                                {/* Social Login */}
+                                {/* Social Login - Rounded (pill) */}
                                 <div className="auth-social-row">
                                     <div className="auth-social-btn-wrap">
                                         <GoogleLogin
                                             onSuccess={handleGoogleSuccess}
                                             onError={() => { }}
                                             theme="filled_black"
-                                            shape="rectangular"
+                                            shape="pill"
                                             size="large"
                                             text="signin_with"
                                         />
@@ -586,7 +542,7 @@ const Login = () => {
                                                         <label className="upload-label">Profile Image (Optional)</label>
                                                         <div className="upload-content-wrapper">
                                                             <div className="avatar-preview">
-                                                                {formData.profilePictureUrl ? (
+                                                                 {formData.profilePictureUrl ? (
                                                                     <img src={formData.profilePictureUrl} alt="Preview" />
                                                                 ) : (
                                                                     <HiPlus size={20} color="#666" />
