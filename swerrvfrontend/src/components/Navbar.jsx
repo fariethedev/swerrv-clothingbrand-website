@@ -256,7 +256,7 @@ const Navbar = () => {
                 {mobileOpen && (
                     <>
                         <motion.div 
-                            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[998]" 
+                            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[1010]" 
                             variants={overlayVariants}
                             initial="hidden"
                             animate="show"
@@ -264,7 +264,7 @@ const Navbar = () => {
                             onClick={() => setMobileOpen(false)} 
                         />
                         <motion.div
-                            className="fixed top-0 right-0 w-full sm:w-[420px] h-screen bg-black/95 backdrop-blur-3xl border-l border-white/10 z-[999] flex flex-col justify-between p-6 overflow-y-auto shadow-2xl"
+                            className="fixed top-0 right-0 w-full sm:w-[420px] h-screen bg-black/95 backdrop-blur-3xl border-l border-white/10 z-[1020] flex flex-col justify-between p-6 overflow-y-auto shadow-2xl"
                             variants={drawerVariants}
                             initial="hidden"
                             animate="show"
